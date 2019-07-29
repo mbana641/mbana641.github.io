@@ -114,10 +114,10 @@
           position: absolute;
           bottom: 20px;
           left: 20px;
-          width: 350px;
-          height: 350px;
+          width: 250px;
+          height: 325px;
           text-align: left;
-		      font-size: 13px;
+		      font-size: 17px;
           margin-top: 10px;
           background-color: white;
           color: black;
@@ -126,7 +126,6 @@
           padding-top: 10px;
           padding-left: 20px;
           padding-bottom: 8px;
-          overflow: scroll;
           line-height: 11px;
         }
 
@@ -146,10 +145,10 @@
         }
 
 		h2 {
-			margin-top:20px;
+			margin-top:37px;
 			margin-left:30px;
 			font-size: 32px;
-			color: black;
+			color: #CC1100;
 			font-family: sans-serif;
 		}
         #tools {
@@ -264,7 +263,7 @@
           const active4 = new FeatureLayer({
             url: "https://services9.arcgis.com/RHVPKKiFTONKtxq3/arcgis/rest/services/Active_Hurricanes_v1/FeatureServer/3"
           });
-          active5 = new FeatureLayer({
+          const active5 = new FeatureLayer({
             url: "https://services9.arcgis.com/RHVPKKiFTONKtxq3/arcgis/rest/services/Active_Hurricanes_v1/FeatureServer/4"
           });
           var popup = {
@@ -289,7 +288,7 @@
           });
           // Create map
           const map = new Map({
-            basemap: "streets-night-vector",
+            basemap: "satellite",
             layers: [featureLayer, active5, active3, active4, active, active2, buffer, centers, routeLayer]
           });
 
@@ -297,7 +296,7 @@
           const view = new MapView({
             container: "viewDiv",
             map: map,
-            zoom: 4,
+            zoom: 5,
             center: [-97.383, 34.4069]
           });
 
@@ -467,10 +466,10 @@
             geometry: polygon,
             symbol: {
               type: "simple-fill", // autocasts as SimpleFillSymbol
-              color: "rgba(250,235,215,0.5)",
+              color: "rgba(228,228,228,0.4)",
               style: "solid",
               outline: {  // autocasts as SimpleLineSymbol
-              color: "rgba(182,143,211,0.8)",
+              color: "rgba(228, 228, 228, 0.8)",
               width: 2,
               }
             }
@@ -718,8 +717,8 @@
     <body>
       <div id='show'>
       <ul>
-        <li><a href="https://www.esri.com/en-us/home"><img src="esri.png" height="50" width="150"/></a></li>
-        <li><h2>DC++</h2></li>
+        <li><a href="https://www.fema.gov/"><img src="https://upload.wikimedia.org/wikipedia/commons/6/67/FEMA_logo.svg" height="78.75" width="222.1875"/></a></li>
+        <li><h2>ESF DECISION SUPPORT TOOLS</h2></li>
         <div class="dropdown">
             <button class="dropbtn">Tools
               <i class="fa fa-caret-down"></i>
