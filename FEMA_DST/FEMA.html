@@ -208,7 +208,8 @@
           "esri/widgets/Print",
           "esri/WebMap",
           "esri/widgets/BasemapToggle",
-          "esri/widgets/BasemapGallery"
+          "esri/widgets/BasemapGallery",
+          "esri/layers/MapImageLayer"
         ], function(
           config,
           Sketch,
@@ -235,7 +236,8 @@
           Print,
           WebMap,
           BasemapToggle,
-          BasemapGallery
+          BasemapGallery,
+          MapImageLayer
         ) {
           // Create layers
 
@@ -271,8 +273,12 @@
           'content': '<b>Available Water:</b> {Water} liters<br><b>Available Food:</b> {Food} meals'
           }
           var centers = new FeatureLayer({
-              url: 'https://services.arcgis.com/hRUr1F8lE8Jq2uJo/arcgis/rest/services/Distribution_Centers/FeatureServer',
+              url: 'https://services.arcgis.com/hRUr1F8lE8Jq2uJo/arcgis/rest/services/Distribution_Centers/FeatureServer/0',
               popupTemplate: popup
+          });
+          var weatherRadar = new MapImageLayer({
+            url: "https://nowcoast.noaa.gov/arcgis/rest/services/nowcoast/radar_meteo_imagery_nexrad_time/MapServer/",
+            opacity: 0.5
           });
           document
           .getElementById("uploadForm")
@@ -289,7 +295,7 @@
           // Create map
           const map = new Map({
             basemap: "hybrid",
-            layers: [featureLayer, active5, active3, active4, active, active2, buffer, centers, routeLayer]
+            layers: [featureLayer, active5, active3, active4, active, active2, weatherRadar, buffer, centers, routeLayer]
           });
 
           // Create view
