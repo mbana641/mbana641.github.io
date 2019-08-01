@@ -488,6 +488,7 @@
           // Add widget to the top right corner of the view
           view.ui.add(print, "top-right");
           view.ui.add("csvDiv", "top-right");
+          view.ui.add("layerToggle", "top-left");
           var args = '{ filename: "export-data.csv" }';
           function convertArrayOfObjectsToCSV(args) {
             var result, ctr, keys, columnDelimiter, lineDelimiter, data;
@@ -512,6 +513,15 @@
             });
             return result;
         }
+
+        document.getElementById("layerToggle").onclick = function toggle() {
+          if(weatherRadar.visible == true) {
+            weatherRadar.visible = false
+          } else if(weatherRadar.visible == false) {
+            weatherRadar.visible = true
+          }
+        }
+
         document.getElementById("csvDiv").onclick = function downloadCSV(args) {
             var data, filename, link;
             var csv = convertArrayOfObjectsToCSV({
@@ -772,6 +782,8 @@
         title='Export CSV'>
           <span class='esri-icon-download'></span>
       </div>
+
+      <div id="layerToggle" class="esri-widget esri-widget--button esri-interactive" title="Radar On/Off"><span class="esri-icon-hollow-eye"></span></div>
 
       <span id = "html"></span>
     </body>
