@@ -1,5 +1,3 @@
-<!DOCTYPE HTML>
-
 <html>
 
 <head>
@@ -251,7 +249,6 @@
       MapImageLayer
     ) {
         // Create layers
-
         var portalUrl = "https://www.arcgis.com";
         const buffer = new GraphicsLayer();
         var graphicsLayer = new GraphicsLayer();
@@ -308,7 +305,6 @@
           basemap: "hybrid",
           layers: [featureLayer, active5, active3, active4, active, active2, weatherRadar, buffer, centers, routeLayer]
         });
-
         // Create view
         const view = new MapView({
           container: "viewDiv",
@@ -316,14 +312,12 @@
           zoom: 5,
           center: [-97.383, 34.4069]
         });
-
         var fileForm = document.getElementById("mainWindow");
         var expand = new Expand({
           expandIconClass: "esri-icon-upload",
           view: view,
           content: fileForm
         });
-
         var print = new Expand({
           id: "Print",
           view: view,
@@ -335,7 +329,6 @@
                 "https://utility.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task"
             })
         });
-
         var basemap = new Expand({
           id: "Change Basemaps",
           expandIconClass: "esri-icon-basemap",
@@ -350,9 +343,7 @@
             }
           })
         });
-
         view.ui.add(basemap, "top-left");
-
         view.ui.add(expand, "top-right");
         function generateFeatureCollection(fileName) {
           var name = fileName.split(".");
@@ -438,18 +429,15 @@
           action.on("vertex-add", function (evt) {
             createPolygonGraphic(evt.vertices);
           });
-
           // PolygonDrawAction.vertex-remove
           // Fires when the "Z" key is pressed to undo the last added vertex
           action.on("vertex-remove", function (evt) {
             createPolygonGraphic(evt.vertices);
           });
-
           // Fires when the pointer moves over the view
           action.on("cursor-update", function (evt) {
             createPolygonGraphic(evt.vertices);
           });
-
           // Add a graphic representing the completed polygon
           // when user double-clicks on the view or presses the "C" key
           action.on("draw-complete", function (evt) {
@@ -493,9 +481,7 @@
           });
           view.graphics.add(graphic);
           return graphic;
-
         }
-
         // Add widget to the top right corner of the view
         view.ui.add(print, "top-right");
         view.ui.add("csvDiv", "top-right");
@@ -524,7 +510,6 @@
           });
           return result;
         }
-
         document.getElementById("layerToggle").onclick = function toggle() {
           if (weatherRadar.visible == true) {
             weatherRadar.visible = false
@@ -532,7 +517,6 @@
             weatherRadar.visible = true
           }
         }
-
         document.getElementById("csvDiv").onclick = function downloadCSV(args) {
           var data, filename, link;
           var csv = convertArrayOfObjectsToCSV({
@@ -596,7 +580,6 @@
               var mealsf = formatNumber(meals);
               var waterf = formatNumber(water);
               var foodf = formatNumber(food);
-
               html = "<div class='floating-box'><div class='resources'><div id='box'><strong><span>Number of people in need:</span></strong><br></br><span id='pop'></span></div><br></br><div id='box'><strong><span>Liters of water needed:</span></strong><br></br><span id='water'></span></div><br></br><div id='box'><strong><span>Number of meals needed:</span></strong><br></br><span id='meals'></span></div><br></br><div id='box'><strong><span>Cost of water:</span></strong><br></br>$<span id='costw'></span></div><br></br><div id='box'><strong><span>Cost of meals:</span></strong><br></br>$<span id='costm'></span></div><br></br><div id='box'><strong><span>Number of miles on route:</span></strong><br></br><span id='miles'></div></div></div>"
               document.getElementById('html').innerHTML = html;
               document.getElementById('pop').innerHTML = seekf;
@@ -607,7 +590,6 @@
               document.getElementById('miles').innerHTML = "Loading...";
             });
         }
-
         function sleep(seconds) {
           var waitUntil = new Date().getTime() + seconds * 1000;
           while (new Date().getTime() < waitUntil) true;
@@ -623,7 +605,6 @@
             longitude: centroidy,
             latitude: centroidx
           };
-
           var centersQuery = centers.createQuery();
           centers.queryFeatures(centersQuery).then(function (response) {
             for (var x = 0; x < response.features.length; x++) {
@@ -677,7 +658,6 @@
               geometry: point,
               symbol: markerSymbol
             });
-
             var waterNeed = liters;
             var foodNeed = meals;
             for (var n = 0; n < sortedGraphics.graphics.length; n++) {
