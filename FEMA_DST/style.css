@@ -1,0 +1,165 @@
+html,
+    body {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .dropdown {
+      float: right;
+      overflow: hidden;
+      margin-top: 30px;
+      margin-right: 75px;
+      font-family: "Avenir Next";
+    }
+
+    .dropdown .dropbtn {
+      font-size: 16px;
+      border: none;
+      outline: none;
+      color: white;
+      padding: 10px 20px;
+      background-color: rgba(0, 51, 102, 0.75);
+      font-family: "Avenir Next";
+      margin: 0;
+    }
+
+    .navbar a:hover,
+    .dropdown:hover .dropbtn {
+      background-color: black;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #f9f9f9;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+      z-index: 1;
+    }
+
+    .dropdown-content a {
+      float: none;
+      color: black;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+      text-align: left;
+    }
+
+    .dropdown-content a:hover {
+      background-color: #ddd;
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #fff;
+    }
+
+    li {
+      float: left;
+      display: inline;
+      border-width: 1px 1px 0 1px;
+      margin: 0 5px 0 0;
+    }
+
+    li a {
+      display: block;
+      color: white;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+    }
+
+    /* Change the link color to #111 (black) on hover */
+    li a:hover {
+      background-color: white;
+    }
+
+    #paneDiv {
+      font-family: "Avenir Next";
+      position: absolute;
+      top: 120px;
+      left: 62px;
+      padding: 0 12px 0 12px;
+      background-color: white;
+      color: black;
+      box-shadow: 2px 2px rgba(71, 71, 71, 0.281);
+    }
+
+    .floating-box {
+      font-family: "Avenir Next";
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      width: 250px;
+      height: 325px;
+      text-align: left;
+      font-size: 17px;
+      margin-top: 10px;
+      background-color: white;
+      color: black;
+      box-shadow: 4px 4px rgba(71, 71, 71);
+      z-index: 10;
+      padding-top: 10px;
+      padding-left: 20px;
+      padding-bottom: 8px;
+      line-height: 11px;
+    }
+
+    .box p {
+      display: inline-block;
+      vertical-align: top;
+    }
+
+    .box span {
+      margin: 0;
+      padding: 0;
+      border: solid 1px black;
+      margin-left: 20px;
+      font-size: 48px;
+      display: inline;
+      line-height: 80px;
+    }
+
+    h2 {
+      margin-top: 37px;
+      margin-left: 30px;
+      font-size: 32px;
+      color: #CC1100;
+      font-family: sans-serif;
+    }
+
+    #tools {
+      margin-left: 500px;
+      font-size: 20px;
+      margin-top: 42px;
+    }
+
+    #mainWindow {
+      padding: 0.5em;
+      background-color: #fff;
+    }
+
+    #mainWindow p,
+    #uploadForm {
+      display: block;
+      padding: 0.1em;
+    }
