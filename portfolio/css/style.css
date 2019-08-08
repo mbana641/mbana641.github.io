@@ -7,6 +7,13 @@ body {
   color: #777777;
   background-color: white; }
 
+  #viewDiv {
+    padding: 0;
+    margin: 0;
+    height: 80%;
+    width: 100%;
+  }
+
 h1,
 h2,
 h3,
