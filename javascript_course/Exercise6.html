@@ -1,6 +1,6 @@
 <!doctype html>
 
-<title>Exercise 4</title>
+<title>Exercise 6</title>
 <meta charset="utf-8"/>
 <link rel="icon" type="image/png" href="./brackets.png"/>
 <link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.51.0/codemirror.css>
@@ -164,7 +164,7 @@
 
 
 <textarea id="code" name="code" style="display:none;">
-<!-- Exercise 4, Written in JavaScript 4.18 -->
+<!-- Exercise 6, Written in JavaScript 4.18 -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -183,40 +183,7 @@
 </style>
 
 <script>
-  require([
-    "esri/Map",
-    "esri/views/MapView",
-    "esri/layers/FeatureLayer"
-  ], function(Map, MapView, FeatureLayer) {
 
-    var map = new Map({
-      basemap: "hybrid"
-    });
-
-    var view = new MapView({
-      container: "viewDiv",
-      map: map,
-      center: [-75.992824, 42.978188],
-      zoom: 7
-    });
-    
-    var waterfalls = new FeatureLayer({
-    url: "https://services.arcgis.com/hRUr1F8lE8Jq2uJo/arcgis/rest/services/Waterfalls/FeatureServer/0"
-  });
-    
-    var rivers = new FeatureLayer({
-    url: "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Rivers_and_Streams/FeatureServer/0",
-    customParameters: {
-   		"where": "State='NY'" 
-    }
-  });
-    
-    var lakes = new FeatureLayer({
-    	url: "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Water_Bodies/FeatureServer/0"
-  	});
-    map.addMany([lakes, rivers, waterfalls]);
-    
-  });
 </script>
 </head>
 <body>
@@ -237,103 +204,46 @@
 </div>
 <div id=instruct>
 <b><u>Exercise:</u></b><br><br>
-There are many different types of rivers in the Rivers and Streams layer. It would be beneficial to be able to symbolize this layer based on the type of stream.
+You can use the ArcGIS API for JavaScript to easily load web maps built with the Map Viewer. The advantage of using this approach is that the map will contain all of he predefined settings you configured in the Map Viewer (Layer Styles, Popups, Refresh Rate, etc).
 <br><br>
-We will be using the <a href="https://developers.arcgis.com/javascript/latest/api-reference/esri-symbols-SimpleLineSymbol.html">SimpleLineSymbol</a> to style this layer and <a href="https://developers.arcgis.com/javascript/latest/api-reference/esri-renderers-UniqueValueRenderer.html">UniqueValueRenderer</a> to render the style.
+In this lab, you will use the ArcGIS API for JavaScript to load a WebMap by its portal ID in a custom JavaScript app.
 <br><br>
-1. Update the require statement and function definition to add SimpleLineSymbol and UniqueValueRenderer.
-<p style="padding-left: 5%; font-family: monospace;"><br><br>require([<br>
-	&emsp;&emsp;"esri/Map",<br>
-	&emsp;&emsp;"esri/views/MapView",<br>
-	&emsp;&emsp;"esri/layers/FeatureLayer",<br>
-	&emsp;&emsp;<b>"esri/symbols/SimpleLineSymbol",</b><br>
-	&emsp;&emsp;<b>"esri/renderers/UniqueValueRenderer"</b><br>
-], function(Map, MapView, FeatureLayer, <b>SimpleLineSymbol</b>, <b>UniqueValueRenderer</b>) {</p>
-<br>
-2. Now set up a UniqueValueRenderer based off the <i>Feature</i> field. You can view a list of fields by navigating to the service endpoint.
-<br><br>
-<p style="padding-left: 5%; font-family: monospace;">var view = new MapView({<br>
-	&emsp;&emsp;container: "viewDiv",<br>
-	&emsp;&emsp;map: map,<br>
-	&emsp;&emsp;center: [-75.992824, 42.978188],<br>
-	&emsp;&emsp;zoom: 7<br>
+1. Explore the WebMap Class<br><br>
+2. Between the script tags, add the require statement and function definition<br>
+<b><p style="padding-left: 5%; font-family: monospace;">
+require([<br>
+&emsp;&emsp;"esri/views/MapView",<br>
+&emsp;&emsp;"esri/WebMap"<br>
+], function(MapView, WebMap) {<br><br>
 });<br>
-<br>
-<b>
-	var renderer = new UniqueValueRenderer({<br>
-		&emsp;&emsp;field: "Feature",<br>
-		&emsp;&emsp;defaultSymbol: new SimpleLineSymbol()<br>
-	});<br>
-</b></p>
-<br>
-3. Next we will tell the renderer how to respresent each discrete <i>Feature</i> value. We will define the line color/properties for each type of river/stream in the layer.
-<br><br><b><p style="padding-left: 5%; font-family: monospace;">
-renderer.addUniqueValueInfo("Stream",<br>
-&emsp;&emsp;new SimpleLineSymbol({<br>
-	&emsp;&emsp;&emsp;&emsp;color: "lightblue",<br>
-	&emsp;&emsp;&emsp;&emsp;width: "2px",<br>
-	&emsp;&emsp;&emsp;&emsp;style: "solid"<br>
-	&emsp;&emsp;})<br>
-);<br>
-renderer.addUniqueValueInfo("Stream Intermittent",<br>
-&emsp;&emsp;new SimpleLineSymbol({<br>
-	&emsp;&emsp;&emsp;&emsp;color: "blue",<br>
-	&emsp;&emsp;&emsp;&emsp;width: "2px",<br>
-	&emsp;&emsp;&emsp;&emsp;style: "dash"<br>
-	&emsp;&emsp;})<br>
-);<br>
-renderer.addUniqueValueInfo("Artificial Path",<br>
-&emsp;&emsp;new SimpleLineSymbol({<br>
-	&emsp;&emsp;&emsp;&emsp;color: "green",<br>
-	&emsp;&emsp;&emsp;&emsp;width: "2px",<br>
-	&emsp;&emsp;&emsp;&emsp;style: "solid"<br>
-	&emsp;&emsp;})<br>
-);<br>
-renderer.addUniqueValueInfo("Canal",<br>
-&emsp;&emsp;new SimpleLineSymbol({<br>
-	&emsp;&emsp;&emsp;&emsp;color: "yellow",<br>
-	&emsp;&emsp;&emsp;&emsp;width: "2px",<br>
-	&emsp;&emsp;&emsp;&emsp;style: "solid"<br>
-	&emsp;&emsp;})<br>
-);<br>
-renderer.addUniqueValueInfo("Intercoastal Waterway",<br>
-&emsp;&emsp;new SimpleLineSymbol({<br>
-	&emsp;&emsp;&emsp;&emsp;color: "gray",<br>
-	&emsp;&emsp;&emsp;&emsp;width: "2px",<br>
-	&emsp;&emsp;&emsp;&emsp;style: "solid"<br>
-	&emsp;&emsp;})<br>
-);<br>
-renderer.addUniqueValueInfo("Aqueduct",<br>
-&emsp;&emsp;new SimpleLineSymbol({<br>
-	&emsp;&emsp;&emsp;&emsp;color: "blue",<br>
-	&emsp;&emsp;&emsp;&emsp;width: "2px",<br>
-	&emsp;&emsp;&emsp;&emsp;style: "solid"<br>
-	&emsp;&emsp;})<br>
-);<br>
-</b></p><br><br>
-4. Lastly, we will attach the UniqueValueRenderer to the rivers FeatureLayer.
+</p></b>
 <br><br>
-<p style="padding-left: 5%; font-family: monospace;">var rivers = new FeatureLayer({<br>
-	&emsp;&emsp;url: "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Rivers_and_Streams/FeatureServer/0",<br>
-	&emsp;&emsp;customParameters: {<br>
-		&emsp;&emsp;&emsp;&emsp;"where": "State='NY'"<br>
-		&emsp;&emsp;}<b>, renderer: renderer</b><br>
-});<br>
-map.add(rivers);</p>
+3. Open a WebMap into the MapView using the WebMapID. Note that the code is really similar to the starter map, but in place of a Map we're using a WebMap. To use the saved initial view of the WebMap, remove the center and zoom atttributes from the MapView options.<br>
+<b>Note: Use a publically shared Web Map for this exercise. If you need an example, <a href="https://www.arcgis.com/home/item.html?id=787722665db94bfa80fe36bd38848430">you can use this one.</a></b>
+<br><br>
+<b><p style="padding-left: 5%; font-family: monospace;">
+	&emsp;&emsp;var map = new WebMap({<br>
+	&emsp;&emsp;&emsp;&emsp;portalItem: { // autocasts as new PortalItem<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;id: "&lt;insert portal item ID&gt;",<br>
+	&emsp;&emsp;&emsp;&emsp;}<br>
+	&emsp;&emsp;});<br><br>
+	&emsp;&emsp;var view = new MapView({<br>
+	&emsp;&emsp;&emsp;&emsp;container: "viewDiv",<br>
+	&emsp;&emsp;&emsp;&emsp;map: map<br>
+	&emsp;&emsp;});<br>
+	</p></b>
 <br><br>
 If you're stuck, ensure that your code looks like the solution in the picture below:<br><br>
 <button type="button" class="collapsible">Solution</button>
-    <div class="content"><img src="./e4_one.JPG"><img src="./e4_two.JPG"><img src="./e4_three.JPG"></div>
+    <div class="content"><img src="./e5_one.JPG"></div>
 <br><br>
-<b><u>Challenges:</u></b><br><br>
--Change the color and style of the different types of rivers/streams 
-<br><br>-Try investigating and symbolizing other layers as well!
+
 <br><br>
 </div>
 </div>
-<div id="dialog" title="Welcome to the ArcGIS API for JavaScript">
+<!-- <div id="dialog" title="Welcome to the ArcGIS API for JavaScript">
   <p>Please use this Code Playground to begin learning about the ArcGIS API for JavaScript. To get started, click on the Directions button. As you edit code on the left side of the screen, press the Refresh button to see the updates on the Map.</p>
-</div>
+</div> -->
     <script>
       var delay;
       // Initialize CodeMirror editor with a nice html5 canvas demo.

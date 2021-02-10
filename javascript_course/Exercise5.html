@@ -183,7 +183,90 @@
 </style>
 
 <script>
+  require([
+    "esri/Map",
+    "esri/views/MapView",
+    "esri/layers/FeatureLayer",
+  	"esri/symbols/SimpleLineSymbol",
+  	"esri/renderers/UniqueValueRenderer"
+  ], function(Map, MapView, FeatureLayer, SimpleLineSymbol, UniqueValueRenderer) {
 
+    var map = new Map({
+      basemap: "hybrid"
+    });
+    
+    var renderer = new UniqueValueRenderer({
+      field: "Feature",
+      defaultSymbol: new SimpleLineSymbol()
+    });
+
+    var view = new MapView({
+      container: "viewDiv",
+      map: map,
+      center: [-75.992824, 42.978188],
+      zoom: 7
+    });
+    
+    renderer.addUniqueValueInfo("Stream",
+      new SimpleLineSymbol({
+        color: "lightblue",
+        width: "2px",
+        style: "solid"
+      })
+    );
+    renderer.addUniqueValueInfo("Stream Intermittent",
+      new SimpleLineSymbol({
+        color: "blue",
+        width: "2px",
+        style: "dash"
+      })
+    );
+    renderer.addUniqueValueInfo("Artificial Path",
+      new SimpleLineSymbol({
+        color: "green",
+        width: "2px",
+        style: "solid"
+      })
+    );
+    renderer.addUniqueValueInfo("Canal",
+      new SimpleLineSymbol({
+        color: "yellow",
+        width: "2px",
+        style: "solid"
+      })
+    );
+    renderer.addUniqueValueInfo("Intercoastal Waterway",
+      new SimpleLineSymbol({
+        color: "gray",
+        width: "2px",
+        style: "solid"
+      })
+    );
+    renderer.addUniqueValueInfo("Aqueduct",
+      new SimpleLineSymbol({
+        color: "blue",
+        width: "2px",
+        style: "solid"
+      })
+    );
+    
+    var waterfalls = new FeatureLayer({
+    url: "https://services.arcgis.com/hRUr1F8lE8Jq2uJo/arcgis/rest/services/Waterfalls/FeatureServer/0"
+  });
+    
+    var rivers = new FeatureLayer({
+    url: "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Rivers_and_Streams/FeatureServer/0",
+    customParameters: {
+   		"where": "State='NY'" 
+    }, renderer: renderer
+  });
+    
+    var lakes = new FeatureLayer({
+    	url: "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Water_Bodies/FeatureServer/0"
+  	});
+    map.addMany([lakes, rivers, waterfalls]);
+    
+  });
 </script>
 </head>
 <body>
@@ -204,46 +287,59 @@
 </div>
 <div id=instruct>
 <b><u>Exercise:</u></b><br><br>
-You can use the ArcGIS API for JavaScript to easily load web maps built with the Map Viewer. The advantage of using this approach is that the map will contain all of he predefined settings you configured in the Map Viewer (Layer Styles, Popups, Refresh Rate, etc).
+In this lab, you will use code to style a popup.
 <br><br>
-In this lab, you will use the ArcGIS API for JavaScript to load a WebMap by its portal ID in a custom JavaScript app.
-<br><br>
-1. Explore the WebMap Class<br><br>
-2. Add the require statement and function definition<br>
-<b><p style="padding-left: 5%; font-family: monospace;">
-require([<br>
-&emsp;&emsp;"esri/views/MapView",<br>
-&emsp;&emsp;"esri/WebMap"<br>
-], function(MapView, WebMap) {<br><br>
-});<br>
-</p></b>
-<br><br>
-3. Open a WebMap into the MapView using the WebMapID. Note that the code is really similar to the starter map, but in place of a Map we're using a WebMap. To use the saved initial view of the WebMap, remove the center and zoom atttributes from the MapView options.<br>
-<b>Note: Use a publically shared Web Map for this exercise. If you need an example, <a href="https://www.arcgis.com/home/item.html?id=787722665db94bfa80fe36bd38848430">you can use this one.</a></b>
-<br><br>
-<b><p style="padding-left: 5%; font-family: monospace;">
-	&emsp;&emsp;var map = new WebMap({<br>
-	&emsp;&emsp;&emsp;&emsp;portalItem: { // autocasts as new PortalItem<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;id: "&lt;insert portal item ID&gt;",<br>
-	&emsp;&emsp;&emsp;&emsp;}<br>
-	&emsp;&emsp;});<br><br>
-	&emsp;&emsp;var view = new MapView({<br>
-	&emsp;&emsp;&emsp;&emsp;container: "viewDiv",<br>
-	&emsp;&emsp;&emsp;&emsp;map: map<br>
-	&emsp;&emsp;});<br>
-	</p></b>
-<br><br>
+1. Update the require statement and function definition to add PopupTemplate and the Legend widget.
+<p style="padding-left: 5%; font-family: monospace;"><br><br>require([<br>
+	&emsp;&emsp;"esri/Map",<br>
+	&emsp;&emsp;"esri/views/MapView",<br>
+	&emsp;&emsp;"esri/layers/FeatureLayer",<br>
+	&emsp;&emsp;"esri/symbols/SimpleLineSymbol",<br>
+	&emsp;&emsp;"esri/renderers/UniqueValueRenderer",<br>
+	&emsp;&emsp;<b>"esri/popupTemplate",</b><br>
+	&emsp;&emsp;<b>"esri/widgets/Legend"</b><br>
+], function(Map, MapView, FeatureLayer, <b>PopupTemplate</b>, <b>Legend</b>) {</p>
+<br>
+2. Now add a new PopupTemplate to the Waterfalls Feature Layer with the popup template style desired, in this case the Waterfalls layer has a field that contains information to be used in the popup:
+<br><br><b>
+<p style="padding-left: 5%; font-family: monospace;">var popupTemplate = new popupTemplate({<br>
+	&emsp;&emsp;title: "{Name}",<br>
+	&emsp;&emsp;content: [{<br>
+	&emsp;&emsp;&emsp;&emsp;type: "text",<br>
+	&emsp;&emsp;&emsp;&emsp;text: "{PopupInfo}"<br>
+	&emsp;&emsp;}]<br>
+});<br></b>
+<br></p>
+<br>
+3. Now add the template to its assigned Feature Layer and add the Feature Layer to the map.
+<br><br><p style="padding-left: 5%; font-family: monospace;">
+	&emsp;var waterfalls = new FeatureLayer({<br>
+		&emsp;&emsp;&emsp;url: "https://services.arcgis.com/hRUr1F8lE8Jq2uJo/arcgis/rest/services/Waterfalls/FeatureServer/0",<br>
+		&emsp;&emsp;&emsp;<b>popupTemplate: popupTemplate</b><br>
+		&emsp;});<br><br>
+</p><br><br>
 If you're stuck, ensure that your code looks like the solution in the picture below:<br><br>
 <button type="button" class="collapsible">Solution</button>
-    <div class="content"><img src="./e5_one.JPG"></div>
+    <div class="content"><img src="./e5_really.JPG"><img src="./e5_reallytwo.JPG"><img src="./e5_reallythree.JPG"></div>
 <br><br>
-
+<b><u>Challenges:</u></b><br><br>
+Add a legend and make sure to add the infoDiv to the html:<br><br>
+<p style="padding-left: 5%; font-family: monospace;">
+var legend = new Legend({<br>
+&emsp;&emsp;view: view;<br>
+&emsp;&emsp;layerInfos: [{<br>
+	&emsp;&emsp;&emsp;&emsp;layer: waterfalls,<br>
+	&emsp;&emsp;&emsp;&emsp;title: "Waterfall Status"<br>
+	&emsp;&emsp;}]<br>
+}, "infoDiv");<br><br>
+</p>
+<b>Hint: Put the infoDiv within the viewDiv</b>
 <br><br>
 </div>
 </div>
-<!-- <div id="dialog" title="Welcome to the ArcGIS API for JavaScript">
+<div id="dialog" title="Welcome to the ArcGIS API for JavaScript">
   <p>Please use this Code Playground to begin learning about the ArcGIS API for JavaScript. To get started, click on the Directions button. As you edit code on the left side of the screen, press the Refresh button to see the updates on the Map.</p>
-</div> -->
+</div>
     <script>
       var delay;
       // Initialize CodeMirror editor with a nice html5 canvas demo.
