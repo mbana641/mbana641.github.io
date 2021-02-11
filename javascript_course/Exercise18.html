@@ -1,6 +1,6 @@
 <!doctype html>
 
-<title>Exercise 1</title>
+<title>Exercise 18</title>
 <meta charset="utf-8"/>
 <link rel="icon" type="image/png" href="./brackets.png"/>
 <link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.51.0/codemirror.css>
@@ -164,37 +164,56 @@
 
 
 <textarea id="code" name="code" style="display:none;">
+<!-- Exercise 18, Written in JavaScript 4.18 -->
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-	<script>
-		function myFunction() {
-			document.getElementById("heading").innerHTML = "Hello World";
-		}
-	</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>2D Map</title>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/themes/light/main.css" />
+	<script src="https://js.arcgis.com/4.18/"></script>
+  
+  <style>
+    html, body, #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+    }
+  </style>
+
+  <script>
+    //var view; // declaring view as a global variable 
+    
+    require([
+      "esri/Map",
+      "esri/views/MapView"
+    ], function(Map, MapView) {
+
+      var map = new Map({
+        basemap: "hybrid",
+      });
+
+      var view = new MapView({
+        container: "viewDiv",
+        map: map,
+        center: [-74.029, 40.71],
+        zoom: 10
+      });
+	        
+    });
+  </script>
 </head>
 <body>
-<style>
-	h1{
-		color:  Purple;
-		text-align:  center;
-		padding:  21;
-	}
-	p{
-		font-family:  cursive;
-		font-size:  14px;
-	}
-</style>    
-<h1 id="heading">This is a heading!</h1>
-<p>This is a paragraph where you can write things</p>
-<button type="button" onclick="myFunction()">Change the heading text by clicking here!</button>
+  <div id="viewDiv"></div>
 </body>
 </html>
 </textarea>
 
 <div class="tab">
   <button id="Instructions" class="tablinks" onclick="openCity(event, 'Instructions')">Directions</button>
-  <button id="MapCanvas" class="tablinks active" onclick="openCity(event, 'MapCanvas')">View</button>
+  <button id="MapCanvas" class="tablinks active" onclick="openCity(event, 'MapCanvas')">Map</button>
   <button id="Refresh" class="tablinks" onclick="updatePreview()">Refresh</button>
   <button id="Download" class="tablinks" onclick="download()">Download</button>
 </div>
@@ -203,24 +222,139 @@
 <iframe id=preview></iframe>
 </div>
 <div id=instruct>
-<b><u>Exercise:</u></b><br>
-This simple HTML page will give you an idea of the basic structure that all web prages follow.
+<b><u>Exercise:</u></b><br><br>
+In this lab you will use the Cedar library to create charts that will dynamically update based on the map extents. The charts will depict demographic data that includes Total Population, Density, and Median Age for each US State that lies within the map extents.
 <br><br>
-Change the attributes in the style tag such as color of the text, font-size, or font-family and click "Refresh" to see how the content on the page changes.
+1. Edit the CSS properties for the #viewDiv and add the CSS properties for the charts:
+<p style="padding-left: 5%; font-family: monospace;"><br><br>#viewDiv { height: calc(100% - 300px); width: 100%; }<br>
+#chart1, #chart2 { height: 300px; width: 33%; box-shadow: 0px 0px 0px 1px black inset; float: left; }<br>
+#chart3 { height: 300px; width: 34%; box-shadow: 0px 0px 0px 1px black inset; float: right;}<br>
+</p>
+<br>
+2. Next add the JavaScript URLs for the Cedar library. You will need to remove the original link to the ArcGIS JavaScript library and place it below the Cedar library scripts:
 <br><br>
+<p style="padding-left: 5%; font-family: monospace;">&lt;script src='https://cdnjs.cloudflare.com/ajax/libs/amcharts/3.21.12/amcharts.js'&gt;&lt;/script&gt;<br>
+&lt;script src='https://cdnjs.cloudflare.com/ajax/libs/amcharts/3.21.12/serial.js'&gt;&lt;/script&gt;<br>
+&lt;script src='https://unpkg.com/@esri/cedar@1.0.0-beta.2/dist/umd/cedar.js'&gt;&lt;/script&gt;<br>
+&lt;script src='https://unpkg.com/@esri/cedar@1.0.0-beta.2/dist/umd/themes/amCharts/calcite.js'&gt;&lt;/script&gt;<br>
+<br></p>
+<br>
+3. Update the require statement and function definition with "esri/layers/FeatureLayer" and "esri/geometry/Extent". Change the basemap to Topo, edit the map location, and add a feature layer. This layer depicts the US states and includes multiple demographic attributes.
+<br><br><p style="padding-left: 5%; font-family: monospace;">
+var map = new Map({<br>
+&emsp;&emsp;basemap: "topo",<br>
+})<br><br>
+var extent = new Extent ({<br>
+&emsp;&emsp;xmin: -83.7,<br>
+&emsp;&emsp;ymin: 36.4,<br>
+&emsp;&emsp;xmax: -75.7,<br>
+&emsp;&emsp;ymax: 39.6<br>
+});<br><br>
+var view = new MapView({<br>
+	&emsp;&emsp;container: "viewDiv",<br>
+	&emsp;&emsp;map: map,<br>
+	&emsp;&emsp;extent: extent<br>
+  });<br><br>
+  var featureLayer = new FeatureLayer("https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_States_Generalized/FeatureServer/0",<br>
+  &emsp;&emsp;{ outFields: ["*"],<br>
+  &emsp;&emsp;&emsp;&emsp;renderer: {<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;type: "simple",<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;symbol: {<br>
+        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;type: "simple-fill",<br>
+        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color: [0, 0, 0, 0.1],<br>
+        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outline: {<br>
+			&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;  width: 0.5,<br>
+			&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;  color: "white"<br>
+			&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br>
+			&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}  <br>
+			&emsp;&emsp;&emsp;&emsp;}<br>
+			&emsp;&emsp; }<br>
+);<br><br>
+view.map.add(featureLayer);<br><br>
+</p><br>
+4. Whenever a user moves around the map we need to update the charts by passing them the visible features. This is accomplished by watching the view. After the update completes, a response will be returned which can be used to iterate through each visible graphic. From each graphic the feature attributes are pushed into an array. Once the array has been populated by all the visible features it is passed to a function called loadCharts, which it does once for each chart.
+<br><br><p style="padding-left: 5%; font-family: monospace;">
+view.whenLayerView(featureLayer).then(function(layerView) {<br>
+&emsp;&emsp;layerView.watch("updating", function(value) {<br>
+&emsp;&emsp;&emsp;&emsp;if (!value) {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;layerView<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;.queryFeatures({<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;geometry: view.extent,<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;returnGeometry: true<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;})<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;.then(function(results) {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;var features = [];<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;graphics = results.features;<br><br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;graphics.forEach(function(result, index) {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;var attributes = result.attributes;<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;var name = attributes.NAME;<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;features.push({<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;attributes: {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;STATE_ABBR: attributes.STATE_ABBR,<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;POPULATION: attributes.POPULATION,<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;POP_SQMI: attributes.POP_SQMI,<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;MED_AGE: attributes.MED_AGE<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;});<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;});<br><br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;loadCharts(features, "chart1", "POPULATION", "Population")<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;loadCharts(features, "chart2", "POP_SQMI", "Density (Square Mile)")<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;loadCharts(features, "chart3", "MED_AGE", "Median Age")<br><br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;})<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;.catch(function(error) {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;console.error("query failed: ", error);<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;});<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br>
+&emsp;&emsp;&emsp;&emsp;});<br>
+&emsp;&emsp;});<br><br></p><br>
+5. The next step is to create loadCharts. This function generates a bar chart with the cedar library based on the variables that get passed.<br><br>
+<p style="padding-left: 5%; font-family: monospace;">
+function loadCharts(features, chartName, chartField, chartLabel){<br>
+&emsp;&emsp;features.sort(function(a, b) {<br>
+&emsp;&emsp;&emsp;&emsp;return b.attributes.POPULATION -a.attributes.POPULATION;<br>
+&emsp;&emsp;});<br>
+&emsp;&emsp;var definition = {<br>
+&emsp;&emsp;&emsp;&emsp;type: "bar",<br>
+&emsp;&emsp;&emsp;&emsp;datasets: [<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;{<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;data: {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;features: features<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br>
+&emsp;&emsp;&emsp;&emsp;],<br>
+&emsp;&emsp;&emsp;&emsp;series: [<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;{<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;category: {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;field: "STATE_ABBR",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;label: "US State"<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;},<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;value: {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;field: chartField,<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;label: chartLabel<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br>
+&emsp;&emsp;&emsp;&emsp;]<br>
+&emsp;&emsp;};<br><br>
+		  
+&emsp;&emsp;var cedarChart = new cedar.Chart(chartName, definition);<br>
+&emsp;&emsp;cedarChart.show();<br>
+}<br><br>
+</p>
+<br>6. The final step is to add the charts to the html below the viewDiv.
+<br><br><p style="padding-left: 5%; font-family: monospace;">
+&lt;div id="chart1"&gt;&lt;/div&gt;<br>
+&lt;div id="chart2"&gt;&lt;/div&gt;<br>
+&lt;div id="chart3"&gt;&lt;/div&gt;<br><br>
+</p><br><br>
 If you're stuck, ensure that your code looks like the solution in the picture below:<br><br>
 <button type="button" class="collapsible">Solution</button>
-    <div class="content"><img src="https://imgur.com/1JCGJfd.jpg"></div>
+    <div class="content"><img src="./e18_one.JPG"><img src="./e18_two.JPG"><img src="./e18_three.JPG"></div>
 <br><br>
-<b><u>Challenges:</u></b><br><br>
-CSS: <a href="https://www.w3schools.com/css/default.asp">Change the whole page background to a color besides white</a><br>
-HTML: <a href="https://www.w3schools.com/html/html_images.asp">Add an image to your page</a><br>
-JavaScript: <a href="https://www.w3schools.com/js/js_output.asp">Change the onclick to show an alert box</a><br>
 </div>
 </div>
-<!-- <div id="dialog" title="Welcome to the ArcGIS API for JavaScript">
+<div id="dialog" title="Welcome to the ArcGIS API for JavaScript">
   <p>Please use this Code Playground to begin learning about the ArcGIS API for JavaScript. To get started, click on the Directions button. As you edit code on the left side of the screen, press the Refresh button to see the updates on the Map.</p>
-</div> -->
+</div>
     <script>
       var delay;
       // Initialize CodeMirror editor with a nice html5 canvas demo.

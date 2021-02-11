@@ -283,7 +283,7 @@ If you're stuck, ensure that your code looks like the solution in the picture be
       setTimeout(updatePreview, 300);
 	  
 	  function download() {
-		var elHtml = document.getElementById('code').textContent;
+		var elHtml = editor.getValue();
 		var link = document.createElement('a');
 		mimeType = 'text/html' || 'text/plain';
 

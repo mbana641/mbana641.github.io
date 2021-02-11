@@ -239,7 +239,7 @@
 <b><u>Exercise:</u></b><br><br>
 There are many different types of rivers in the Rivers and Streams layer. It would be beneficial to be able to symbolize this layer based on the type of stream.
 <br><br>
-We will be using the <a href="https://developers.arcgis.com/javascript/latest/api-reference/esri-symbols-SimpleLineSymbol.html">SimpleLineSymbol</a> to style this layer and <a href="https://developers.arcgis.com/javascript/latest/api-reference/esri-renderers-UniqueValueRenderer.html">UniqueValueRenderer</a> to render the style.
+We will be using the <a target="_blank" href="https://developers.arcgis.com/javascript/latest/api-reference/esri-symbols-SimpleLineSymbol.html">SimpleLineSymbol</a> to style this layer and <a href="https://developers.arcgis.com/javascript/latest/api-reference/esri-renderers-UniqueValueRenderer.html">UniqueValueRenderer</a> to render the style.
 <br><br>
 1. Update the require statement and function definition to add SimpleLineSymbol and UniqueValueRenderer.
 <p style="padding-left: 5%; font-family: monospace;"><br><br>require([<br>
@@ -367,7 +367,7 @@ If you're stuck, ensure that your code looks like the solution in the picture be
       setTimeout(updatePreview, 300);
 	  
 	  function download() {
-		var elHtml = document.getElementById('code').textContent;
+		var elHtml = editor.getValue();
 		var link = document.createElement('a');
 		mimeType = 'text/html' || 'text/plain';
 
