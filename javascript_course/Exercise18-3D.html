@@ -1,6 +1,6 @@
 <!doctype html>
 
-<title>Exercise 18</title>
+<title>Exercise 18-3D</title>
 <meta charset="utf-8"/>
 <link rel="icon" type="image/png" href="./brackets.png"/>
 <link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.51.0/codemirror.css>
@@ -188,14 +188,14 @@
     
     require([
       "esri/Map",
-      "esri/views/MapView"
-    ], function(Map, MapView) {
+      "esri/views/SceneView"
+    ], function(Map, SceneView) {
 
       var map = new Map({
         basemap: "hybrid",
       });
 
-      var view = new MapView({
+      var view = new SceneView({
         container: "viewDiv",
         map: map,
         center: [-74.029, 40.71],
@@ -250,7 +250,7 @@ var extent = new Extent ({<br>
 &emsp;&emsp;xmax: -75.7,<br>
 &emsp;&emsp;ymax: 39.6<br>
 });<br><br>
-var view = new MapView({<br>
+var view = new SceneView({<br>
 	&emsp;&emsp;container: "viewDiv",<br>
 	&emsp;&emsp;map: map,<br>
 	&emsp;&emsp;extent: extent<br>
