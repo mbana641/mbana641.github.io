@@ -1,6 +1,6 @@
 <!doctype html>
 
-<title>Exercise 18-3D</title>
+<title>Exercise 17</title>
 <meta charset="utf-8"/>
 <link rel="icon" type="image/png" href="./brackets.png"/>
 <link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.51.0/codemirror.css>
@@ -164,13 +164,13 @@
 
 
 <textarea id="code" name="code" style="display:none;">
-<!-- Exercise 18, Written in JavaScript 4.18 -->
+<!-- Exercise 17, Written in JavaScript 4.18 -->
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-  <title>Cedar Charts</title>
+  <title>Arcade</title>
 
   <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/themes/light/main.css" />
 	<script src="https://js.arcgis.com/4.18/"></script>
@@ -188,14 +188,14 @@
     
     require([
       "esri/Map",
-      "esri/views/SceneView"
-    ], function(Map, SceneView) {
+      "esri/views/MapView"
+    ], function(Map, MapView) {
 
       var map = new Map({
         basemap: "hybrid",
       });
 
-      var view = new SceneView({
+      var view = new MapView({
         container: "viewDiv",
         map: map,
         center: [-74.029, 40.71],
@@ -223,138 +223,129 @@
 </div>
 <div id=instruct>
 <b><u>Exercise:</u></b><br><br>
-In this lab you will use the Cedar library to create charts that will dynamically update based on the map extents. The charts will depict demographic data that includes Total Population, Density, and Median Age for each US State that lies within the map extents.
+In this lab you will use Arcade to create custom labels based on each feature’s attributes. Through arcade you can access individual features by using $feature, and use it to edit lables or rendering. Arcade scripts can be used across the Esri platform to include ArcGIS Pro, the JavaScript API, and mobile applications.
 <br><br>
-1. Edit the CSS properties for the #viewDiv and add the CSS properties for the charts:
-<p style="padding-left: 5%; font-family: monospace;"><br><br>#viewDiv { height: calc(100% - 300px); width: 100%; }<br>
-#chart1, #chart2 { height: 300px; width: 33%; box-shadow: 0px 0px 0px 1px black inset; float: left; }<br>
-#chart3 { height: 300px; width: 34%; box-shadow: 0px 0px 0px 1px black inset; float: right;}<br>
+1. Add the following code directly below &lt;/style&gt;. This is the Arcade expression that will be used to produce the label.
+<p style="padding-left: 5%; font-family: monospace;"><br><br>&lt;script type="text/plain" id="amenities"&gt;<br>
+&emsp;&emsp;var i = 0;<br>
+&emsp;&emsp;var features = [];<br><br>
+&emsp;&emsp;if ($feature.TastingRoo != " ") {<br>
+&emsp;&emsp;&emsp;&emsp;features[i++] = "-Tasting Room Onsite";<br>
+&emsp;&emsp;}<br>
+&emsp;&emsp;if ($feature.GroupTour != " ") {<br>
+&emsp;&emsp;&emsp;&emsp;features[i++] = "-Tours Available";<br>
+&emsp;&emsp;}<br>
+&emsp;&emsp;if ($feature.PicnicArea != " ") {<br>
+&emsp;&emsp;&emsp;&emsp;features[i++] = "-Picnic Area Onsite";<br>
+&emsp;&emsp;}<br>
+&emsp;&emsp;if ($feature.FoodAvaila != " ") {<br>
+&emsp;&emsp;&emsp;&emsp;features[i++] = "-Food Available Onsite";<br>
+&emsp;&emsp;}<br><br>
+&emsp;&emsp;return Concatenate(features, TextFormatting.NewLine)<br>
+&lt;/script&gt;<br>
 </p>
 <br>
-2. Next add the JavaScript URLs for the Cedar library. <b><u>You will need to remove the original link to the ArcGIS JavaScript library and place it below the Cedar library scripts</u></b>:
+2. Update the require statement and function definition:
 <br><br>
-<p style="padding-left: 5%; font-family: monospace;">&lt;script src='https://cdnjs.cloudflare.com/ajax/libs/amcharts/3.21.12/amcharts.js'&gt;&lt;/script&gt;<br>
-&lt;script src='https://cdnjs.cloudflare.com/ajax/libs/amcharts/3.21.12/serial.js'&gt;&lt;/script&gt;<br>
-&lt;script src='https://unpkg.com/@esri/cedar@1.0.0-beta.2/dist/umd/cedar.js'&gt;&lt;/script&gt;<br>
-&lt;script src='https://unpkg.com/@esri/cedar@1.0.0-beta.2/dist/umd/themes/amCharts/calcite.js'&gt;&lt;/script&gt;<br>
+<p style="padding-left: 5%; font-family: monospace;">require([<br>
+&emsp;&emsp;"esri/Map",<br>
+&emsp;&emsp;"esri/views/MapView",<br>
+&emsp;&emsp;"esri/layers/FeatureLayer",<br>
+&emsp;&emsp;"esri/geometry/Extent"<br>
+], function(Map, MapView, FeatureLayer, Extent) {<br>
 <br></p>
 <br>
-3. Update the require statement and function definition with "esri/layers/FeatureLayer" and "esri/geometry/Extent". Change the basemap to Topo, edit the map location, and add a feature layer. This layer depicts the US states and includes multiple demographic attributes.
+3. Change your map and view. Add a variable that will be used to determine at what scale labels should draw.
 <br><br><p style="padding-left: 5%; font-family: monospace;">
-var map = new Map({<br>
-&emsp;&emsp;basemap: "topo",<br>
-})<br><br>
-var extent = new Extent ({<br>
-&emsp;&emsp;xmin: -83.7,<br>
-&emsp;&emsp;ymin: 36.4,<br>
-&emsp;&emsp;xmax: -75.7,<br>
-&emsp;&emsp;ymax: 39.6<br>
-});<br><br>
-var view = new SceneView({<br>
-	&emsp;&emsp;container: "viewDiv",<br>
-	&emsp;&emsp;map: map,<br>
-	&emsp;&emsp;extent: extent<br>
-  });<br><br>
-  var featureLayer = new FeatureLayer("https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_States_Generalized/FeatureServer/0",<br>
-  &emsp;&emsp;{ outFields: ["*"],<br>
-  &emsp;&emsp;&emsp;&emsp;renderer: {<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;type: "simple",<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;symbol: {<br>
-        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;type: "simple-fill",<br>
-        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color: [0, 0, 0, 0.1],<br>
-        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outline: {<br>
-			&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;  width: 0.5,<br>
-			&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;  color: "white"<br>
-			&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br>
-			&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}  <br>
-			&emsp;&emsp;&emsp;&emsp;}<br>
-			&emsp;&emsp; }<br>
-);<br><br>
-view.map.add(featureLayer);<br><br>
+	var minScale = 100000;<br>
+	var map = new Map({<br>
+		&emsp;&emsp;basemap: "gray-vector"<br>
+	})<br><br>
+	 
+	var extent = new Extent ({<br>
+		&emsp;&emsp;xmin: -83.7,<br>
+		&emsp;&emsp;ymin: 36.4,<br>
+		&emsp;&emsp;xmax: -75.7,<br>
+		&emsp;&emsp;ymax: 39.6<br>
+	})<br><br>
+	 
+	var view = new MapView({<br>
+		&emsp;&emsp;container: "viewDiv",<br>
+		&emsp;&emsp;map: map,<br>
+		&emsp;&emsp;extent: extent<br>
+	});<br><br>
 </p><br>
-4. Whenever a user moves around the map we need to update the charts by passing them the visible features. This is accomplished by watching the view. After the update completes, a response will be returned which can be used to iterate through each visible graphic. From each graphic the feature attributes are pushed into an array. Once the array has been populated by all the visible features it is passed to a function called loadCharts, which it does once for each chart.
+4. Create two labeling classes. One is for the feature name and will be displayed at the top-right corner. The second, which uses the arcade script, is for the list of amenities and will be displayed to the bottom-right of the feature. Both classes call a function named createTextSymbol which determines how the label is displayed.
 <br><br><p style="padding-left: 5%; font-family: monospace;">
-view.whenLayerView(featureLayer).then(function(layerView) {<br>
-&emsp;&emsp;layerView.watch("updating", function(value) {<br>
-&emsp;&emsp;&emsp;&emsp;if (!value) {<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;layerView<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;.queryFeatures({<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;geometry: view.extent,<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;returnGeometry: true<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;})<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;.then(function(results) {<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;var features = [];<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;graphics = results.features;<br><br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;graphics.forEach(function(result, index) {<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;var attributes = result.attributes;<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;var name = attributes.NAME;<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;features.push({<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;attributes: {<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;STATE_ABBR: attributes.STATE_ABBR,<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;POPULATION: attributes.POPULATION,<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;POP_SQMI: attributes.POP_SQMI,<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;MED_AGE: attributes.MED_AGE<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;});<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;});<br><br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;loadCharts(features, "chart1", "POPULATION", "Population")<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;loadCharts(features, "chart2", "POP_SQMI", "Density (Square Mile)")<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;loadCharts(features, "chart3", "MED_AGE", "Median Age")<br><br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;})<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;.catch(function(error) {<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;console.error("query failed: ", error);<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;});<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br>
-&emsp;&emsp;&emsp;&emsp;});<br>
-&emsp;&emsp;});<br><br></p><br>
-5. The next step is to create loadCharts. This function generates a bar chart with the cedar library based on the variables that get passed.<br><br>
+	var nameClass = {<br>
+		&emsp;&emsp;labelPlacement: "above-right",<br>
+		&emsp;&emsp;labelExpressionInfo: {<br>
+			&emsp;&emsp;&emsp;&emsp;expression: "$feature.NAME"<br>
+			&emsp;&emsp;},<br>
+			&emsp;&emsp;minScale: minScale<br>
+	  };<br>
+	  nameClass.symbol = createTextSymbol("black");<br><br>
+			  
+	  var amenitiesArcade = document.getElementById("amenities").text;<br>
+	  var amenitiesClass = {<br>
+		&emsp;&emsp;labelExpressionInfo: {<br>
+			&emsp;&emsp;&emsp;&emsp;expression: amenitiesArcade<br>
+			&emsp;&emsp;},<br>
+			&emsp;&emsp;labelPlacement: "below-right",<br>
+			&emsp;&emsp;&emsp;&emsp;minScale: minScale<br>
+			&emsp;&emsp;};<br>
+	  amenitiesClass.symbol = createTextSymbol("#3ba53f");<br><br></p><br>
+5. Create the feature layer and add it to the map.<br><br>
 <p style="padding-left: 5%; font-family: monospace;">
-function loadCharts(features, chartName, chartField, chartLabel){<br>
-&emsp;&emsp;features.sort(function(a, b) {<br>
-&emsp;&emsp;&emsp;&emsp;return b.attributes.POPULATION -a.attributes.POPULATION;<br>
-&emsp;&emsp;});<br>
-&emsp;&emsp;var definition = {<br>
-&emsp;&emsp;&emsp;&emsp;type: "bar",<br>
-&emsp;&emsp;&emsp;&emsp;datasets: [<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;{<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;data: {<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;features: features<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br>
-&emsp;&emsp;&emsp;&emsp;],<br>
-&emsp;&emsp;&emsp;&emsp;series: [<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;{<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;category: {<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;field: "STATE_ABBR",<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;label: "US State"<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;},<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;value: {<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;field: chartField,<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;label: chartLabel<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br>
-&emsp;&emsp;&emsp;&emsp;]<br>
-&emsp;&emsp;};<br><br>
-		  
-&emsp;&emsp;var cedarChart = new cedar.Chart(chartName, definition);<br>
-&emsp;&emsp;cedarChart.show();<br>
-}<br><br>
+	var serviceUrl = "https://services5.arcgis.com/cMBqYE4wmbXNMvex/ArcGIS/rest/services/Virginia_Wineries/FeatureServer/1";<br>
+	var layer = new FeatureLayer({<br>
+		&emsp;&emsp;url: serviceUrl,<br>
+		&emsp;&emsp;renderer: {<br>
+			&emsp;&emsp;&emsp;&emsp;type: "simple",<br>
+			&emsp;&emsp;&emsp;&emsp;symbol: {<br>
+				&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;type: "simple-marker",<br>
+				&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color: [128, 0, 128, 0.6],<br>
+				&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;size: 10,<br>
+				&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outline: {<br>
+					&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color: [0, 0, 0, 0.4],<br>
+					&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;width: 0.5<br>
+					&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br>
+					&emsp;&emsp;&emsp;&emsp;}<br>
+					&emsp;&emsp;},<br>
+					&emsp;&emsp;labelingInfo: [<br>
+					&emsp;&emsp;&emsp;&emsp;nameClass,<br>
+					&emsp;&emsp;&emsp;&emsp;amenitiesClass<br>
+					&emsp;&emsp;]<br>
+	});<br><br>
+	
+	view.map.add(layer);<br><br>
 </p>
-<br>6. The final step is to add the charts to the html below the viewDiv.
+<br>6. The last thing we need to do is to add the createTextSymbol function:
 <br><br><p style="padding-left: 5%; font-family: monospace;">
-&lt;div id="chart1"&gt;&lt;/div&gt;<br>
-&lt;div id="chart2"&gt;&lt;/div&gt;<br>
-&lt;div id="chart3"&gt;&lt;/div&gt;<br><br>
+	function createTextSymbol(color) {<br>
+		&emsp;&emsp;return {<br>
+			&emsp;&emsp;&emsp;&emsp;type: "text",<br>
+			&emsp;&emsp;&emsp;&emsp;font: {<br>
+				&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;size: 12,<br>
+				&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;weight: "bold"<br>
+				&emsp;&emsp;&emsp;&emsp;},<br>
+				&emsp;&emsp;&emsp;&emsp;color: "white",<br>
+				&emsp;&emsp;&emsp;&emsp;haloColor: color,<br>
+				&emsp;&emsp;&emsp;&emsp;haloSize: 1<br>
+				&emsp;&emsp;};<br>
+	  }<br>
 </p><br><br>
+Your app should display a map of all the wineries in Virginia. They should be labeled with the winery name and list the available amenities when zoomed in to a close enough extent.
+<br><br>
 If you're stuck, ensure that your code looks like the solution in the picture below:<br><br>
 <button type="button" class="collapsible">Solution</button>
-    <div class="content"><img src="./images/e183d_one.JPG"><img src="./images/e183d_two.JPG"><img src="./images/e183d_three.JPG"><img src="./images/e183d_four.JPG"></div>
+    <div class="content"><img src="./images/e17_one.JPG"><img src="./images/e17_two.JPG"><img src="./images/e17_three.JPG"></div>
 <br><br>
 </div>
 </div>
 <div id="dialog" title="Welcome to the ArcGIS API for JavaScript">
   <p>Please use this Code Playground to begin learning about the ArcGIS API for JavaScript. To get started, click on the Directions button. As you edit code on the left side of the screen, press the Refresh button to see the updates on the Map.</p>
-</div>
+<br><br></div>
     <script>
       var delay;
       // Initialize CodeMirror editor with a nice html5 canvas demo.
