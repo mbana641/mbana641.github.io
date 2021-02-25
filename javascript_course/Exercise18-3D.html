@@ -1,6 +1,6 @@
 <!doctype html>
 
-<title>Exercise 18-3D</title>
+<title>Exercise 18 3D</title>
 <meta charset="utf-8"/>
 <link rel="icon" type="image/png" href="./brackets.png"/>
 <link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.51.0/codemirror.css>
@@ -164,7 +164,7 @@
 
 
 <textarea id="code" name="code" style="display:none;">
-<!-- Exercise 18, Written in JavaScript 4.18 -->
+<!-- Exercise 18 3D, Written in JavaScript 4.18 -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -221,7 +221,8 @@
 <div id=wrapper>
 <iframe id=preview></iframe>
 </div>
-<div id=instruct>
+<div id=instruct style="font-family: Arial, Helvetica, sans-serif;">
+	<span style="display: block; text-align: center;"><b><u>Exercise 18 3D - Adding Cedar Charts</u></b><br><br></span>
 <b><u>Exercise:</u></b><br><br>
 In this lab you will use the Cedar library to create charts that will dynamically update based on the map extents. The charts will depict demographic data that includes Total Population, Density, and Median Age for each US State that lies within the map extents.
 <br><br>
@@ -231,7 +232,7 @@ In this lab you will use the Cedar library to create charts that will dynamicall
 #chart3 { height: 300px; width: 34%; box-shadow: 0px 0px 0px 1px black inset; float: right;}<br>
 </p>
 <br>
-2. Next add the JavaScript URLs for the Cedar library. <b><u>You will need to remove the original link to the ArcGIS JavaScript library and place it below the Cedar library scripts</u></b>:
+2. Next add the JavaScript URLs for the Cedar library. <b><u>Add these below the style tag. You will need to remove the original link to the ArcGIS JavaScript library and place it below the Cedar library scripts</u></b>:
 <br><br>
 <p style="padding-left: 5%; font-family: monospace;">&lt;script src='https://cdnjs.cloudflare.com/ajax/libs/amcharts/3.21.12/amcharts.js'&gt;&lt;/script&gt;<br>
 &lt;script src='https://cdnjs.cloudflare.com/ajax/libs/amcharts/3.21.12/serial.js'&gt;&lt;/script&gt;<br>
@@ -347,14 +348,16 @@ function loadCharts(features, chartName, chartField, chartLabel){<br>
 &lt;div id="chart3"&gt;&lt;/div&gt;<br><br>
 </p><br><br>
 If you're stuck, ensure that your code looks like the solution in the picture below:<br><br>
-<button type="button" class="collapsible">Solution</button>
+<button type="button" class="collapsible">Map Solution</button>
+    <div class="content"><img src="./images/e183d_map.JPG"></div><br>
+<button type="button" class="collapsible">Code Solution</button>
     <div class="content"><img src="./images/e183d_one.JPG"><img src="./images/e183d_two.JPG"><img src="./images/e183d_three.JPG"><img src="./images/e183d_four.JPG"></div>
 <br><br>
 </div>
 </div>
-<div id="dialog" title="Welcome to the ArcGIS API for JavaScript">
+<!-- <div id="dialog" title="Welcome to the ArcGIS API for JavaScript">
   <p>Please use this Code Playground to begin learning about the ArcGIS API for JavaScript. To get started, click on the Directions button. As you edit code on the left side of the screen, press the Refresh button to see the updates on the Map.</p>
-</div>
+</div> -->
     <script>
       var delay;
       // Initialize CodeMirror editor with a nice html5 canvas demo.
@@ -371,9 +374,9 @@ If you're stuck, ensure that your code looks like the solution in the picture be
       });
 	  document.getElementById('instruct').style.display = "none";
 	  
-	  $( function() {
-		$( "#dialog" ).dialog({width: "500px"});
-	  } );
+	//   $( function() {
+	// 	$( "#dialog" ).dialog({width: "500px"});
+	//   } );
       
       function updatePreview() {
 	    var wrapper = document.getElementById('wrapper');
@@ -392,7 +395,7 @@ If you're stuck, ensure that your code looks like the solution in the picture be
 		var link = document.createElement('a');
 		mimeType = 'text/html' || 'text/plain';
 
-		link.setAttribute('download', 'exercise2.html');
+		link.setAttribute('download', 'exercise18-3D.html');
 		link.setAttribute('href', 'data:' + 'text/html' + ';charset=utf-8,' + encodeURIComponent(elHtml));
 		link.click(); 
 	  }

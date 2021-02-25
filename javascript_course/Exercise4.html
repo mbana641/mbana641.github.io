@@ -235,11 +235,12 @@
 <div id=wrapper>
 <iframe id=preview></iframe>
 </div>
-<div id=instruct>
+<div id=instruct style="font-family: Arial, Helvetica, sans-serif;">
+	<span style="display: block; text-align: center;"><b><u>Exercise 4 - Style Feature Layer</u></b><br><br></span>
 <b><u>Exercise:</u></b><br><br>
 There are many different types of rivers in the Rivers and Streams layer. It would be beneficial to be able to symbolize this layer based on the type of stream.
 <br><br>
-We will be using the <a target="_blank" href="https://developers.arcgis.com/javascript/latest/api-reference/esri-symbols-SimpleLineSymbol.html">SimpleLineSymbol</a> to style this layer and <a href="https://developers.arcgis.com/javascript/latest/api-reference/esri-renderers-UniqueValueRenderer.html">UniqueValueRenderer</a> to render the style.
+We will be using the <a target="_blank" href="https://developers.arcgis.com/javascript/latest/api-reference/esri-symbols-SimpleLineSymbol.html">SimpleLineSymbol</a> to style this layer and <a target="_blank" href="https://developers.arcgis.com/javascript/latest/api-reference/esri-renderers-UniqueValueRenderer.html">UniqueValueRenderer</a> to render the style.
 <br><br>
 1. Update the require statement and function definition to add SimpleLineSymbol and UniqueValueRenderer.
 <p style="padding-left: 5%; font-family: monospace;"><br><br>require([<br>
@@ -322,7 +323,9 @@ renderer.addUniqueValueInfo("Aqueduct",<br>
 map.add(rivers);</p>
 <br><br>
 If you're stuck, ensure that your code looks like the solution in the picture below:<br><br>
-<button type="button" class="collapsible">Solution</button>
+<button type="button" class="collapsible">Map Solution</button>
+    <div class="content"><img src="./images/e4_map.JPG"></div><br>
+<button type="button" class="collapsible">Code Solution</button>
     <div class="content"><img src="./images/e4_one.JPG"><img src="./images/e4_two.JPG"><img src="./images/e4_three.JPG"></div>
 <br><br>
 <b><u>Challenges:</u></b><br><br>
@@ -331,9 +334,9 @@ If you're stuck, ensure that your code looks like the solution in the picture be
 <br><br>
 </div>
 </div>
-<div id="dialog" title="Welcome to the ArcGIS API for JavaScript">
+<!-- <div id="dialog" title="Welcome to the ArcGIS API for JavaScript">
   <p>Please use this Code Playground to begin learning about the ArcGIS API for JavaScript. To get started, click on the Directions button. As you edit code on the left side of the screen, press the Refresh button to see the updates on the Map.</p>
-</div>
+</div> -->
     <script>
       var delay;
       // Initialize CodeMirror editor with a nice html5 canvas demo.
@@ -350,9 +353,9 @@ If you're stuck, ensure that your code looks like the solution in the picture be
       });
 	  document.getElementById('instruct').style.display = "none";
 	  
-	  $( function() {
-		$( "#dialog" ).dialog({width: "500px"});
-	  } );
+	//   $( function() {
+	// 	$( "#dialog" ).dialog({width: "500px"});
+	//   } );
       
       function updatePreview() {
 	    var wrapper = document.getElementById('wrapper');
@@ -371,7 +374,7 @@ If you're stuck, ensure that your code looks like the solution in the picture be
 		var link = document.createElement('a');
 		mimeType = 'text/html' || 'text/plain';
 
-		link.setAttribute('download', 'exercise2.html');
+		link.setAttribute('download', 'exercise4.html');
 		link.setAttribute('href', 'data:' + 'text/html' + ';charset=utf-8,' + encodeURIComponent(elHtml));
 		link.click(); 
 	  }

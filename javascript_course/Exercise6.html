@@ -202,7 +202,8 @@
 <div id=wrapper>
 <iframe id=preview></iframe>
 </div>
-<div id=instruct>
+<div id=instruct style="font-family: Arial, Helvetica, sans-serif;">
+	<span style="display: block; text-align: center;"><b><u>Exercise 6 - Create a WebMap App</u></b><br><br></span>
 <b><u>Exercise:</u></b><br><br>
 You can use the ArcGIS API for JavaScript to easily load web maps built with the Map Viewer. The advantage of using this approach is that the map will contain all of he predefined settings you configured in the Map Viewer (Layer Styles, Popups, Refresh Rate, etc).
 <br><br>
@@ -219,7 +220,7 @@ require([<br>
 </p></b>
 <br><br>
 3. Open a WebMap into the MapView using the WebMapID. Note that the code is really similar to the starter map, but in place of a Map we're using a WebMap. To use the saved initial view of the WebMap, remove the center and zoom atttributes from the MapView options.<br>
-<b>Note: Use a publically shared Web Map for this exercise. If you need an example, <a href="https://www.arcgis.com/home/item.html?id=787722665db94bfa80fe36bd38848430">you can use this one.</a></b>
+<b>Note: Use a publically shared Web Map for this exercise. If you need an example, <a target="_blank" href="https://www.arcgis.com/home/item.html?id=787722665db94bfa80fe36bd38848430">you can use this one.</a></b>
 <br><br>
 <b><p style="padding-left: 5%; font-family: monospace;">
 	&emsp;&emsp;var map = new WebMap({<br>
@@ -234,7 +235,9 @@ require([<br>
 	</p></b>
 <br><br>
 If you're stuck, ensure that your code looks like the solution in the picture below:<br><br>
-<button type="button" class="collapsible">Solution</button>
+<button type="button" class="collapsible">Map Solution</button>
+    <div class="content"><img src="./images/e6_map.JPG"></div><br>
+<button type="button" class="collapsible">Code Solution</button>
     <div class="content"><img src="./images/e5_one.JPG"></div>
 <br><br>
 
@@ -260,9 +263,9 @@ If you're stuck, ensure that your code looks like the solution in the picture be
       });
 	  document.getElementById('instruct').style.display = "none";
 	  
-	  $( function() {
-		$( "#dialog" ).dialog({width: "500px"});
-	  } );
+	//   $( function() {
+	// 	$( "#dialog" ).dialog({width: "500px"});
+	//   } );
       
       function updatePreview() {
 	    var wrapper = document.getElementById('wrapper');
@@ -281,7 +284,7 @@ If you're stuck, ensure that your code looks like the solution in the picture be
 		var link = document.createElement('a');
 		mimeType = 'text/html' || 'text/plain';
 
-		link.setAttribute('download', 'exercise2.html');
+		link.setAttribute('download', 'exercise6.html');
 		link.setAttribute('href', 'data:' + 'text/html' + ';charset=utf-8,' + encodeURIComponent(elHtml));
 		link.click(); 
 	  }

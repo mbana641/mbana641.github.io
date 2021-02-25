@@ -219,7 +219,8 @@
 <div id=wrapper>
 <iframe id=preview></iframe>
 </div>
-<div id=instruct>
+<div id=instruct style="font-family: Arial, Helvetica, sans-serif;">
+	<span style="display: block; text-align: center;"><b><u>Exercise 15 - Query and Calculate Statistics</u></b><br><br></span>
 <b><u>Exercise:</u></b><br><br>
 In this lab you will use a query with distance and then clone that query to do stats on the features selected.<br><br>
 1. First we'll add some css for how we want our statistics values to be display with color and font size and weight:
@@ -253,7 +254,7 @@ In this lab you will use a query with distance and then clone that query to do s
 ], function(WebMap, MapView, Legend, Expand, lang, promiseUtils, watchUtils) {<br>
 <br></p>
 <br>
-3. Let's use the portal id for a new web map that contains crime data and use this webmap in the view. Notice that we are setting some addtional properties on the view like the <a href="https://developers.arcgis.com/javascript/latest/api-reference/esri-views-MapView.html#constraints">constraints</a> of minScale and <a href="https://developers.arcgis.com/javascript/latest/api-reference/esri-views-MapView.html#highlightOptions">highlightOptions</a>. Look at the links to get more info and play around with some different properties as you build out this lab.
+3. Let's use the portal id for a new web map that contains crime data and use this webmap in the view. Notice that we are setting some addtional properties on the view like the <a target="_blank" href="https://developers.arcgis.com/javascript/latest/api-reference/esri-views-MapView.html#constraints">constraints</a> of minScale and <a target="_blank" href="https://developers.arcgis.com/javascript/latest/api-reference/esri-views-MapView.html#highlightOptions">highlightOptions</a>. Look at the links to get more info and play around with some different properties as you build out this lab.
 <br><br><p style="padding-left: 5%; font-family: monospace;">
 var webmap = new WebMap({<br>
 &emsp;&emsp;portalItem: {<br>
@@ -301,7 +302,7 @@ var titleExpand = new Expand({<br>
 &emsp;&emsp;expanded: view.widthBreakpoint !== "xsmall"<br>
 });<br>
 view.ui.add(titleExpand, "top-right");<br><br></p><br>
-5. Next let's add a legend which should be easy for you to do. Here we will add it into a Expand widget as well like we did above. Notice that both the above and legend are using the <a href="https://developers.arcgis.com/javascript/latest/api-reference/esri-views-MapView.html#widthBreakpoint">widthBreakpoint</a> property to dynamically control the expansion of the widget. You can see this by making the browser window smaller.<br><br>
+5. Next let's add a legend which should be easy for you to do. Here we will add it into a Expand widget as well like we did above. Notice that both the above and legend are using the <a target="_blank" href="https://developers.arcgis.com/javascript/latest/api-reference/esri-views-MapView.html#widthBreakpoint">widthBreakpoint</a> property to dynamically control the expansion of the widget. You can see this by making the browser window smaller.<br><br>
 <p style="padding-left: 5%; font-family: monospace;">
 var legendExpand = new Expand({<br>
 &emsp;&emsp;view: view,<br>
@@ -322,7 +323,7 @@ view.watch("widthBreakpoint", function(newValue) {<br>
 	var highlightHandle = null;
 </p>
 <br><br>
-7. Now we need to right the code when to start doing the query. What this is saying is that when the view is ready, then we get the first layer in the map which is our crime points. So when the view is not updating once <a href="https://developers.arcgis.com/javascript/latest/api-reference/esri-core-watchUtils.html#whenFalseOnce">watchUtils.whenFalseOnce</a> when there is a click or drag on the view, we capture the location and stop navigations using event.stopPropagation() so as we drag it doesn't pan the map. But instead we call the function to queryStatsOnDrag and pass the layerView and the event(the location clicked).<br><br>
+7. Now we need to right the code when to start doing the query. What this is saying is that when the view is ready, then we get the first layer in the map which is our crime points. So when the view is not updating once <a target="_blank" href="https://developers.arcgis.com/javascript/latest/api-reference/esri-core-watchUtils.html#whenFalseOnce">watchUtils.whenFalseOnce</a> when there is a click or drag on the view, we capture the location and stop navigations using event.stopPropagation() so as we drag it doesn't pan the map. But instead we call the function to queryStatsOnDrag and pass the layerView and the event(the location clicked).<br><br>
 <p style="padding-left: 5%; font-family: monospace;">
 view.when()<br>
 .then(function() {<br>
@@ -457,14 +458,16 @@ function updateStats(responses) {<br>
 Select a category to query the feature layer. Click on any point to display the attribute data in a popup.
 <br><br>
 If you're stuck, ensure that your code looks like the solution in the picture below:<br><br>
-<button type="button" class="collapsible">Solution</button>
+<button type="button" class="collapsible">Map Solution</button>
+    <div class="content"><img src="./images/e15_map.JPG"></div><br>
+<button type="button" class="collapsible">Code Solution</button>
     <div class="content"><img src="./images/e15_one.JPG"><img src="./images/e15_two.JPG"><img src="./images/e15_three.JPG"><img src="./images/e15_four.JPG"><img src="./images/e15_five.JPG"></div>
 <br><br>
 </div>
 </div>
-<div id="dialog" title="Welcome to the ArcGIS API for JavaScript">
+<!-- <div id="dialog" title="Welcome to the ArcGIS API for JavaScript">
   <p>Please use this Code Playground to begin learning about the ArcGIS API for JavaScript. To get started, click on the Directions button. As you edit code on the left side of the screen, press the Refresh button to see the updates on the Map.</p>
-<br><br></div>
+<br><br></div> -->
     <script>
       var delay;
       // Initialize CodeMirror editor with a nice html5 canvas demo.
@@ -481,9 +484,9 @@ If you're stuck, ensure that your code looks like the solution in the picture be
       });
 	  document.getElementById('instruct').style.display = "none";
 	  
-	  $( function() {
-		$( "#dialog" ).dialog({width: "500px"});
-	  } );
+	//   $( function() {
+	// 	$( "#dialog" ).dialog({width: "500px"});
+	//   } );
       
       function updatePreview() {
 	    var wrapper = document.getElementById('wrapper');
@@ -502,7 +505,7 @@ If you're stuck, ensure that your code looks like the solution in the picture be
 		var link = document.createElement('a');
 		mimeType = 'text/html' || 'text/plain';
 
-		link.setAttribute('download', 'exercise2.html');
+		link.setAttribute('download', 'exercise15.html');
 		link.setAttribute('href', 'data:' + 'text/html' + ';charset=utf-8,' + encodeURIComponent(elHtml));
 		link.click(); 
 	  }

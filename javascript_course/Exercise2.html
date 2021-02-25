@@ -218,10 +218,11 @@
 <div id=wrapper>
 <iframe id=preview></iframe>
 </div>
-<div id=instruct>
+<div id=instruct style="font-family: Arial, Helvetica, sans-serif;">
+	<span style="display: block; text-align: center;"><b><u>Exercise 2 - Builder a Starter 2D Map</u></b><br><br></span>
 <b><u>Exercise:</u></b><br><br>
 This lab covers the basics for creating a basic starter mapping application.
-The starter map simply loads a default base map, and centers and zooms it in in a <a href="https://developers.arcgis.com/javascript/latest/api-reference/esri-views-MapView.html">MapView</a>.
+The starter map simply loads a default base map, and centers and zooms it in in a <a target="_blank" href="https://developers.arcgis.com/javascript/latest/api-reference/esri-views-MapView.html">MapView</a>.
 <br><br>
 The output on the 'Map' tab should show an imagery basemap of the United States.
 <br><br>
@@ -232,14 +233,16 @@ Change the center and zoom to look more specifically at New York state.
 <br><br>Refresh as you make changes to view the updated map.
 <br><br>
 If you're stuck, ensure that your code looks like the solution in the picture below:<br><br>
-<button type="button" class="collapsible">Solution</button>
+<button type="button" class="collapsible">Map Solution</button>
+    <div class="content"><img src="./images/e2_map.JPG"></div><br>
+<button type="button" class="collapsible">Code Solution</button>
     <div class="content"><img src="./images/e2_one.JPG"></div>
 <br><br>
 <br><b><u>Challenges:</u></b><br><br>
 <u>1. Change the basemap!</u>
-<br>Experiment with different basemaps such as topo-vector or gray-vector. Other basemap options can also be found <a href="https://developers.arcgis.com/javascript/latest/api-reference/esri-Map.html#basemap">here.</a><br>
+<br>Experiment with different basemaps such as topo-vector or gray-vector. Other basemap options can also be found <a target="_blank" href="https://developers.arcgis.com/javascript/latest/api-reference/esri-Map.html#basemap">here.</a><br>
 <br>
-<u>2. To get a better understanding, explore the <a href="https://developers.arcgis.com/javascript/latest/api-reference/esri-views-MapView.html">MapView Class</a></u>
+<u>2. To get a better understanding, explore the <a target="_blank" href="https://developers.arcgis.com/javascript/latest/api-reference/esri-views-MapView.html">MapView Class</a></u>
 <br><br>
 <u>3. Run the code locally on your machine.</u> <br>Eventually if your app gets larger you'll want to migrate it from the code playground. Click “Download” to get your html page, choose to “open with…” Chrome or your favorite browser and you can see your website!
 <br><br><b>Note:</b> This can be done throughout the workshop, so if you would like to save the results of each of these lessons, feel free to do so!
@@ -247,9 +250,9 @@ If you're stuck, ensure that your code looks like the solution in the picture be
 
 </div>
 </div>
-<div id="dialog" title="Welcome to the ArcGIS API for JavaScript">
+<!-- <div id="dialog" title="Welcome to the ArcGIS API for JavaScript">
   <p>Please use this Code Playground to begin learning about the ArcGIS API for JavaScript. To get started, click on the Directions button. As you edit code on the left side of the screen, press the Refresh button to see the updates on the Map.</p>
-</div>
+</div> -->
     <script>
       var delay;
       // Initialize CodeMirror editor with a nice html5 canvas demo.
@@ -266,9 +269,9 @@ If you're stuck, ensure that your code looks like the solution in the picture be
       });
 	  document.getElementById('instruct').style.display = "none";
 	  
-	  $( function() {
-		$( "#dialog" ).dialog({width: "500px"});
-	  } );
+	//   $( function() {
+	// 	$( "#dialog" ).dialog({width: "500px"});
+	//   } );
       
       function updatePreview() {
 	    var wrapper = document.getElementById('wrapper');

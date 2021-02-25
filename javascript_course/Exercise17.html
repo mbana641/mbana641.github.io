@@ -221,7 +221,8 @@
 <div id=wrapper>
 <iframe id=preview></iframe>
 </div>
-<div id=instruct>
+<div id=instruct style="font-family: Arial, Helvetica, sans-serif;">
+	<span style="display: block; text-align: center;"><b><u>Exercise 17 - Working with Arcade</u></b><br><br></span>
 <b><u>Exercise:</u></b><br><br>
 In this lab you will use Arcade to create custom labels based on each feature’s attributes. Through arcade you can access individual features by using $feature, and use it to edit lables or rendering. Arcade scripts can be used across the Esri platform to include ArcGIS Pro, the JavaScript API, and mobile applications.
 <br><br>
@@ -338,14 +339,16 @@ In this lab you will use Arcade to create custom labels based on each feature’
 Your app should display a map of all the wineries in Virginia. They should be labeled with the winery name and list the available amenities when zoomed in to a close enough extent.
 <br><br>
 If you're stuck, ensure that your code looks like the solution in the picture below:<br><br>
-<button type="button" class="collapsible">Solution</button>
+<button type="button" class="collapsible">Map Solution</button>
+    <div class="content"><img src="./images/e17_map.JPG"></div><br>
+<button type="button" class="collapsible">Code Solution</button>
     <div class="content"><img src="./images/e17_one.JPG"><img src="./images/e17_two.JPG"><img src="./images/e17_three.JPG"></div>
 <br><br>
 </div>
 </div>
-<div id="dialog" title="Welcome to the ArcGIS API for JavaScript">
+<!-- <div id="dialog" title="Welcome to the ArcGIS API for JavaScript">
   <p>Please use this Code Playground to begin learning about the ArcGIS API for JavaScript. To get started, click on the Directions button. As you edit code on the left side of the screen, press the Refresh button to see the updates on the Map.</p>
-<br><br></div>
+<br><br></div> -->
     <script>
       var delay;
       // Initialize CodeMirror editor with a nice html5 canvas demo.
@@ -362,9 +365,9 @@ If you're stuck, ensure that your code looks like the solution in the picture be
       });
 	  document.getElementById('instruct').style.display = "none";
 	  
-	  $( function() {
-		$( "#dialog" ).dialog({width: "500px"});
-	  } );
+	//   $( function() {
+	// 	$( "#dialog" ).dialog({width: "500px"});
+	//   } );
       
       function updatePreview() {
 	    var wrapper = document.getElementById('wrapper');
@@ -383,7 +386,7 @@ If you're stuck, ensure that your code looks like the solution in the picture be
 		var link = document.createElement('a');
 		mimeType = 'text/html' || 'text/plain';
 
-		link.setAttribute('download', 'exercise2.html');
+		link.setAttribute('download', 'exercise17.html');
 		link.setAttribute('href', 'data:' + 'text/html' + ';charset=utf-8,' + encodeURIComponent(elHtml));
 		link.click(); 
 	  }
