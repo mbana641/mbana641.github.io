@@ -1,0 +1,576 @@
+<!doctype html>
+
+<title>Exercise 15 3D</title>
+<meta charset="utf-8"/>
+<link rel="icon" type="image/png" href="./brackets.png"/>
+<link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.51.0/codemirror.css>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.51.0/codemirror.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.51.0/mode/xml/xml.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.51.0/mode/javascript/javascript.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.51.0/mode/css/css.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.51.0/mode/htmlmixed/htmlmixed.js></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.51.0/theme/monokai.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+<style type=text/css>
+	  html, body{
+		height: 99%;
+		background-color: #130D4E;
+		margin: 4px;
+	  }
+      .CodeMirror {
+        float: left;
+        width: 50%;
+		min-height: 93.5vh;
+        border: 1px solid #ccc;
+      }
+      #container {
+		position: relative;
+        width: 49%;
+		height: calc(93.5vh - 42px);
+        float: left;
+        border: 1px solid #ccc;
+        border-left: 0px;
+		background-color: white;
+      }
+	  iframe{
+		position: absolute;
+		top:0;
+		left:0;
+		width: calc(100% - 4px);
+		height: calc(100% - 4px)
+	  }
+	  #instruct{
+		position: absolute;
+		overflow: auto;
+		top:0;
+		left:0;
+		padding: 10px;
+		width: calc(100% - 22px);
+		height: calc(100% - 22px);
+		background-color: white;
+		display: block
+	  }
+	  
+		.tab {
+		  overflow: hidden;
+		  width: 48.95%;
+		  height: 40px;
+		  border: 1px solid #ccc;
+		  background-color: #3d3582;
+		  color:white;
+		}
+
+		.tab button {
+		  background-color: inherit;
+		  float: left;
+		  border: none;
+		  outline: none;
+		  cursor: pointer;
+		  padding: 14px 16px;
+		  transition: 0.3s;
+		}
+
+		.tab button:hover {
+		  background-color: #6258ad;
+		}
+
+		.tab button.active {
+		  background-color: #958be8;
+		}
+
+		.tabcontent {
+		  display: none;
+		  padding: 6px 12px;
+		  border: 1px solid #ccc;
+		  border-top: none;
+		}
+		
+		.tab2 {
+		  overflow: hidden;
+		  width: 99.05%;
+		  height: 40px;
+		  border: 1px solid #ccc;
+		  background-color: #f1f1f1;
+		}
+
+		.tab2 button {
+		  background-color: inherit;
+		  
+		  border: none;
+		  outline: none;
+		  cursor: pointer;
+		  padding: 14px 16px;
+		  transition: 0.3s;
+		}
+
+		.tab2 button:hover {
+		  background-color: #3d3582;
+		}
+
+		.tab2 button.active {
+		  background-color: #6258ad;
+		}
+
+		.tablinks2{
+			color:white;
+		}
+
+		.tablinks{
+			color:white;
+			font-size:14px;
+		}
+
+		.collapsible {
+            background-color: #777;
+            color: white;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+        }
+
+        .active, .collapsible:hover {
+            background-color: #555;
+        }
+
+        .content {
+            padding: 0 18px;
+            display: none;
+            overflow: hidden;
+            background-color: #f1f1f1;
+        }
+
+		img {
+			width: 100%;
+		}
+
+</style>
+<article>
+<div class="tab2" style="display: inline-block; vertical-align: middle; height: 100%; color:white; background-color: #2D2670;">
+	<svg style="height:30px;position:absolute;top:16px;left:50px;fill:white;"><path d="M77.277.5c-1.48 0-2.554 1.175-2.554 2.488 0 1.314 1.074 2.49 2.554 2.49 1.48 0 2.622-1.071 2.622-2.49C79.899 1.572 78.756.5 77.277.5zm-1.913 23.426h3.891V8.353h-3.891v15.573zM40.515 7.965c-4.702 0-8.465 3.275-8.465 8.174 0 4.898 3.763 8.177 8.465 8.177 2.146 0 4.165-.667 5.852-2.31l-2.457-2.457c-.916.964-2.093 1.651-3.78 1.651-2.175 0-3.927-1.397-4.188-3.698h11.875v-1.07c0-5.42-2.95-8.467-7.302-8.467zm-4.573 6.617c.293-2.24 1.721-3.7 4.023-3.7 2.434 0 3.926 1.43 3.96 3.7h-7.983zm17.305-1.849c0-1.169 1.233-1.655 2.273-1.655 1.32 0 2.292.547 3.037 1.577l2.476-2.474c-1.282-1.6-3.407-2.216-5.418-2.216-3.147 0-6.262 1.555-6.262 5.028 0 5.938 8.403 3.406 8.403 6.617 0 1.233-1.46 1.784-2.595 1.784-1.65 0-2.687-.806-3.69-1.905l-2.515 2.514c1.58 1.711 3.62 2.313 5.978 2.313 3.179 0 6.717-1.299 6.717-4.998 0-6.067-8.404-3.795-8.404-6.585zm14.15-1.916h-.062V8.353h-3.892v15.573h3.892v-8.34c0-.842.518-3.925 4.185-3.925.564 0 1.127.112 1.718.253l.152-3.726c-.45-.127-.901-.223-1.382-.223-2.046 0-3.766 1.07-4.61 2.852zM14.683 2.766c-1.217-.037-1.932.12-2.651.26-.216-.056-.62.003-.643.472 0 .252.08.447.24.562.159.114 1.493 1.1 2.473 2.142-.47.052-.98.138-1.504.246-.585-1.264-2.465-.114-3.714-.064-.146.006-.286.025-.431.035-.137-1.056-.235-2.15-.21-2.92 1.618-.917 4.748-1.593 6.874-1.626l.373-.01c.312-.003.337-.251.043-.291-2.641-.361-4.929.173-7.279 1.145C5.808 3.748 2.696 6.12.8 10.596c-.444 1.247-2.219 7.195.935 12.3 2.56 4.142 5.855 6.113 9.887 6.676 4.024.561 6.207.075 8.752-1.055 5.951-2.642 10.496-12.559 5.95-19.747-1.794-3.319-6.495-6.229-11.641-6.004zm-2.259 4.647a17.754 17.754 0 0 1 2.362-.368 15.741 15.741 0 0 1 1.748 2.54c-.805.39-1.878.688-2.315 1.312-.181.26-.226.613-.232.995a23.59 23.59 0 0 0-3.877 1.286c-.453-1.332-.85-2.66-1.124-3.842 1.296-1.237 2.813-1.438 3.438-1.923zm6.61 15.88c-.354.038-.706.083-1.016.13-.77.121-1.762.379-2.685.723-.53-.843-1.95-2.891-2.667-4.437 1.442-.709 3.457-1.303 5.775-1.444.19.33.4.66.69.956.757.774-.44 1.883-.096 4.072zm-8.603-9.14c1.12-.53 2.3-.968 3.56-1.286-.008.333-.045.649-.182.903-.196.366-.106 1.428.134 1.775.755 1.099 2.008.488 2.951.883.433.181.721.482.964.84-1.974.124-3.91.584-5.706 1.41-.923-1.96-1.72-4.524-1.72-4.524zm.832 4.938c-.07.033-.145.074-.217.11a40.803 40.803 0 0 0-3.256-.78c-.995-.204-1.031-.15-2.151.175-.16.046-.313.088-.462.133a36.17 36.17 0 0 1-.445-1.202c1.436-1.106 2.884-2.034 4.821-2.985.5 1.491 1.215 3.483 1.71 4.549zm.768 4.528c.293-.765.521-1.331.605-1.89.569.958 1.248 2 1.774 2.815-.819.397-1.772 1.01-2.672 1.685.062-1.037.083-2.064.293-2.61zm5.334-14.636c-.01.014-.028.026-.04.04a23.057 23.057 0 0 0-1.376-2.111c1.007-.061 2.246-.008 3.374.108-1.014.363-1.461 1.254-1.958 1.963zm-9.028 1.094c.019-.026.039-.047.057-.072.234 1.182.513 2.16.886 3.518-1.402.618-3.881 2.148-4.976 2.972-.198-.502-.404-1.214-.589-1.946.249-.737.758-1.254 1.476-1.325 1.228-.123 2.28-1.95 3.146-3.147zm-5.41-1.784C4.24 6.455 6.023 4.666 7.65 3.773c-.016.4.086 1.567.218 2.693-.57.057-1.134.128-1.692.211a12.084 12.084 0 0 0-3.115 4.088c-.117-1.054-.178-1.933-.133-2.472zM2.07 9.731s.062 1.06.113 1.833c0 0-.781.886-1.18 1.59.159-1.443.498-2.187 1.067-3.423zm7.664 18.356C5.688 26.82 2.69 23.41 1.62 19.834a17.475 17.475 0 0 1-.651-6.473c.056.01.186.072.38.017.135-.093.616-.43.957-.728l.018.131c-.23.87-.371 1.775-.4 2.71.37.39.804 1.038 1.286 1.707-.31.23-.905.641-1.045.741-.41.292-.406.753-.114 1.015.161.144.492.084.613-.01.358-.285.656-.513 1.066-.77.15.393.292.748.43 1.086-.175.188-.3.436-.342.798-.135 1.172.979 2.092 1.918 2.36.035.01.06.014.094.023.05.076.095.147.148.224-.487.378-.82.765-1.049 1.063-.132.172-.28.43-.16.481.123.05.535 0 .719-.034.466-.09.826-.606 1.148-.796.387.534 1.017 1.22 1.672 1.88.029.12.055.246.088.351.125.403.293.804.495 1.196.471.22.962.402 1.464.561a8.344 8.344 0 0 0-.622.72zm.989.313c.155-.203.312-.454.505-.626.468.31.969.665 1.368.894-.615-.07-1.337-.085-1.873-.268zm3.113.31s-1.604-1.062-2.009-1.471c.803-.667 2.102-1.459 3.128-1.889.402.63 1.727 2.507 2.258 3.112-.963.168-2.31.294-3.377.248zM20.54 27.2c-.286.189-1.664.814-2.204.988a23.43 23.43 0 0 1-2.44-3.202c.844-.354 2.143-.67 3.346-.82.109.342.25.704.444 1.094.19.382.411.662.649.853.085-.053.164-.115.248-.17-.006.42-.018.846-.043 1.257zm-.33-21.477c-.27-.172-.607-.108-.467.193.053.117.259.314.427.512-.986-.272-3.608-.479-4.856-.364-.815-.916-1.744-2.028-2.861-2.765 4.999-.311 9.49 1.756 11.473 4.186-.661-.344-2.087-.834-2.667-.963-.313-.319-.708-.58-1.05-.8zm1.094 21.065c.023-.407.04-.922.053-1.396.487-.378.946-.79 1.37-1.238.547.063 1.094.156 1.427.24-.74.936-1.762 1.716-2.85 2.394zm3.825-3.724c-.12.253-.428.688-.633.894-.312-.126-.781-.258-1.272-.375.078-.094.163-.182.24-.279.268-1.796-.338-2.37.42-4.014l.172-.371c.418.118.812.247 1.153.386.043.616.04 2.728-.08 3.759zm-.708-4.917c.196-.407.412-.84.645-1.27.061.547.105 1.08.131 1.563a9.256 9.256 0 0 0-.776-.293zm2.218 1.126l-.194.756c-.137.515-.593 1.732-.832 2.223.091-.663.171-2.384.148-2.73.16.049.502-.147.559-.341.057-.195-.564-.495-.564-.495a20.742 20.742 0 0 0-.172-2.7c.142-.23.286-.452.434-.655a12.082 12.082 0 0 0-.186-1.575c.125.041.24.074.323.075.283.004.282-.19.192-.298-.058-.07-.328-.238-.643-.42a12.02 12.02 0 0 0-2.78-5.32c.533.202 1.214.48 1.754.774.41.516 1.585 1.675 2.212 4.92.564 2.922-.06 5.143-.251 5.786zM80.886 8.597v-.24h1.218v.24h-.468v1.191h-.283V8.597h-.467zm1.87-.24l.365 1.025.368-1.024h.406v1.43h-.262V8.634l-.396 1.154h-.229l-.4-1.154v1.154h-.261v-1.43h.409z"></path></svg>
+<!-- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="https://www.transportation.gov/sites/dot.gov/files/images/esri-17GlobeLogo_tag-right_sRGB_0.PNG" style="height:40px; vertical-align: middle; text-align: center; margin-top: 3px;"> -->
+<svg style="height:25px;position:absolute;top:18px;left:150px; fill:white;" class="top-nav-module--title-icon--Gc8Uz" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30.08 24"><path d="M20.721,18.91l5.1-6.91L20.639,5.09h3.78a.953.953,0,0,1,.765.384L30.08,12l-4.224,5.733a2.92,2.92,0,0,1-2.342,1.177Zm-11.279,0L4.26,12l5.1-6.91H5.578a.953.953,0,0,0-.765.384L0,12l4.307,5.733A2.92,2.92,0,0,0,6.649,18.91ZM17.648,0,8.483,24h0a5.735,5.735,0,0,0,5.358-3.69L21.6.01,21.572,0Z"></path></svg><span style="font: 400 13.3333px Arial;padding-left:40px;position:absolute;top:20px;font-size:larger;left:150px"><b>Geospatial Center JS API Workshop</b></span><div style="float: right;">
+  <button id="labbutton" class="tablinks2" title='https://developers.arcgis.com/javascript/' onclick="window.open('https://developers.arcgis.com/javascript/')";>Main Page</button>
+  <button id="labbutton" class="tablinks2" title = 'https://developers.arcgis.com/javascript/latest/sample-code/' onclick="window.open('https://developers.arcgis.com/javascript/latest/sample-code/')";>Code Samples</button>
+  <button id="labbutton" class="tablinks2" title = 'https://developers.arcgis.com/javascript/latest/api-reference/' onclick="window.open('https://developers.arcgis.com/javascript/latest/api-reference/')";>API Reference</button>
+ </div>
+</div>
+
+
+<textarea id="code" name="code" style="display:none;">
+<!-- Exercise 15 3D, Written in JavaScript 4.18 -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Query and Calculate Statistics</title>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/themes/light/main.css" />
+	<script src="https://js.arcgis.com/4.18/"></script>
+  
+  <style>
+    html, body, #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+    }
+  </style>
+
+  <script>
+  	require([
+      "esri/Map",
+      "esri/views/SceneView"
+    ], function(Map, SceneView) {
+
+      var map = new Map({
+        basemap: "hybrid",
+      });
+
+      var view = new SceneView({
+        container: "viewDiv",
+        map: map,
+        center: [-74.029, 40.71],
+        zoom: 10
+      });
+	        
+    });
+  </script>
+</head>
+<body>
+  <div id="viewDiv"></div>
+</body>
+</html>
+</textarea>
+
+<div class="tab">
+  <button id="Instructions" class="tablinks" onclick="openCity(event, 'Instructions')">Directions</button>
+  <button id="MapCanvas" class="tablinks active" onclick="openCity(event, 'MapCanvas')">Map</button>
+  <button id="Refresh" class="tablinks" onclick="updatePreview()">Refresh</button>
+  <button id="Download" class="tablinks" onclick="download()">Download</button>
+</div>
+<div id=container>
+<div id=wrapper>
+<iframe id=preview></iframe>
+</div>
+<div id=instruct style="font-family: Arial, Helvetica, sans-serif;">
+<span style="display: block; text-align: center;"><b><u>Exercise 15 3D - Query and Calculate Statistics</u></b><br><br></span>
+<b><u>Exercise:</u></b><br><br>
+In this lab you will use a query with distance and then clone that query to do stats on the features selected.<br><br>
+1. First we'll add some css for how we want our statistics values to be display with color and font size and weight:
+<p style="padding-left: 5%; font-family: monospace;"><br><br>
+#tot-crimes {<br>
+&emsp;&emsp;color: #ed5050;<br>
+&emsp;&emsp;font-size: 36pt;<br>
+&emsp;&emsp;font-weight: bolder;<br>
+&emsp;&emsp;line-height: 0.8;<br>
+}<br><br>
+#tot-Homicides,#tot-theft,#tot-Arson,<br>
+#tot-theftAuto,#tot-MVT,#tot-Robbery,<br>
+#tot-AssaultwWeapon,#tot-Burglary,#tot-SexAbuse{<br>
+&emsp;&emsp;color: #149dcf;<br>
+&emsp;&emsp;font-size: 20pt;<br>
+&emsp;&emsp;font-weight: bolder;<br>
+&emsp;&emsp;line-height: 0.8;<br>
+}<br><br>
+</p>
+<br>
+2. Update the require statement and function definition:
+<br><br>
+<p style="padding-left: 5%; font-family: monospace;">require([<br>
+&emsp;&emsp;"esri/WebScene",<br>
+&emsp;&emsp;"esri/views/SceneView",<br>
+&emsp;&emsp;"esri/widgets/Legend",<br>
+&emsp;&emsp;"esri/widgets/Expand",<br>
+&emsp;&emsp;"esri/core/lang",<br>
+&emsp;&emsp;"esri/core/promiseUtils",<br>
+&emsp;&emsp;"esri/core/watchUtils"<br>
+], function(WebScene, SceneView, Legend, Expand, lang, promiseUtils, watchUtils) {<br>
+<br></p>
+<br>
+3. Let's use the portal id for a new web map that contains crime data and use this webscene in the view. Notice that we are setting some addtional properties on the view like the <a href="https://developers.arcgis.com/javascript/latest/api-reference/esri-views-MapView.html#constraints">constraints</a> of minScale and <a href="https://developers.arcgis.com/javascript/latest/api-reference/esri-views-MapView.html#highlightOptions">highlightOptions</a>. Look at the links to get more info and play around with some different properties as you build out this lab.
+<br><br><p style="padding-left: 5%; font-family: monospace;">
+var webscene = new WebScene({<br>
+&emsp;&emsp;portalItem: {<br>
+&emsp;&emsp;&emsp;&emsp;id: "e57df7b2e5e1484a9a6fba59983756c3"<br>
+&emsp;&emsp;}<br>
+});<br><br>
+var view = new SceneView({<br>
+&emsp;&emsp;map: webscene,<br>
+&emsp;&emsp;container: "viewDiv",<br>
+&emsp;&emsp;constraints: {<br>
+&emsp;&emsp;&emsp;&emsp;minScale: 300000<br>
+&emsp;&emsp;},<br>
+&emsp;&emsp;highlightOptions: {<br>
+&emsp;&emsp;&emsp;&emsp;color: "yellow",<br>
+&emsp;&emsp;&emsp;&emsp;haloOpacity: 0.65,<br>
+&emsp;&emsp;&emsp;&emsp;fillOpacity: 0.45<br>
+&emsp;&emsp;}<br>
+});<br><br>
+</p><br>
+4. Next, we are going to add a UI element to show the results of our query. Notice that the values in the span id='', the id's are the same as you defined in your css above.
+<br><br><p style="padding-left: 5%; font-family: monospace;">
+var titleContent = document.createElement("div");<br>
+titleContent.style.padding = "15px";<br>
+titleContent.style.backgroundColor = "white";<br>
+titleContent.style.width = "500px";<br>
+titleContent.innerHTML = [<br>
+&emsp;&emsp;"&lt;div id='title' class='esri-widget'&gt;",<br>
+&emsp;&emsp;"&lt;span id='tot-crimes'&gt;0&lt;/span&gt; crimes occurred within half mile of the pointer location in 2018.&lt;br&gt;",<br>
+&emsp;&emsp;&emsp;&emsp;"Total number of Theft are &lt;span id='tot-theft'&gt;0&lt;/span&gt;.&lt;br&gt;",<br>
+&emsp;&emsp;&emsp;&emsp;"Total number of Theft from Auto are &lt;span id='tot-theftAuto'&gt;0&lt;/span&gt;.&lt;br&gt;",<br>
+&emsp;&emsp;&emsp;&emsp;"Total number of Motor Vehicle Theft are &lt;span id='tot-MVT'&gt;0&lt;/span&gt;.&lt;br&gt;",<br>
+&emsp;&emsp;&emsp;&emsp;"Total number of Robberies are &lt;span id='tot-Robbery'&gt;0&lt;/span&gt;.&lt;br&gt;",<br>
+&emsp;&emsp;&emsp;&emsp;"Total number of Assault with a Dangerous Weapon are &lt;span id='tot-AssaultwWeapon'&gt;0&lt;/span&gt;.&lt;br&gt;",<br>
+&emsp;&emsp;&emsp;&emsp;"Total number of Burglaries &lt;span id='tot-Burglary'&gt;0&lt;/span&gt;.&lt;br&gt;",<br>
+&emsp;&emsp;&emsp;&emsp;"Total number of Sex Abuse are &lt;span id='tot-SexAbuse'&gt;0&lt;/span&gt;.&lt;br&gt;",<br>
+&emsp;&emsp;&emsp;&emsp;"Total number of Homicides are &lt;span id='tot-Homicides'&gt;0&lt;/span&gt;.&lt;br&gt;",<br>
+&emsp;&emsp;&emsp;&emsp;"Total number of Arson are &lt;span id='tot-Arson'&gt;0&lt;/span&gt;.&lt;br&gt;",<br>
+&emsp;&emsp;"&lt;/div&gt;"<br>
+].join(" ");<br><br>
+var titleExpand = new Expand({<br>
+&emsp;&emsp;expandIconClass: "esri-icon-dashboard",<br>
+&emsp;&emsp;expandTooltip: "Summary stats",<br>
+&emsp;&emsp;view: view,<br>
+&emsp;&emsp;content: titleContent,<br>
+&emsp;&emsp;expanded: view.widthBreakpoint !== "xsmall"<br>
+});<br>
+view.ui.add(titleExpand, "top-right");<br><br></p><br>
+5. Next let's add a legend which should be easy for you to do. Here we will add it into a Expand widget as well like we did above. Notice that both the above and legend are using the <a href="https://developers.arcgis.com/javascript/latest/api-reference/esri-views-MapView.html#widthBreakpoint">widthBreakpoint</a> property to dynamically control the expansion of the widget. You can see this by making the browser window smaller.<br><br>
+<p style="padding-left: 5%; font-family: monospace;">
+var legendExpand = new Expand({<br>
+&emsp;&emsp;view: view,<br>
+&emsp;&emsp;content: new Legend({<br>
+&emsp;&emsp;&emsp;&emsp;view: view<br>
+&emsp;&emsp;}),<br>
+&emsp;&emsp;expanded: view.widthBreakpoint !== "xsmall"<br>
+});<br>
+view.ui.add(legendExpand, "bottom-left");<br><br>
+view.watch("widthBreakpoint", function(newValue) {<br>
+&emsp;&emsp;titleExpand.expanded = newValue !== "xsmall";<br>
+&emsp;&emsp;legendExpand.expanded = newValue !== "xsmall";<br>
+});<br>
+</p>
+<br><br>
+6. You need to declare a variable so that we can control what is highlighted as the selection is changed. This will be used later.<br><br>
+<p style="padding-left: 5%; font-family: monospace;">
+	var highlightHandle = null;
+</p>
+<br><br>
+7. Now we need to right the code when to start doing the query. What this is saying is that when the view is ready, then we get the first layer in the map which is our crime points. So when the view is not updating once <a href="https://developers.arcgis.com/javascript/latest/api-reference/esri-core-watchUtils.html#whenFalseOnce">watchUtils.whenFalseOnce</a> when there is a click or drag on the view, we capture the location and stop navigations using event.stopPropagation() so as we drag it doesn't pan the map. But instead we call the function to queryStatsOnDrag and pass the layerView and the event(the location clicked).<br><br>
+<p style="padding-left: 5%; font-family: monospace;">
+view.when()<br>
+.then(function() {<br>
+&emsp;&emsp;var layer = webscene.layers.getItemAt(0);<br>
+&emsp;&emsp;view.whenLayerView(layer).then(function(layerView) {<br>
+&emsp;&emsp;&emsp;&emsp;watchUtils.whenFalseOnce(layerView, "updating", function(<br>
+&emsp;&emsp;&emsp;&emsp;val) {<br>
+&emsp;&emsp;&emsp;&emsp;view.on(["click", "drag"], function(event) {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;event.stopPropagation();<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;queryStatsOnDrag(layerView, event)<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;.then(updateStats);<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;});<br>
+&emsp;&emsp;&emsp;&emsp;});<br>
+&emsp;&emsp;});<br>
+});<br>
+</p>
+<br><br>
+8. What does the queryStatsOnDrag function look like. It looks complicated but it really isn't. First we create a query on the layerView that is passed in. Then we use the event as the geometry and set the distance for the query. Then we clone the query so we can use it also for the stats query. Next we define the array of statDefinitions to count up how many crimes and of what type are found within the query. Then we do the query against the layerView to get the stats. Next we use the query with the distance set to highlight the features that are selected. Here is where we use the highlightHandle from above that we set to null earlier. We need this because if we don't remove the previous highlighted features they will just accumulate as you drag around the view.<br><br>
+<p style="padding-left: 5%; font-family: monospace;">
+function queryStatsOnDrag(layerView, event) {<br><br>
+&emsp;&emsp;// create a query object for the highlight and the statistics query<br><br>
+&emsp;&emsp;var query = layerView.layer.createQuery();<br>
+&emsp;&emsp;query.geometry = view.toMap(event); // converts the screen point to a map point<br>
+&emsp;&emsp;query.distance = .5; // queries all features within 1 mile of the point<br>
+&emsp;&emsp;query.units = "miles";<br><br>
+&emsp;&emsp;var statsQuery = query.clone();<br><br>
+&emsp;&emsp;// Create the statistic definitions for querying stats from the layer view<br>
+&emsp;&emsp;// the `onStatisticField` property can reference a field name or a SQL expression<br>
+&emsp;&emsp;// `outStatisticFieldName` is the name of the statistic you will reference in the result<br>
+&emsp;&emsp;// `statisticType` can be sum, avg, min, max, count, stddev<br>
+&emsp;&emsp;var statDefinitions = [<br><br>
+&emsp;&emsp;&emsp;&emsp;// total OFFENSES<br><br>
+&emsp;&emsp;&emsp;&emsp;{<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;onStatisticField: "1",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outStatisticFieldName: "total",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;statisticType: "count"<br>
+&emsp;&emsp;&emsp;&emsp;},<br><br>
+&emsp;&emsp;&emsp;&emsp;// total types of crime <br>
+&emsp;&emsp;&emsp;&emsp;// Since separate fields don't exist for each crime type, we can use<br>
+&emsp;&emsp;&emsp;&emsp;// an expression to return a 1 or a 0 for each crime type and sum up the<br>
+&emsp;&emsp;&emsp;&emsp;// results to get the total.<br><br>
+&emsp;&emsp;&emsp;&emsp;{<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;onStatisticField: "CASE WHEN OFFENSE = 'THEFT/OTHER' THEN 1 ELSE 0 END",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outStatisticFieldName: "total_Theft",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;statisticType: "sum"<br>
+&emsp;&emsp;&emsp;&emsp;}, {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;onStatisticField: "CASE WHEN OFFENSE = 'THEFT F/AUTO' THEN 1 ELSE 0 END",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outStatisticFieldName: "total_TheftAuto",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;statisticType: "sum"<br>
+&emsp;&emsp;&emsp;&emsp;}, {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;onStatisticField: "CASE WHEN OFFENSE = 'MOTOR VEHICLE THEFT' THEN 1 ELSE 0 END",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outStatisticFieldName: "total_MVT",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;statisticType: "sum"<br>
+&emsp;&emsp;&emsp;&emsp;}, {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;onStatisticField: "CASE WHEN OFFENSE = 'ROBBERY' THEN 1 ELSE 0 END",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outStatisticFieldName: "total_Robbery",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;statisticType: "sum"<br>
+&emsp;&emsp;&emsp;&emsp;}, {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;onStatisticField: "CASE WHEN OFFENSE = 'ASSAULT W/DANGEROUS WEAPON' THEN 1 ELSE 0 END",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outStatisticFieldName: "total_AssaultWeapon",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;statisticType: "sum"<br>
+&emsp;&emsp;&emsp;&emsp;}, {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;onStatisticField: "CASE WHEN OFFENSE = 'BURGLARY' THEN 1 ELSE 0 END",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outStatisticFieldName: "total_Bulglary",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;statisticType: "sum"<br>
+&emsp;&emsp;&emsp;&emsp;}, {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;onStatisticField: "CASE WHEN OFFENSE = 'SEX ABUSE' THEN 1 ELSE 0 END",<br>
+&emsp;&emsp;&emsp;&emsp;outStatisticFieldName: "total_SexAbuse",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;statisticType: "sum"<br>
+&emsp;&emsp;&emsp;&emsp;}, {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;onStatisticField: "CASE WHEN OFFENSE = 'HOMICIDE' THEN 1 ELSE 0 END",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outStatisticFieldName: "total_Homicide",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;statisticType: "sum"<br>
+&emsp;&emsp;&emsp;&emsp;}, {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;onStatisticField: "CASE WHEN OFFENSE = 'ARSON' THEN 1 ELSE 0 END",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outStatisticFieldName: "total_Arson",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;statisticType: "sum"<br>
+&emsp;&emsp;&emsp;&emsp;}<br><br>
+&emsp;&emsp;];<br><br>
+&emsp;&emsp;// add the stat definitions to the the statistics query object cloned earlier<br>
+&emsp;&emsp;statsQuery.outStatistics = statDefinitions;<br><br>
+&emsp;&emsp;// execute the query for all features in the layer view<br>
+&emsp;&emsp;var allStatsResponse = layerView.queryFeatures(statsQuery)<br>
+&emsp;&emsp;&emsp;&emsp;.then(function(response) {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;var stats = response.features[0].attributes;<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;return stats;<br>
+&emsp;&emsp;&emsp;&emsp;}, function(e) {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;console.error(e);<br>
+&emsp;&emsp;&emsp;&emsp;});<br><br>
+&emsp;&emsp;// highlight all features within the query distance<br>
+&emsp;&emsp;layerView.queryObjectIds(query)<br>
+&emsp;&emsp;&emsp;&emsp;.then(function(ids) {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;if (highlightHandle) {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;highlightHandle.remove();<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;highlightHandle = null;<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;highlightHandle = layerView.highlight(ids);<br>
+&emsp;&emsp;&emsp;&emsp;});<br><br>
+&emsp;&emsp;// Return the promises that will resolve to each set of statistics<br>
+&emsp;&emsp;return promiseUtils.eachAlways([allStatsResponse]);<br>
+}<br>
+</p>
+<br><br>
+9. The last bit is to write the function to update the numbers with the data returned from the statistic queries.<br><br>
+<p style="padding-left: 5%; font-family: monospace;">
+function updateStats(responses) {<br>
+&emsp;&emsp;var allStats = responses[0].value;<br>
+&emsp;&emsp;var totalNumber = document.getElementById("tot-crimes");<br>
+&emsp;&emsp;var totTheft = document.getElementById("tot-theft");<br>
+&emsp;&emsp;var totTheftAuto = document.getElementById("tot-theftAuto");<br>
+&emsp;&emsp;var totMVT = document.getElementById("tot-MVT");<br>
+&emsp;&emsp;var totRobbery = document.getElementById("tot-Robbery");<br>
+&emsp;&emsp;var totAssault = document.getElementById("tot-AssaultwWeapon");<br>
+&emsp;&emsp;var totBurglary = document.getElementById("tot-Burglary");<br>
+&emsp;&emsp;var totSexAbuse = document.getElementById("tot-SexAbuse");<br>
+&emsp;&emsp;var totHomicide = document.getElementById("tot-Homicides");<br>
+&emsp;&emsp;var totArson = document.getElementById("tot-Arson");<br><br>
+&emsp;&emsp;// Update the total numbers in the title UI element<br>
+&emsp;&emsp;totalNumber.innerHTML = allStats.total;<br>
+&emsp;&emsp;totTheft.innerHTML = allStats.total_Theft;<br>
+&emsp;&emsp;totTheftAuto.innerHTML = allStats.total_TheftAuto;<br>
+&emsp;&emsp;totMVT.innerHTML = allStats.total_MVT;<br>
+&emsp;&emsp;totRobbery.innerHTML = allStats.total_Robbery;<br>
+&emsp;&emsp;totAssault.innerHTML = allStats.total_AssaultWeapon;<br>
+&emsp;&emsp;totBurglary.innerHTML = allStats.total_Bulglary;<br>
+&emsp;&emsp;totSexAbuse.innerHTML = allStats.total_SexAbuse;<br>
+&emsp;&emsp;totHomicide.innerHTML = allStats.total_Homicide;<br>
+&emsp;&emsp;totArson.innerHTML = allStats.total_Arson;<br>
+}<br>
+</p>
+<br><br>
+Select a category to query the feature layer. Click on any point to display the attribute data in a popup.
+<br><br>
+If you're stuck, ensure that your code looks like the solution in the picture below:<br><br>
+<button type="button" class="collapsible">Map Solution</button>
+    <div class="content"><img src="./images/e15_3D_one.jpg"></div>
+<br><br><button type="button" class="collapsible">Code Solution</button>
+    <div class="content"><img src="./images/e15_3D_code_1.jpg"><img src="./images/e15_3D_code_2.jpg"><img src="./images/e15_3D_code_3.jpg"><img src="./images/e15_3D_code_4.jpg"><img src="./images/e15_3D_code_5.jpg"></div>
+<br><br>
+</div>
+</div>
+<!-- <div id="dialog" title="Welcome to the ArcGIS API for JavaScript">
+  <p>Please use this Code Playground to begin learning about the ArcGIS API for JavaScript. To get started, click on the Directions button. As you edit code on the left side of the screen, press the Refresh button to see the updates on the Map.</p>
+<br><br></div> -->
+    <script>
+      var delay;
+      // Initialize CodeMirror editor with a nice html5 canvas demo.
+      var editor = CodeMirror.fromTextArea(document.getElementById('code'), {
+		mode: 'text/html',
+		theme: "monokai",
+		lineNumbers: true,
+        gutter: true,
+        lineWrapping: true
+      });
+      editor.on("change", function() {
+        //clearTimeout(delay);
+        //delay = setTimeout(updatePreview, 300);
+      });
+	  document.getElementById('instruct').style.display = "none";
+	  
+	  /* $( function() {
+		$( "#dialog" ).dialog({width: "500px"});
+	  } ); */
+      
+      function updatePreview() {
+	    var wrapper = document.getElementById('wrapper');
+		wrapper.innerHTML = "<iframe id='preview'></iframe>";
+        var previewFrame = document.getElementById('preview');
+        var preview =  previewFrame.contentDocument ||  previewFrame.contentWindow.document;
+        preview.open();
+        preview.write(editor.getValue());
+        preview.close();
+		//preview.createElement(editor.getValue());
+      }
+      setTimeout(updatePreview, 300);
+	  
+	  function download() {
+		var elHtml = editor.getValue();
+		var link = document.createElement('a');
+		mimeType = 'text/html' || 'text/plain';
+
+		link.setAttribute('download', 'exercise15-3D.html');
+		link.setAttribute('href', 'data:' + 'text/html' + ';charset=utf-8,' + encodeURIComponent(elHtml));
+		link.click(); 
+	  }
+
+	  function loadLab(evt, a){
+		var i, tabcontent, tablinks;
+		 tabcontent = document.getElementsByClassName("tabcontent");
+		 for (i = 0; i < tabcontent.length; i++) {
+			tabcontent[i].style.display = "none";
+		 }
+		 tablinks = document.getElementsByClassName("tablinks2");
+		 for (i = 0; i < tablinks.length; i++) {
+			tablinks[i].className = tablinks[i].className.replace(" active", "");
+		 }
+		 document.getElementById(a).style.display = "block";
+		 evt.currentTarget.className += " active";
+		  
+		if (a == "lab1button"){
+			editor.getDoc().setValue(document.getElementById('code').value)
+			document.getElementById('instruct').innerHTML = "Welcome to the class...etc, etc, etc."
+		}
+		if (a == "labbutton"){
+			editor.getDoc().setValue(document.getElementById('lab1').value)
+			document.getElementById('instruct').innerHTML = "<br>###Review HTML, CSS, and JavaScript<br><br>This lab covers the basics of creating your first web page. Take this starter page and play around with modifying the HTML, CSS, and JavaScript. Use the resource <a target='_blank' href='https:www.w3schools.com'>W3Schools</a> to learn what is possible.<br><br>The code on the left ouputs a web page with basic text and button. When you click the button the heading text chnages to Hello World. To vew the output of your code click on the map tab at the top of this page.<br><br>###Bonus<br><br><ul><li>Experiment with different HTML, CSS, JavaScript. Use <a target='_blank' href='https:www.w3schools.com'>W3Schools</a> as a resource to help.</li><li>CSS: Change the whole page background to a color besides white (body)</li><li>HTML: Modify the table to show the last and first names of two people in class (table)</li><li>JavaScript: Change the onclick to show an alert box (alert)</li></ul>"
+		}
+		if (a == "lab2button"){
+			editor.getDoc().setValue(document.getElementById('lab2').value)
+			document.getElementById('instruct').innerHTML = "<br>###Build a starter map<br><br>This lab covers the basics for creating a basic starter mapping application. The starter map simply loads a default base map, and centers and zooms it in in a <a target='_blank' href='https://developers.arcgis.com/javascript/latest/api-reference/esri-views-MapView.html'>MapView</a>. If you are new to ArcGIS and need a full set of instructions on building a basic mapping application visit the <a target='_blank' href='https://developers.arcgis.com/javascript/latest/sample-code/get-started-mapview/index.html'>Getting Started with MapView</a> tutorial.<br><br>###Bonus<ul><li>Experiment with different basemaps such as topo-vector or gray-vector. Here is a <a target='_blank' href='https://developers.arcgis.com/javascript/latest/api-reference/esri-Map.html#basemap'>list</a> of options.</li><li>Change the center and zoom level.</li></ul>"
+		}
+	  }
+
+	  var coll = document.getElementsByClassName("collapsible");
+        var i;
+
+        for (i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", function() {
+            this.classList.toggle("active");
+            var content = this.nextElementSibling;
+            if (content.style.display === "block") {
+            content.style.display = "none";
+            } else {
+            content.style.display = "block";
+            }
+        });
+        }
+	  
+	  function openCity(evt, cityName) {
+		  var i, tabcontent, tablinks;
+		  tabcontent = document.getElementsByClassName("tabcontent");
+		  for (i = 0; i < tabcontent.length; i++) {
+			tabcontent[i].style.display = "none";
+		  }
+		  tablinks = document.getElementsByClassName("tablinks");
+		  for (i = 0; i < tablinks.length; i++) {
+			tablinks[i].className = tablinks[i].className.replace(" active", "");
+		  }
+		  document.getElementById(cityName).style.display = "block";
+		  evt.currentTarget.className += " active";
+		  
+		  if (evt.currentTarget.id == "MapCanvas"){
+			document.getElementById('instruct').style.display = "none";
+		  }else{
+			document.getElementById('instruct').style.display = "block";
+		  }
+	  }
+	  
+    </script>
+  </article>
