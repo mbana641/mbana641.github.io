@@ -22,8 +22,8 @@ fill:#555;
 <body>
 <script>
 
-var width = 960,
-    height = 500
+var width = document.width,
+    height = document.height
 
 var svg = d3.select("body").append("svg")
     .attr("width", width)
