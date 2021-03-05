@@ -52,7 +52,6 @@ d3.json("megangraph.json", function(json) {
     .enter().append("g")
       .attr("class", "node")
       .call(force.drag)
-      .join(circle)
       .style("fill", function(d) { return color(d.group); })
       .attr("r", 5);
 
