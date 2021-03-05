@@ -53,12 +53,12 @@ d3.json("megangraph.json", function(json) {
       .data(json.nodes)
     .enter().append("g")
       .attr("class", "node")
-      .call(force.drag)
-      .style("fill", function(d) { return color(d.group); })
-      .attr("r", 5);
+      .call(force.drag);
+      
 
   node.append("circle")
-      .attr("r","5");
+      .style("fill", function(d) { return color(d.group); })
+      .attr("r", 5);
 
   node.append("text")
       .attr("dx", 12)
