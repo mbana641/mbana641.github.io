@@ -26,7 +26,11 @@
             {"id": 24,"name": "SQL", "group": 4},
             {"id": 25,"name": "Presenter at FedGIS 2020 Plenary Session", "group": 5},
             {"id": 26,"name": "Founder of Collaboration Circles", "group": 5},
-            {"id": 27,"name": "ArcGIS Insights COVID-19 Response Learn Lesson", "group": 5}
+            {"id": 27,"name": "ArcGIS Insights COVID-19 Response Learn Lesson", "group": 5},
+            {"id": 28, "name": "B.S. Geography (GISc & Cartography focus)", "group": 2},
+            {"id": 29, "name": "Spatial Analysis Minor", "group": 2},
+            {"id": 30, "name": "Geographic Information Science Minor", "group": 2},
+            {"id": 31, "name": "Computer Information Systems Minor", "group": 2}
     ], "links": [
         {"source":0, "target":1},
         {"source":0, "target":2},
@@ -54,6 +58,10 @@
         {"source":3, "target":24},
         {"source":4, "target":25},
         {"source":4, "target":26},
-        {"source":4, "target":27}
+        {"source":4, "target":27},
+        {"source":5, "target":28},
+        {"source":5, "target":29},
+        {"source":5, "target":30},
+        {"source":5, "target":31}
     ]
 }
