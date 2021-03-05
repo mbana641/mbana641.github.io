@@ -62,6 +62,7 @@ d3.json("megangraph.json", function(json) {
     .enter().append("g")
       .attr("class", "node")
       .style("fill", function(d) { return color(d.group); })
+      .style("outline", function(d) { return color(d.group); })
       .call(force.drag);
       
 
