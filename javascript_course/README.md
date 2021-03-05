@@ -41,9 +41,6 @@ Let's get started!
 
 You can see a high-level overview of the differences between the 3.x and 4.x JS APIs [here](https://developers.arcgis.com/javascript/latest/guide/choose-version/index.html) and a more detailed comparison [here](https://developers.arcgis.com/javascript/latest/guide/functionality-matrix/index.html).
 
-## Data and Terms of Use
-Please see [http://opendata.dc.gov/](http://opendata.dc.gov/) for the data terms of use.
-
 ## Licensing
 Copyright 2016 Esri
 
