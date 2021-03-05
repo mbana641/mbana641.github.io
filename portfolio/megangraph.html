@@ -9,7 +9,7 @@
 
 .node text {
 stroke:#333;
-cursos:pointer;
+cursor:pointer;
 }
 
 .node circle{
@@ -51,7 +51,10 @@ d3.json("megangraph.json", function(json) {
       .data(json.nodes)
     .enter().append("g")
       .attr("class", "node")
-      .call(force.drag);
+      .call(force.drag)
+      .join(circle)
+      .style("fill", function(d) { return color(d.group); })
+      .attr("r", 5);
 
   node.append("circle")
       .attr("r","5");
