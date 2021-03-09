@@ -326,7 +326,7 @@ If you're stuck, ensure that your code looks like the solution in the picture be
     <div class="content"><img src="./images/e5_really.JPG"><img src="./images/e5_reallytwo.JPG"><img src="./images/e5_reallythree.JPG"></div>
 <br><br>
 <b><u>Challenges:</u></b><br><br>
-Add a legend and make sure to add the infoDiv to the html:<br><br>
+Add a legend and add it to the UI in <a target="_blank" href="https://developers.arcgis.com/javascript/latest/view-ui/">your preferred location</a>:<br><br>
 <p style="padding-left: 5%; font-family: monospace;">
 var legend = new Legend({<br>
 &emsp;&emsp;view: view,<br>
@@ -334,9 +334,10 @@ var legend = new Legend({<br>
 	&emsp;&emsp;&emsp;&emsp;layer: waterfalls,<br>
 	&emsp;&emsp;&emsp;&emsp;title: "Waterfall Status"<br>
 	&emsp;&emsp;}]<br>
-}, "infoDiv");<br><br>
+};<br><br>
+view.ui.add(legend, "bottom-right");<br><br>
 </p>
-<b>Hint: Put the infoDiv within the viewDiv</b>
+
 <br><br>
 </div>
 </div>
