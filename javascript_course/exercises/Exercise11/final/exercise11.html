@@ -1,0 +1,128 @@
+<!-- Exercise 11, Written in JavaScript 4.18 -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Exercise 11</title>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.18/"></script>
+  
+  <style>
+    html, body, #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+    }
+  
+  </style>
+
+  <script>
+    require([
+      "esri/views/MapView",
+      "esri/Map",
+      "esri/layers/GraphicsLayer",
+      "esri/Graphic",
+      "esri/geometry/Point",
+      "esri/tasks/Geoprocessor",
+      "esri/tasks/support/LinearUnit",
+      "esri/tasks/support/FeatureSet",
+    ], function(MapView, Map, GraphicsLayer, Graphic, Point, Geoprocessor, LinearUnit, FeatureSet) {
+
+      var map = new Map({
+        basemap: "hybrid"
+      });
+
+      var view = new MapView({
+        map: map,
+        container: "viewDiv",
+		center: [7.59564, 46.06595],
+  	  	zoom: 12
+      });
+      
+      var graphicsLayer = new GraphicsLayer();
+
+      map.add(graphicsLayer);
+      
+      var markerSymbol = {
+        type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+        color: [255, 0, 0],
+        outline: { // autocasts as new SimpleLineSymbol()
+          color: [255, 255, 255],
+          width: 2
+        }
+      };
+
+      var fillSymbol = {
+        type: "simple-fill", // autocasts as new SimpleFillSymbol()
+        color: [0, 255, 0, 0.75],
+        outline: { // autocasts as new SimpleLineSymbol()
+          color: [255, 255, 255],
+          width: 1
+        }
+      };
+
+      var gp = new Geoprocessor("https://sampleserver6.arcgisonline.com/arcgis/rest/services/Elevation/ESRI_Elevation_World/GPServer/Viewshed");
+        gp.outSpatialReference = { // autocasts as new SpatialReference()
+          wkid: 102100
+        };
+
+      view.on("click", computeViewshed);
+      
+      function computeViewshed(event) {
+        graphicsLayer.removeAll();
+
+        var point = new Point({
+          longitude: event.mapPoint.longitude,
+          latitude: event.mapPoint.latitude
+        });
+
+        var inputGraphic = new Graphic({
+          geometry: point,
+          symbol: markerSymbol
+        });
+
+        graphicsLayer.add(inputGraphic);
+
+        var inputGraphicContainer = [];
+        inputGraphicContainer.push(inputGraphic);
+        var featureSet = new FeatureSet();
+        featureSet.features = inputGraphicContainer;
+
+        var vsDistance = new LinearUnit();
+        vsDistance.distance = 5;
+        vsDistance.units = "miles";
+
+        var params = {
+          "Input_Observation_Point": featureSet,
+          "Viewshed_Distance": vsDistance
+        };
+
+        gp.execute(params).then(drawResultData);
+      }
+
+      function drawResultData(result) {
+        var resultFeatures = result.results[0].value.features;
+
+        // Assign each resulting graphic a symbol
+        var viewshedGraphics = resultFeatures.map(function(feature) {
+          feature.symbol = fillSymbol;
+          return feature;
+        });
+
+        // Add the resulting graphics to the graphics layer
+        graphicsLayer.addMany(viewshedGraphics);
+
+        view.goTo({
+          target: viewshedGraphics
+        });
+      }
+      
+    });
+  </script>
+</head>
+<body>
+    <div id="viewDiv"></div>
+</body>
+</html>

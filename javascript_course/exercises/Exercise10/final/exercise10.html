@@ -1,0 +1,87 @@
+<!-- Exercise 10, Written in JavaScript 4.18 -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Exercise 10</title>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.18/"></script>
+  
+  <style>
+    html, body, #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+    }
+  
+  </style>
+
+  <script>
+    require([
+      "esri/views/MapView",
+      "esri/Map",
+      "esri/layers/GraphicsLayer",
+      "esri/Graphic",
+      "esri/geometry/geometryEngine"
+    ], function(MapView, Map, GraphicsLayer, Graphic, geometryEngine) {
+
+      var map = new Map({
+        basemap: "dark-gray-vector"
+      });
+
+      var view = new MapView({
+        map: map,
+        container: "viewDiv",
+		center: [-77.029, 38.89],
+		zoom: 10
+      });
+      
+      var bufferLayer = new GraphicsLayer();
+
+      map.add(bufferLayer);
+      
+      var bufferSymbol = {
+        type: "simple-fill", // autocasts as new SimpleFillSymbol()
+        color: [140, 140, 222, 0.5],
+        outline: {
+          color: [0, 0, 0, 0.5],
+          width: 2
+        }
+      };
+
+      var pointSymbol = {
+        type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+        color: [255, 0, 0],
+        outline: {
+          color: [255, 255, 255],
+          width: 1
+        },
+        size: 7
+      };
+      
+      view.on("click", function(event) {
+        bufferPoint(event.mapPoint);
+      });
+
+      function bufferPoint(point) {
+        bufferLayer.add(new Graphic({
+          geometry: point,
+          symbol: pointSymbol
+        }));
+
+        var buffer = geometryEngine.geodesicBuffer(point, 5, "miles");
+        bufferLayer.add(new Graphic({
+          geometry: buffer,
+          symbol: bufferSymbol
+        }));
+      }
+
+    });
+  </script>
+</head>
+<body>
+    <div id="viewDiv"></div>
+</body>
+</html>

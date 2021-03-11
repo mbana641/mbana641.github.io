@@ -1,0 +1,79 @@
+<!-- Exercise 10 3D, Written in JavaScript 4.18 -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Exercise 10 3D</title>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.18/"></script>
+  
+  <style>
+    html, body, #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+    }
+  
+  </style>
+
+  <script>
+    require([
+      "esri/views/SceneView",
+      "esri/Map",
+      /*** ADD ***/
+      "esri/layers/GraphicsLayer",
+      "esri/Graphic",
+      "esri/geometry/geometryEngine"
+    ], function(SceneView, Map, GraphicsLayer, Graphic, geometryEngine) {
+
+      var scene = new Map({
+        basemap: "dark-gray-vector"
+      });
+
+      var view = new SceneView({
+        map: scene,
+        container: "viewDiv",
+		center: [-77.029, 38.89],
+		zoom: 10
+      });
+      
+      var bufferLayer = new GraphicsLayer();
+
+	  scene.add(bufferLayer);
+      
+      var bufferSymbol = {
+        type: "point-3d", // autocasts as new SimpleFillSymbol()
+        symbolLayers: [{
+          type: "object",
+          width: 10000,
+          height: 10000,
+          resource: {
+            primitive: "diamond"
+          },
+          material: {
+            color:[50, 50, 200, 0.75]
+          }
+        }]
+      };
+      
+      view.on("click", function(event) {
+        bufferPoint(event.mapPoint);
+      });
+
+      function bufferPoint(point) {
+        var buffer = geometryEngine.geodesicBuffer(point, 8, "miles");
+        bufferLayer.add(new Graphic({
+          geometry: buffer,
+          symbol: bufferSymbol
+        }));
+      }
+
+    });
+  </script>
+</head>
+<body>
+    <div id="viewDiv"></div>
+</body>
+</html>

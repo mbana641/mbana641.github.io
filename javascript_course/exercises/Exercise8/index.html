@@ -282,20 +282,17 @@ After adding that widget, your map should look like this, with both a functionin
 
 <br><br><br><b><u>Challenges:</u></b><br><br>
 Having the Basemap Gallery open all the time takes up a lot of space, and isn't very user friendly. There is an <a target="_blank" href="https://developers.arcgis.com/javascript/latest/api-reference/esri-widgets-Expand.html">Expand Widget</a> that acts like a clickable button for opening a widget.
-<br>
+<br><br>
 Try putting the Basemap Gallery into the expand widget, and you'll notice that this is way easier on the eyes! Also don't forget to remove your previous "view.ui.add".
-<p style="padding-left: 5%; font-family: monospace;">var basemapExpand = new Expand ({<br>
-	&emsp;&emsp;content: //VARIABLE FOR YOUR BASEMAP GALLERY HERE,<br>
-	&emsp;&emsp;view: view<br>
-});<br>
-<br>
-view.ui.add(basemapExpand, "top-right");
-</p>
+<br><br>
 Now it should look like this while collapsed:<br><br>
 <button type="button" class="collapsible">Challenge Solution</button>
     <div class="content"><img src="./images/e11_three.png"></div>
 <br><br><button type="button" class="collapsible">Code Solution</button>
     <div class="content"><img src="./images/e11_code_1.jpg"><img src="./images/e11_code_2.jpg"></div>
+<br><br><br>
+	<a target="_blank" href="./final/exercise8.html">Final Solution</a>
+	
 </div>
 </div>
 <!-- <div id="dialog" title="Welcome to the ArcGIS API for JavaScript">

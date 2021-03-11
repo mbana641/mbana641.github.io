@@ -1,0 +1,65 @@
+<!-- Exercise 8, Written in JavaScript 4.18 -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Exercise 8</title>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.18/"></script>
+  
+  <style>
+    html, body, #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+    }
+  
+  </style>
+
+  <script>
+    require([
+      "esri/WebMap",
+      "esri/views/MapView",
+      "esri/widgets/Search",
+      "esri/widgets/BasemapGallery",
+      "esri/widgets/Expand"
+    ], function(WebMap, MapView, Search, BasemapGallery, Expand) {
+
+      var map = new WebMap({
+        portalItem: { // autocasts as new PortalItem()
+          id: "7d281311aef74b5fa2c39f0ebc01b5dd"
+        }
+      });
+
+      var view = new MapView({
+        map: map,
+        container: "viewDiv"
+      });
+      
+      //Create search widget
+      var searchWidget = new Search({
+        view: view
+      });
+      //Add widget to the UI
+      view.ui.add(searchWidget, "top-right");
+      
+      var basemapGallery = new BasemapGallery({
+        view: view
+      });
+      
+      var basemapExpand = new Expand ({
+        content: basemapGallery,
+        view: view
+      });
+
+      view.ui.add(basemapExpand, "top-right");
+
+    });
+  </script>
+</head>
+<body>
+    <div id="viewDiv"></div>
+</body>
+</html>

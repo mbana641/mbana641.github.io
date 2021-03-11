@@ -1,0 +1,73 @@
+<!-- Exercise 13 3D, Written in JavaScript 4.18 -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Editor Widget</title>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/themes/light/main.css" />
+	<script src="https://js.arcgis.com/4.18/"></script>
+  
+  <style>
+    html, body, #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+    }
+    .esri-editor .esri-item-list__scroller {
+      max-height: 350px;
+    }
+  </style>
+
+  <script>
+    //var view; // declaring view as a global variable 
+    
+    require([
+      "esri/WebScene",
+      "esri/views/SceneView",
+      "esri/widgets/Editor"
+    ], function(WebScene, SceneView, Editor) {
+      
+      var webscene = new WebScene({
+        portalItem: {
+          id: "206a6a13162c4d9a95ea6a87abad2437"
+        }
+      });
+      var view = new SceneView({
+        container: "viewDiv",
+        map: webscene
+      });
+      
+      var renderer = {
+        type: "unique-value",
+        visualVariables: [
+           {
+            type: "size",
+            field: "SIZE",
+            axis: "height",
+            valueUnit: "meters"
+          },
+          {
+            type: "rotation",
+            field: "ROTATION"
+          }
+        ],
+      };
+      
+      view.when(function() {
+      view.popup.autoOpenEnabled = false;
+      var editor = new Editor({
+        view: view,
+        renderer: renderer   });
+      view.ui.add(editor, "top-right");
+    });
+
+	        
+    });
+  </script>
+</head>
+<body>
+  <div id="viewDiv"><div id="editorDiv"></div></div>
+</body>
+</html>

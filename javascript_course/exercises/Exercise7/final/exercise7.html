@@ -1,0 +1,206 @@
+<!-- Exercise 7, Written in JavaScript 4.18 -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Exercise 7</title>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.18/"></script>
+  
+  <style>
+    html, body, #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+    }
+	.esri-button {
+	  margin: 2px;
+	}
+	#sketchPanel {
+      width: 200px;
+      padding: 10px;
+      background-color: rgba(255, 255, 255, 0.8);
+	}
+	#actionbuttons {
+	  display: none;
+	}
+  </style>
+
+  <script>
+    require([
+        "esri/Map",
+        "esri/views/SceneView",
+        "esri/layers/GraphicsLayer",
+  		"esri/widgets/Sketch/SketchViewModel"
+    ], function(Map, SceneView, GraphicsLayer, SketchViewModel) {
+
+      var map = new Map({
+        basemap: "topo-vector",
+        ground: "world-elevation"
+      });
+        
+      var view = new SceneView({
+        container: "viewDiv",
+        map: map,
+        center: [-117.195658, 34.056677],
+        scale: 5000
+      });
+
+	  var graphicsLayer = new GraphicsLayer({
+        elevationInfo: {
+          mode: "on-the-ground"
+        }
+      });
+      map.add(graphicsLayer);
+      
+      var blue = [82, 82, 122, 0.9];
+      var white = [255, 255, 255, 0.8];
+
+      // polygon symbol used for sketching the extruded building footprints
+      var extrudedPolygon = {
+        type: "polygon-3d",
+        symbolLayers: [
+          {
+            type: "extrude",
+            size: 10, // extrude by 10 meters
+            material: {
+              color: white
+            },
+            edges: {
+              type: "solid",
+              size: "3px",
+              color: blue
+            }
+          }
+        ]
+      };
+
+      // polyline symbol used for sketching routes
+      var route = {
+        type: "line-3d",
+        symbolLayers: [
+          {
+            type: "line",
+            size: "10px",
+            material: {
+              color: white
+            }
+          },
+          {
+            type: "line",
+            size: "3px",
+            material: {
+              color: blue
+            }
+          }
+        ]
+      };
+
+      // point symbol used for sketching points of interest
+      var point = {
+        type: "point-3d",
+        symbolLayers: [
+          {
+            type: "icon",
+            size: "20px",
+            resource: { primitive: "kite" },
+            outline: {
+              color: blue,
+              size: "3px"
+            },
+            material: {
+              color: white
+            }
+          }
+        ]
+      };
+
+      var sketchViewModel = new SketchViewModel({
+        layer: graphicsLayer,
+        view: view,
+        pointSymbol: point,
+        polygonSymbol: extrudedPolygon,
+        polylineSymbol: route,
+        snappingOptions: { selfEnabled: true }
+      });
+
+      /****************************************
+       * 
+       * This is all the code that makes the UI work!
+       *
+       *  **************************************/
+      sketchViewModel.on("create", function (event) {
+        if (event.state === "complete") {
+          document.getElementById("startbuttons").style.display = "inline";
+          document.getElementById("actionbuttons").style.display = "none";
+        }
+        if (event.state === "cancel") {
+          document.getElementById("startbuttons").style.display = "inline";
+          document.getElementById("actionbuttons").style.display = "none";
+        }
+      });
+
+      // graphic backup to revert a canceled update process
+      let updatebackupgraphic;
+
+      sketchViewModel.on("update", function (event) {
+        console.log(event);
+        if (event.state === "start") {
+          updatebackupgraphic = event.graphics[0].clone();
+          document.getElementById("startbuttons").style.display = "none";
+          document.getElementById("actionbuttons").style.display = "inline";
+        }
+        if (event.state === "complete") {
+          if (event.aborted) {
+            // revert to the graphic before starting the update process
+            graphicsLayer.remove(event.graphics[0]);
+            graphicsLayer.add(updatebackupgraphic);
+          }
+          document.getElementById("startbuttons").style.display = "inline";
+          document.getElementById("actionbuttons").style.display = "none";
+        }
+      });
+
+      const drawButtons = Array.prototype.slice.call(document.getElementsByClassName("starttool"));
+
+      // set event listeners to activate sketching graphics
+      drawButtons.forEach(function (btn) {
+        btn.addEventListener("click", function (event) {
+          // to activate sketching the create method is called passing in the geometry type
+          // from the data-type attribute of the html element
+          sketchViewModel.create(event.target.getAttribute("data-type"));
+          document.getElementById("startbuttons").style.display = "none";
+          document.getElementById("actionbuttons").style.display = "inline";
+        });
+      });
+
+      document.getElementById("cancel").addEventListener("click", function (event) {
+        sketchViewModel.cancel();
+      });
+      document.getElementById("done").addEventListener("click", function (event) {
+        sketchViewModel.complete();
+      });
+
+      view.ui.add("sketchPanel", "top-right");
+
+    });
+  </script>
+</head>
+<body>
+    <div id="viewDiv"><div id="sketchPanel" class="esri-widget">
+      <div id="startbuttons">
+        <button id="point" data-type="point" class="esri-button starttool">Draw a point of interest</button>
+        <button id="line" data-type="polyline" class="esri-button starttool">Draw a route</button>
+        <button id="extrudedPolygon" data-type="polygon" class="esri-button starttool">Draw a building</button>
+      </div>
+      <div id="actionbuttons">
+        <button id="cancel" class="esri-button">Cancel</button>
+        <button id="done" class="esri-button">Done</button>
+      </div>
+    </div>
+    </div>
+    
+</body>
+</html>

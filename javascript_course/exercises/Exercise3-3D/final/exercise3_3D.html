@@ -1,0 +1,54 @@
+<!-- Exercise 3 3D, Written in JavaScript 4.18 -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Exercise 3 3D</title>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.18/"></script>
+  
+  <style>
+    html, body, #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+    }
+  
+  </style>
+
+  <script>
+    require([
+      "esri/Map",
+      "esri/views/SceneView",
+      "esri/layers/SceneLayer"
+    ], function(Map, SceneView, SceneLayer) {
+
+      var map = new Map({
+        basemap: "satellite",
+        ground: "world-elevation"
+      });
+        
+      var view = new SceneView({
+        container: "viewDiv",
+        map: map,
+        camera:{
+          position: [-77.058859, 26.542926, 100],
+          tilt: 70,
+          heading: 60
+        }
+      });
+      
+      var buildingsSL = new SceneLayer({
+        url: "https://services.arcgis.com/hRUr1F8lE8Jq2uJo/arcgis/rest/services/Abaco_Buildings/SceneServer"
+      });
+      map.add(buildingsSL);
+
+    });
+  </script>
+</head>
+<body>
+    <div id="viewDiv"></div>
+</body>
+</html>

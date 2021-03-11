@@ -1,0 +1,137 @@
+<!-- Exercise 5, Written in JavaScript 4.18 -->
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>2D Map</title>
+
+<link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/themes/light/main.css" />
+<script src="https://js.arcgis.com/4.18/"></script>
+<style>
+  html, body, #viewDiv {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+  }
+</style>
+
+<script>
+  require([
+    "esri/Map",
+    "esri/views/MapView",
+    "esri/layers/FeatureLayer",
+  	"esri/symbols/SimpleLineSymbol",
+    "esri/symbols/SimpleMarkerSymbol",
+  	"esri/renderers/UniqueValueRenderer"
+  ], function(Map, MapView, FeatureLayer, SimpleLineSymbol, SimpleMarkerSymbol, UniqueValueRenderer) {
+
+    var map = new Map({
+      basemap: "gray-vector"
+    });
+
+    var view = new MapView({
+      container: "viewDiv",
+      map: map,
+      center: [-75.992824, 42.978188],
+      zoom: 7
+    });
+    
+    var renderer = new UniqueValueRenderer({
+      field: "Feature",
+      defaultSymbol: new SimpleLineSymbol()
+    });
+    
+    renderer.addUniqueValueInfo("Stream",
+      new SimpleLineSymbol({
+        color: "lightblue",
+        width: "2px",
+        style: "solid"
+      })
+    );
+    renderer.addUniqueValueInfo("Stream Intermittent",
+      new SimpleLineSymbol({
+        color: "blue",
+        width: "2px",
+        style: "dash"
+      })
+    );
+    renderer.addUniqueValueInfo("Artificial Path",
+      new SimpleLineSymbol({
+        color: "green",
+        width: "2px",
+        style: "solid"
+      })
+    );
+    renderer.addUniqueValueInfo("Canal",
+      new SimpleLineSymbol({
+        color: "yellow",
+        width: "2px",
+        style: "solid"
+      })
+    );
+    renderer.addUniqueValueInfo("Intercoastal Waterway",
+      new SimpleLineSymbol({
+        color: "gray",
+        width: "2px",
+        style: "solid"
+      })
+    );
+    renderer.addUniqueValueInfo("Aqueduct",
+      new SimpleLineSymbol({
+        color: "blue",
+        width: "2px",
+        style: "solid"
+      })
+    );
+    
+    var waterfallsRenderer = new UniqueValueRenderer({
+      field: "Status",
+      defaultSymbol: new SimpleMarkerSymbol
+    });
+    
+    waterfallsRenderer.addUniqueValueInfo("Confirmed",
+      new SimpleMarkerSymbol({
+      	color: "purple",
+      	size: "12px"
+    }));
+    waterfallsRenderer.addUniqueValueInfo("Unconfirmed",
+      new SimpleMarkerSymbol({
+      	color: "gray",
+      	size: "12px"
+    }));
+    waterfallsRenderer.addUniqueValueInfo("Cataloged",
+      new SimpleMarkerSymbol({
+      	color: "blue",
+      	size: "12px"
+    }));
+    waterfallsRenderer.addUniqueValueInfo("Posted",
+      new SimpleMarkerSymbol({
+      	color: "orange",
+      	size: "12px"
+    }));
+    
+    var waterfalls = new FeatureLayer({
+    url: "https://services.arcgis.com/hRUr1F8lE8Jq2uJo/arcgis/rest/services/Waterfalls/FeatureServer/0",
+      renderer: waterfallsRenderer
+  });
+    
+    var rivers = new FeatureLayer({
+    url: "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Rivers_and_Streams/FeatureServer/0",
+    customParameters: {
+   		"where": "State='NY'" 
+    }, renderer: renderer
+  });
+    
+    var lakes = new FeatureLayer({
+    	url: "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Water_Bodies/FeatureServer/0"
+  	});
+    map.addMany([lakes, rivers, waterfalls]);
+    
+  });
+</script>
+</head>
+<body>
+<div id="viewDiv"></div>
+</body>
+</html>

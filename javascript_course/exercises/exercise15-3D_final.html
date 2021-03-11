@@ -1,0 +1,151 @@
+<!-- Exercise 15, Written in JavaScript 4.18 -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Cedar Charts</title>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/themes/light/main.css" />
+	
+  
+  <style>
+    html, body, #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+    }
+    #viewDiv { height: calc(100% - 300px); width: 100%; }
+    #chart1, #chart2 { height: 300px; width: 33%; box-shadow: 0px 0px 0px 1px black inset; float: left; }
+    #chart3 { height: 300px; width: 34%; box-shadow: 0px 0px 0px 1px black inset; float: right;}
+  </style>
+  
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/amcharts/3.21.12/amcharts.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/amcharts/3.21.12/serial.js'></script>
+  <script src='https://unpkg.com/@esri/cedar@1.0.0-beta.2/dist/umd/cedar.js'></script>
+  <script src='https://unpkg.com/@esri/cedar@1.0.0-beta.2/dist/umd/themes/amCharts/calcite.js'></script>
+  <script src="https://js.arcgis.com/4.18/"></script>
+
+  <script>
+    //var view; // declaring view as a global variable 
+    
+    require([
+      "esri/Map",
+      "esri/views/SceneView",
+      "esri/layers/FeatureLayer",
+      "esri/geometry/Extent"
+    ], function(Map, SceneView, FeatureLayer, Extent) {
+
+      var map = new Map({
+        basemap: "topo",
+      })
+
+      var extent = new Extent ({
+        xmin: -83.7,
+        ymin: 36.4,
+        xmax: -75.7,
+        ymax: 39.6
+      });
+
+      var view = new SceneView({
+        container: "viewDiv",
+        map: map,
+        extent: extent
+      });
+
+      var featureLayer = new FeatureLayer("https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_States_Generalized/FeatureServer/0",
+        { outFields: ["*"],
+          renderer: {
+            type: "simple",
+            symbol: {
+              type: "simple-fill",
+              color: [0, 0, 0, 0.1],
+              outline: {
+                 width: 0.5,
+                 color: "white"
+              }
+            }
+          }
+         }
+      );
+      
+      view.map.add(featureLayer);
+      
+      view.whenLayerView(featureLayer).then(function(layerView) {
+      layerView.watch("updating", function(value) {
+        if (!value) {
+          layerView
+            .queryFeatures({
+              geometry: view.extent,
+              returnGeometry: true
+            })
+            .then(function(results) {
+              var features = [];
+              graphics = results.features;
+
+              graphics.forEach(function(result, index) {
+                var attributes = result.attributes;
+                var name = attributes.NAME;
+                features.push({
+                  attributes: {
+                    STATE_ABBR: attributes.STATE_ABBR,
+                    POPULATION: attributes.POPULATION,
+                    POP_SQMI: attributes.POP_SQMI,
+                    MED_AGE: attributes.MED_AGE
+                  }
+                });
+              });
+
+              loadCharts(features, "chart1", "POPULATION", "Population")
+              loadCharts(features, "chart2", "POP_SQMI", "Density (Square Mile)")
+              loadCharts(features, "chart3", "MED_AGE", "Median Age")
+
+            })
+            .catch(function(error) {
+              console.error("query failed: ", error);
+            });
+          }
+        });
+      });
+      
+      function loadCharts(features, chartName, chartField, chartLabel){
+      features.sort(function(a, b) {
+        return b.attributes.POPULATION -a.attributes.POPULATION;
+      });
+      var definition = {
+        type: "bar",
+        datasets: [
+          {
+            data: {
+              features: features
+            }
+          }
+        ],
+        series: [
+          {
+            category: {
+              field: "STATE_ABBR",
+              label: "US State"
+          },
+            value: {
+              field: chartField,
+              label: chartLabel
+            }
+          }
+        ]
+      };
+
+      var cedarChart = new cedar.Chart(chartName, definition);
+      cedarChart.show();
+    }
+	        
+    });
+  </script>
+</head>
+<body>
+  <div id="viewDiv"></div>
+  <div id="chart1"></div>
+  <div id="chart2"></div>
+  <div id="chart3"></div>
+</body>
+</html>

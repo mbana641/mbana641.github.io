@@ -1,0 +1,60 @@
+<!-- Exercise 3 , Written in JavaScript 4.18 -->
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>2D Map</title>
+
+<link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/themes/light/main.css" />
+<script src="https://js.arcgis.com/4.18/"></script>
+<style>
+  html, body, #viewDiv {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+  }
+</style>
+
+<script>
+  require([
+    "esri/Map",
+    "esri/views/MapView",
+    "esri/layers/FeatureLayer"
+  ], function(Map, MapView, FeatureLayer) {
+
+    var map = new Map({
+      basemap: "hybrid"
+    });
+
+    var view = new MapView({
+      container: "viewDiv",
+      map: map,
+      center: [-75.992824, 42.978188],
+      zoom: 7
+    });
+    
+    var waterfalls = new FeatureLayer({
+      url: "https://services.arcgis.com/hRUr1F8lE8Jq2uJo/arcgis/rest/services/Waterfalls/FeatureServer/0"
+    });
+    
+    var rivers = new FeatureLayer({
+      url: "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Rivers_and_Streams/FeatureServer/0",
+      customParameters: {
+        "where": "state='NY'"
+      }
+    });
+    
+    var lakes = new FeatureLayer({
+      url: "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Water_Bodies/FeatureServer"
+    });
+    
+    map.addMany([lakes, rivers, waterfalls]);
+
+  });
+</script>
+</head>
+<body>
+<div id="viewDiv"></div>
+</body>
+</html>

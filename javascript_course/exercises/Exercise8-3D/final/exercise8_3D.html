@@ -1,0 +1,65 @@
+<!-- Exercise 8 3D , Written in JavaScript 4.18 -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Exercise 8 3D</title>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.18/"></script>
+  
+  <style>
+    html, body, #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+    }
+  
+  </style>
+
+  <script>
+    require([
+      "esri/WebScene",
+      "esri/views/SceneView",
+      "esri/widgets/Search",
+      "esri/widgets/BasemapGallery",
+      "esri/widgets/Expand"
+    ], function(WebScene, SceneView, Search, BasemapGallery, Expand) {
+
+      var scene = new WebScene({
+        portalItem: { // autocasts as new PortalItem()
+          id: "d68cddec5f3d4091b3290813e4790da3"
+        }
+      });
+
+      var view = new SceneView({
+        map: scene,
+        container: "viewDiv"
+      });
+      
+      //Create search widget
+      var searchWidget = new Search({
+        view: view
+      });
+      //Add widget to the UI
+      view.ui.add(searchWidget, "top-right");
+      
+      var basemapGallery = new BasemapGallery({
+        view: view
+      });
+      
+      var basemapExpand = new Expand ({
+        content: basemapGallery,
+        view: view
+      });
+
+      view.ui.add(basemapExpand, "top-right");
+
+    });
+  </script>
+</head>
+<body>
+    <div id="viewDiv"></div>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!-- Exercise 9 3D, Written in JavaScript 4.18 -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Exercise 9 3D</title>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.18/"></script>
+  
+  <style>
+    html, body, #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+    }
+  
+  </style>
+
+  <script>
+    require([
+      "esri/views/SceneView",
+      "esri/Map",
+      /*** ADD ***/
+      "esri/layers/FeatureLayer",
+      "esri/tasks/QueryTask",
+      "esri/tasks/support/Query",
+      "esri/symbols/SimpleMarkerSymbol"
+    ], function(SceneView, Map, FeatureLayer, QueryTask, Query, SimpleMarkerSymbol) {
+
+      var scene = new Map({
+		  basemap: "dark-gray-vector"
+	  });
+
+      var view = new SceneView({
+        container: "viewDiv",
+        map: scene,
+        center: [-77.029, 38.89],
+        zoom: 10
+      });
+
+      //Create query task to reference the PDX_Rail_Stops_Styled feature layer
+      var queryTask = new QueryTask({
+        url: "https://services.arcgis.com/hRUr1F8lE8Jq2uJo/arcgis/rest/services/Metro_Stations_Regional/FeatureServer/0"
+      });
+
+      //Only return two fields
+      var query = new Query({
+        returnGeometry: true,
+        outFields: ["NAME", "LINE"],
+        where: ""
+      });
+      
+      //Perform query when page loads
+      getFeatures("blue");
+
+      //Get features with query where clause
+      function getFeatures(theColor) {
+        query.where = "LINE LIKE '%" + theColor + "%'";
+        queryTask.execute(query).then(function(results) {
+          addFeatures(results.features);
+        })
+      .catch(promiseRejected);
+      }
+
+      //Add features as graphics
+      function addFeatures(features) {
+        var color,
+          symbol;
+        //Color
+        switch (document.getElementById("queryDiv").value) {
+          case "blue":
+            color = [0, 0, 255]
+            break;
+          case "red":
+            color = [255, 0, 0]
+            break;
+          case "green":
+            color = [0, 255, 0]
+            break;
+          case "orange":
+            color = [255,165, 0]
+            break;
+          case "yellow":
+            color = [255, 255, 0]
+            break;
+          case "silver":
+            color = [190, 190, 190]
+            break;
+        }
+        symbol = new SimpleMarkerSymbol({
+          color: color,
+          size: 8,
+          outline: {
+            color: [ 255, 255, 255 ],
+            width: 1
+          }
+        });
+        //Set symbol and popup template
+        for (var i=0; i < features.length; i++) {
+          var feature = features[i];
+          feature.symbol = symbol;
+          feature.popupTemplate = {
+            title: "{NAME}",
+            content: "This is a metro stop for the {LINE} line(s)."
+          }
+          view.graphics.add(feature);
+        }
+        //Add graphics
+        view.graphics.removeAll();
+        view.graphics.addMany(features);
+        view.goTo(features);
+        view.popup.visible = false;
+      }
+
+      //Add select element to UI
+      view.when(function() {
+        view.ui.add(document.getElementById("queryDiv"), "top-right");
+        document.getElementById("queryDiv").addEventListener("change", doQuery);
+      });
+
+      //Get the color from the drop down
+      function doQuery(e) {
+        var theColor = e.target.value;
+        getFeatures(theColor);
+      };
+
+      //Add the promise rejected function
+      function promiseRejected(){
+        console.write("Error with query");
+      }
+      
+    });
+  </script>
+</head>
+<body>
+    <div id="viewDiv"></div>
+    <select id="queryDiv">
+      <option selected>blue</option>
+      <option>orange</option>
+      <option>red</option>
+      <option>silver</option>
+      <option>yellow</option>
+      <option>green</option>
+    </select>
+</body>
+</html>
