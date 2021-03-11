@@ -1,6 +1,6 @@
 <!doctype html>
 
-<title>Exercise 17</title>
+<title>Exercise 3 3D</title>
 <meta charset="utf-8"/>
 <link rel="icon" type="image/png" href="./brackets.png"/>
 <link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.51.0/codemirror.css>
@@ -123,7 +123,7 @@
 			font-size:14px;
 		}
 
-		.collapsible {
+        .collapsible {
             background-color: #777;
             color: white;
             cursor: pointer;
@@ -147,7 +147,7 @@
         }
 
 		img {
-			width: 100%;
+			width:100%;
 		}
 
 </style>
@@ -164,16 +164,16 @@
 
 
 <textarea id="code" name="code" style="display:none;">
-<!-- Exercise 17, Written in JavaScript 4.18 -->
+<!-- Exercise 3 3D, Written in JavaScript 4.18 -->
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-  <title>Arcade</title>
+  <title>Exercise 3 3D</title>
 
-  <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/themes/light/main.css" />
-	<script src="https://js.arcgis.com/4.18/"></script>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.18/"></script>
   
   <style>
     html, body, #viewDiv {
@@ -181,32 +181,32 @@
       margin: 0;
       height: 100%;
     }
+  
   </style>
 
   <script>
-    //var view; // declaring view as a global variable 
-    
     require([
-      "esri/Map",
-      "esri/views/MapView"
-    ], function(Map, MapView) {
+        "esri/Map",
+        "esri/views/SceneView",
+    ], function(Map, SceneView) {
 
       var map = new Map({
-        basemap: "hybrid",
+        basemap: "dark-gray-vector",
+        ground: "world-elevation"
       });
-
-      var view = new MapView({
+        
+	  var view = new SceneView({
         container: "viewDiv",
         map: map,
-        center: [-74.029, 40.71],
-        zoom: 10
+        center: [-77.029, 38.89],
+        scale: 500000
       });
-	        
+
     });
   </script>
 </head>
 <body>
-  <div id="viewDiv"></div>
+    <div id="viewDiv"></div>
 </body>
 </html>
 </textarea>
@@ -222,133 +222,63 @@
 <iframe id=preview></iframe>
 </div>
 <div id=instruct style="font-family: Arial, Helvetica, sans-serif;">
-	<span style="display: block; text-align: center;"><b><u>Exercise 17 - Working with Arcade</u></b><br><br></span>
+<span style="display: block; text-align: center;"><b><u>Exercise 3 3D - Add a Scene Layer</u></b><br><br></span>
+<b><u>Instructions:</u></b><br><br>
+Just displaying a plain scene is fine, but we need to be able to add our own layers to our scene.
+<br><br>
+In this exercise we will cover the basics of adding a scene layer to any 3D application. To learn more about the options in SceneLayers check out the <a target="_blank" href="https://developers.arcgis.com/javascript/latest/api-reference/esri-layers-SceneLayer.html">API Reference</a>.
+<br><br>
 <b><u>Exercise:</u></b><br><br>
-In this lab you will use Arcade to create custom labels based on each feature’s attributes. Through arcade you can access individual features by using $feature, and use it to edit lables or rendering. Arcade scripts can be used across the Esri platform to include ArcGIS Pro, the JavaScript API, and mobile applications.
-<br><br>
-1. Add the following code directly below &lt;/style&gt;. This is the Arcade expression that will be used to produce the label.
-<p style="padding-left: 5%; font-family: monospace;"><br><br>&lt;script type="text/plain" id="amenities"&gt;<br>
-&emsp;&emsp;var i = 0;<br>
-&emsp;&emsp;var features = [];<br><br>
-&emsp;&emsp;if ($feature.TastingRoo != " ") {<br>
-&emsp;&emsp;&emsp;&emsp;features[i++] = "-Tasting Room Onsite";<br>
-&emsp;&emsp;}<br>
-&emsp;&emsp;if ($feature.GroupTour != " ") {<br>
-&emsp;&emsp;&emsp;&emsp;features[i++] = "-Tours Available";<br>
-&emsp;&emsp;}<br>
-&emsp;&emsp;if ($feature.PicnicArea != " ") {<br>
-&emsp;&emsp;&emsp;&emsp;features[i++] = "-Picnic Area Onsite";<br>
-&emsp;&emsp;}<br>
-&emsp;&emsp;if ($feature.FoodAvaila != " ") {<br>
-&emsp;&emsp;&emsp;&emsp;features[i++] = "-Food Available Onsite";<br>
-&emsp;&emsp;}<br><br>
-&emsp;&emsp;return Concatenate(features, TextFormatting.NewLine)<br>
-&lt;/script&gt;<br>
-</p>
+<u>1. Update Require Statement</u>
 <br>
-2. Update the require statement and function definition:
-<br><br>
+First step is to update the require statement and the function definition.
 <p style="padding-left: 5%; font-family: monospace;">require([<br>
-&emsp;&emsp;"esri/Map",<br>
-&emsp;&emsp;"esri/views/MapView",<br>
-&emsp;&emsp;"esri/layers/FeatureLayer",<br>
-&emsp;&emsp;"esri/geometry/Extent"<br>
-], function(Map, MapView, FeatureLayer, Extent) {<br>
-<br></p>
-<br>
-3. Change your map and view. Add a variable that will be used to determine at what scale labels should draw.
-<br><br><p style="padding-left: 5%; font-family: monospace;">
-	var minScale = 100000;<br>
-	var map = new Map({<br>
-		&emsp;&emsp;basemap: "gray-vector"<br>
-	})<br><br>
-	 
-	var extent = new Extent ({<br>
-		&emsp;&emsp;xmin: -83.7,<br>
-		&emsp;&emsp;ymin: 36.4,<br>
-		&emsp;&emsp;xmax: -75.7,<br>
-		&emsp;&emsp;ymax: 39.6<br>
-	})<br><br>
-	 
-	var view = new MapView({<br>
-		&emsp;&emsp;container: "viewDiv",<br>
-		&emsp;&emsp;map: map,<br>
-		&emsp;&emsp;extent: extent<br>
-	});<br><br>
-</p><br>
-4. Create two labeling classes. One is for the feature name and will be displayed at the top-right corner. The second, which uses the arcade script, is for the list of amenities and will be displayed to the bottom-right of the feature. Both classes call a function named createTextSymbol which determines how the label is displayed.
-<br><br><p style="padding-left: 5%; font-family: monospace;">
-	var nameClass = {<br>
-		&emsp;&emsp;labelPlacement: "above-right",<br>
-		&emsp;&emsp;labelExpressionInfo: {<br>
-			&emsp;&emsp;&emsp;&emsp;expression: "$feature.NAME"<br>
-			&emsp;&emsp;},<br>
-			&emsp;&emsp;minScale: minScale<br>
-	  };<br>
-	  nameClass.symbol = createTextSymbol("black");<br><br>
-			  
-	  var amenitiesArcade = document.getElementById("amenities").text;<br>
-	  var amenitiesClass = {<br>
-		&emsp;&emsp;labelExpressionInfo: {<br>
-			&emsp;&emsp;&emsp;&emsp;expression: amenitiesArcade<br>
-			&emsp;&emsp;},<br>
-			&emsp;&emsp;labelPlacement: "below-right",<br>
-			&emsp;&emsp;&emsp;&emsp;minScale: minScale<br>
-			&emsp;&emsp;};<br>
-	  amenitiesClass.symbol = createTextSymbol("#3ba53f");<br><br></p><br>
-5. Create the feature layer and add it to the map.<br><br>
-<p style="padding-left: 5%; font-family: monospace;">
-	var serviceUrl = "https://services5.arcgis.com/cMBqYE4wmbXNMvex/ArcGIS/rest/services/Virginia_Wineries/FeatureServer/1";<br>
-	var layer = new FeatureLayer({<br>
-		&emsp;&emsp;url: serviceUrl,<br>
-		&emsp;&emsp;renderer: {<br>
-			&emsp;&emsp;&emsp;&emsp;type: "simple",<br>
-			&emsp;&emsp;&emsp;&emsp;symbol: {<br>
-				&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;type: "simple-marker",<br>
-				&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color: [128, 0, 128, 0.6],<br>
-				&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;size: 10,<br>
-				&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outline: {<br>
-					&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color: [0, 0, 0, 0.4],<br>
-					&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;width: 0.5<br>
-					&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br>
-					&emsp;&emsp;&emsp;&emsp;}<br>
-					&emsp;&emsp;},<br>
-					&emsp;&emsp;labelingInfo: [<br>
-					&emsp;&emsp;&emsp;&emsp;nameClass,<br>
-					&emsp;&emsp;&emsp;&emsp;amenitiesClass<br>
-					&emsp;&emsp;]<br>
-	});<br><br>
-	
-	view.map.add(layer);<br><br>
+    &emsp;&emsp;"esri/Map",<br>
+	&emsp;&emsp;"esri/views/SceneView",<br>
+	&emsp;&emsp;"esri/layers/SceneLayer"<br>
+], function(Map, SceneView, SceneLayer) {
 </p>
-<br>6. The last thing we need to do is to add the createTextSymbol function:
-<br><br><p style="padding-left: 5%; font-family: monospace;">
-	function createTextSymbol(color) {<br>
-		&emsp;&emsp;return {<br>
-			&emsp;&emsp;&emsp;&emsp;type: "text",<br>
-			&emsp;&emsp;&emsp;&emsp;font: {<br>
-				&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;size: 12,<br>
-				&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;weight: "bold"<br>
-				&emsp;&emsp;&emsp;&emsp;},<br>
-				&emsp;&emsp;&emsp;&emsp;color: "white",<br>
-				&emsp;&emsp;&emsp;&emsp;haloColor: color,<br>
-				&emsp;&emsp;&emsp;&emsp;haloSize: 1<br>
-				&emsp;&emsp;};<br>
-	  }<br>
-</p><br><br>
-Your app should display a map of all the wineries in Virginia. They should be labeled with the winery name and list the available amenities when zoomed in to a close enough extent.
+This is a pattern that we are going to repeating a lot throughout these exercises. Now we have the components for our Scene Layer.
 <br><br>
-If you're stuck, ensure that your code looks like the solution in the picture below:<br><br>
+<u>2. Add Scene Layer</u>
+<br>
+Now let's add the a scene layer to our map, buildings always look nice in 3D!
+<br>
+<p style="padding-left: 5%; font-family: monospace;">var buildingsSL = new SceneLayer({<br>
+	&emsp;&emsp;url: "https://tiles.arcgis.com/tiles/hRUr1F8lE8Jq2uJo/arcgis/rest/services/BuildingsDC/SceneServer/layers/0"<br>
+});<br>
+map.add(buildingsSL);
+</p>
+Nice! You should be able to zoom in and check out the buildings now. Should look like this:
+<br><br>
 <button type="button" class="collapsible">Map Solution</button>
-    <div class="content"><img src="./images/e17_map.JPG"></div><br>
+    <div class="content"><img src="./images/e8_one.png"></div>
+<br><br>
+<u>3. Adjust Camera</u>
+<br>
+In these scenes, it might be beneficial to adjust your camera in the code to have a better starting point. Let's adjust the camera settings in our SceneView.
+<p style="padding-left: 5%; font-family: monospace;">var view = new SceneView({<br>
+	&emsp;&emsp;container: "viewDiv",<br>
+	&emsp;&emsp;map: map,<br>
+	&emsp;&emsp;camera:{<br>
+		&emsp;&emsp;&emsp;&emsp;position: [-77.029, 38.89, 300],<br>
+		&emsp;&emsp;&emsp;&emsp;tilt: 40,<br>
+		&emsp;&emsp;&emsp;&emsp;heading: 60<br>
+	&emsp;&emsp;}<br>
+});
+</p>
+Now your camera should be perfectly positioned over the Smithsonian Museum of Natural History!
+<br><br>
 <button type="button" class="collapsible">Code Solution</button>
-    <div class="content"><img src="./images/e17_one.JPG"><img src="./images/e17_two.JPG"><img src="./images/e17_three.JPG"></div>
+    <div class="content"><img src="./images/e8_code.jpg"></div>
+<br><br><br><b><u>Challenges:</u></b><br><br>
+Add your own SceneLayer! Use whatever portal you are comfortable with, and find a scene layer published up on there. Keep in mind it must be shared publically, otherwise it'll ask you to log into the portal.
 <br><br>
 </div>
 </div>
 <!-- <div id="dialog" title="Welcome to the ArcGIS API for JavaScript">
-  <p>Please use this Code Playground to begin learning about the ArcGIS API for JavaScript. To get started, click on the Directions button. As you edit code on the left side of the screen, press the Refresh button to see the updates on the Map.</p>
-<br><br></div> -->
+  <p>Please use this Code Playground to begin learning about the ArcGIS API for JavaScript. To get started, please read through and follow the directions on the right hand side of your screen.</p>
+</div> -->
     <script>
       var delay;
       // Initialize CodeMirror editor with a nice html5 canvas demo.
@@ -365,9 +295,9 @@ If you're stuck, ensure that your code looks like the solution in the picture be
       });
 	  document.getElementById('instruct').style.display = "none";
 	  
-	//   $( function() {
-	// 	$( "#dialog" ).dialog({width: "500px"});
-	//   } );
+	  /* $( function() {
+		$( "#dialog" ).dialog({width: "500px", modal: true});
+	  } ); */
       
       function updatePreview() {
 	    var wrapper = document.getElementById('wrapper');
@@ -386,12 +316,12 @@ If you're stuck, ensure that your code looks like the solution in the picture be
 		var link = document.createElement('a');
 		mimeType = 'text/html' || 'text/plain';
 
-		link.setAttribute('download', 'exercise17.html');
+		link.setAttribute('download', 'exercise3_3D.html');
 		link.setAttribute('href', 'data:' + 'text/html' + ';charset=utf-8,' + encodeURIComponent(elHtml));
 		link.click(); 
 	  }
 
-	  function loadLab(evt, a){
+	  /* function loadLab(evt, a){
 		var i, tabcontent, tablinks;
 		 tabcontent = document.getElementsByClassName("tabcontent");
 		 for (i = 0; i < tabcontent.length; i++) {
@@ -416,9 +346,8 @@ If you're stuck, ensure that your code looks like the solution in the picture be
 			editor.getDoc().setValue(document.getElementById('lab2').value)
 			document.getElementById('instruct').innerHTML = "<br>###Build a starter map<br><br>This lab covers the basics for creating a basic starter mapping application. The starter map simply loads a default base map, and centers and zooms it in in a <a target='_blank' href='https://developers.arcgis.com/javascript/latest/api-reference/esri-views-MapView.html'>MapView</a>. If you are new to ArcGIS and need a full set of instructions on building a basic mapping application visit the <a target='_blank' href='https://developers.arcgis.com/javascript/latest/sample-code/get-started-mapview/index.html'>Getting Started with MapView</a> tutorial.<br><br>###Bonus<ul><li>Experiment with different basemaps such as topo-vector or gray-vector. Here is a <a target='_blank' href='https://developers.arcgis.com/javascript/latest/api-reference/esri-Map.html#basemap'>list</a> of options.</li><li>Change the center and zoom level.</li></ul>"
 		}
-	  }
-
-	  var coll = document.getElementsByClassName("collapsible");
+	  } */
+	    var coll = document.getElementsByClassName("collapsible");
         var i;
 
         for (i = 0; i < coll.length; i++) {
@@ -432,7 +361,7 @@ If you're stuck, ensure that your code looks like the solution in the picture be
             }
         });
         }
-	  
+
 	  function openCity(evt, cityName) {
 		  var i, tabcontent, tablinks;
 		  tabcontent = document.getElementsByClassName("tabcontent");

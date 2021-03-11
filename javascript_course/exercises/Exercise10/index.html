@@ -181,184 +181,31 @@
       margin: 0;
       height: 100%;
     }
-	.esri-button {
-	  margin: 2px;
-	}
-	#sketchPanel {
-      width: 200px;
-      padding: 10px;
-      background-color: rgba(255, 255, 255, 0.8);
-	}
-	#actionbuttons {
-	  display: none;
-	}
+  
   </style>
 
   <script>
     require([
-        "esri/Map",
-        "esri/views/SceneView",
-    ], function(Map, SceneView) {
+      "esri/views/MapView",
+      "esri/Map"
+    ], function(MapView, Map) {
 
       var map = new Map({
-        basemap: "topo-vector",
-        ground: "world-elevation"
+        basemap: "dark-gray-vector"
       });
-        
-      var view = new SceneView({
-        container: "viewDiv",
+
+      var view = new MapView({
         map: map,
-        center: [-117.195658, 34.056677],
-        scale: 5000
+        container: "viewDiv",
+		center: [-77.029, 38.89],
+		zoom: 10
       });
-
-	    var blue = [82, 82, 122, 0.9];
-      var white = [255, 255, 255, 0.8];
-
-      // polygon symbol used for sketching the extruded building footprints
-      var extrudedPolygon = {
-        type: "polygon-3d",
-        symbolLayers: [
-          {
-            type: "extrude",
-            size: 10, // extrude by 10 meters
-            material: {
-              color: white
-            },
-            edges: {
-              type: "solid",
-              size: "3px",
-              color: blue
-            }
-          }
-        ]
-      };
-
-      // polyline symbol used for sketching routes
-      var route = {
-        type: "line-3d",
-        symbolLayers: [
-          {
-            type: "line",
-            size: "10px",
-            material: {
-              color: white
-            }
-          },
-          {
-            type: "line",
-            size: "3px",
-            material: {
-              color: blue
-            }
-          }
-        ]
-      };
-
-      // point symbol used for sketching points of interest
-      var point = {
-        type: "point-3d",
-        symbolLayers: [
-          {
-            type: "icon",
-            size: "20px",
-            resource: { primitive: "kite" },
-            outline: {
-              color: blue,
-              size: "3px"
-            },
-            material: {
-              color: white
-            }
-          }
-        ]
-      };
-
-
-
-      /****************************************
-       * 
-       * This is all the code that makes the UI work!
-       *
-       *  **************************************/
-      sketchViewModel.on("create", function (event) {
-        if (event.state === "complete") {
-          document.getElementById("startbuttons").style.display = "inline";
-          document.getElementById("actionbuttons").style.display = "none";
-        }
-        if (event.state === "cancel") {
-          document.getElementById("startbuttons").style.display = "inline";
-          document.getElementById("actionbuttons").style.display = "none";
-        }
-      });
-
-      // graphic backup to revert a canceled update process
-      let updatebackupgraphic;
-
-      sketchViewModel.on("update", function (event) {
-        console.log(event);
-        if (event.state === "start") {
-          updatebackupgraphic = event.graphics[0].clone();
-          document.getElementById("startbuttons").style.display = "none";
-          document.getElementById("actionbuttons").style.display = "inline";
-        }
-        if (event.state === "complete") {
-          if (event.aborted) {
-            // revert to the graphic before starting the update process
-            graphicsLayer.remove(event.graphics[0]);
-            graphicsLayer.add(updatebackupgraphic);
-          }
-          document.getElementById("startbuttons").style.display = "inline";
-          document.getElementById("actionbuttons").style.display = "none";
-        }
-      });
-
-      const drawButtons = Array.prototype.slice.call(document.getElementsByClassName("starttool"));
-
-      // set event listeners to activate sketching graphics
-      drawButtons.forEach(function (btn) {
-        btn.addEventListener("click", function (event) {
-          // to activate sketching the create method is called passing in the geometry type
-          // from the data-type attribute of the html element
-          sketchViewModel.create(event.target.getAttribute("data-type"));
-          document.getElementById("startbuttons").style.display = "none";
-          document.getElementById("actionbuttons").style.display = "inline";
-        });
-      });
-
-      document.getElementById("cancel").addEventListener("click", function (event) {
-        sketchViewModel.cancel();
-      });
-      document.getElementById("done").addEventListener("click", function (event) {
-        sketchViewModel.complete();
-      });
-
-      view.ui.add("sketchPanel", "top-right");
 
     });
   </script>
 </head>
 <body>
     <div id="viewDiv"></div>
-    <div id="sketchPanel" class="esri-widget">
-      <div id="startbuttons">
-        <button id="point" data-type="point" class="esri-button starttool">Draw a point of interest</button>
-        <button id="line" data-type="polyline" class="esri-button starttool">Draw a route</button>
-        <button id="extrudedPolygon" data-type="polygon" class="esri-button starttool">Draw a building</button>
-      </div>
-      <div id="actionbuttons">
-        <button id="cancel" class="esri-button">Cancel</button>
-        <button id="done" class="esri-button">Done</button>
-      </div>
-    </div>
-    <div id="snapping" class="esri-widget">
-      <input type="checkbox" id="snappingcheckbox" checked />
-      <label id="snappinghint"
-        >snapping (use
-        <div id="snappingctrlkey">CTRL-key</div>
-        to toggle)</label
-      >
-    </div>
 </body>
 </html>
 </textarea>
@@ -374,53 +221,93 @@
 <iframe id=preview></iframe>
 </div>
 <div id=instruct style="font-family: Arial, Helvetica, sans-serif;">
-<span style="display: block; text-align: center;"><b><u>Exercise 10 - Sketching in 3D</u></b><br><br></span>
+<span style="display: block; text-align: center;"><b><u>Exercise 10 - Client-side Buffering</u></b><br><br></span>
 <b><u>Instructions:</u></b><br><br>
-Loading in layers and Web Scenes are all great, but what if we want to make our own 3D points/lines/polygons?
+You may have heard the term "client-side" before, but what does that actually mean?
 <br><br>
-Good news is that this is very doable in JavaScript! Instead of a feature layer, we are going to be manipulating a graphics layer to let us draw on the fly.
+The "client" in this case is your web browser! So instead of going back to our feature service, or any servers,
+ we are going to generate a buffer locally on your computer using your web browser.
 <br><br>
-Bad news is that this interfaces with some of the more complicated concepts in programming, like a "View Model". But don't be intimidated even though there's a fair amount of code!
+To do this, we're going to use the GeometryEngine class and buffer by a predefined amount.
 <br><br>
 <b><u>Exercise:</u></b><br><br>
-<u>1. Update Require Statement</u>
+<u>1. Update Require</u>
 <br>
-First, add a reference for our <a target="_blank" href="https://developers.arcgis.com/javascript/latest/api-reference/esri-layers-GraphicsLayer.html">GraphicsLayer</a> and <a target="_blank" href="https://developers.arcgis.com/javascript/latest/api-reference/esri-widgets-Sketch-SketchViewModel.html">SketchViewModel</a> in our <b>require</b> statement and include it in our <b>function</b> parameters.
-<p style="padding-left: 5%; font-family: monospace;">"esri/layers/GraphicsLayer",<br>"esri/widgets/Sketch/SketchViewModel"
+Update your require statement <b>and</b> function definition to include the following:
+<br>
+<p style="padding-left: 5%; font-family: monospace;">require([<br>
+	&emsp;&emsp;"esri/views/MapView",<br>
+	&emsp;&emsp;"esri/Map",<br>
+	&emsp;&emsp;/*** ADD ***/<br>
+	&emsp;&emsp;"esri/layers/GraphicsLayer",<br>
+	&emsp;&emsp;"esri/Graphic",<br>
+	&emsp;&emsp;"esri/geometry/geometryEngine"<br>
+], function(MapView, Map, GraphicsLayer, Graphic, geometryEngine) {
 </p>
-<u>2. Create Graphics Layer</u>
 <br>
-This will be the layer that we actually sketch on.
-<p style="padding-left: 5%; font-family: monospace;">var graphicsLayer = new GraphicsLayer({<br>
-	&emsp;&emsp;elevationInfo: {<br>
-		&emsp;&emsp;&emsp;&emsp;mode: "on-the-ground"<br>
+<u>2. Add Graphics Layer</u>
+<br>
+Before we can work with the graphics layer, we need to add it to our map!
+<br>
+<p style="padding-left: 5%; font-family: monospace;">var bufferLayer = new GraphicsLayer();<br>
+	<br>
+	map.add(bufferLayer);
+</p>
+<br>
+<u>3. Symbols</u>
+<br>
+We need a symbol for the buffer we're going to create since these a client-side graphics. 
+So this will create both a "fill" for the buffer and a point symbol as well.
+<br>
+<p style="padding-left: 5%; font-family: monospace;">var bufferSymbol = {<br>
+	&emsp;&emsp;type: "simple-fill", // autocasts as new SimpleFillSymbol()<br>
+	&emsp;&emsp;color: [140, 140, 222, 0.5],<br>
+	&emsp;&emsp;outline: {<br>
+	&emsp;&emsp;&emsp;&emsp;color: [0, 0, 0, 0.5],<br>
+	&emsp;&emsp;&emsp;&emsp;width: 2<br>
 	&emsp;&emsp;}<br>
-});<br>
-map.add(graphicsLayer);
+  };<br>
+  <br>
+  var pointSymbol = {<br>
+	&emsp;&emsp;type: "simple-marker", // autocasts as new SimpleMarkerSymbol()<br>
+	&emsp;&emsp;color: [255, 0, 0],<br>
+	&emsp;&emsp;outline: {<br>
+	&emsp;&emsp;&emsp;&emsp;color: [255, 255, 255],<br>
+	&emsp;&emsp;&emsp;&emsp;width: 1<br>
+	&emsp;&emsp;},<br>
+	&emsp;&emsp;size: 7<br>
+  };
 </p>
-<u>3. Instantiate View Model</u>
 <br>
-A View Model is, boiled down to it's basics, just a way for us to get our API to interact with our browser, by exposing our "view" variable that we've been using all this time.
-<br><br>
-In the code window I've already included some variables for our points, lines, and polygons symbols. We're going to include them in our SketchViewModel so that our browser knows how to draw these graphics. So be sure to paste this code below those variables, you'll have to scroll down a bit! (Probably around line 118)
-<p style="padding-left: 5%; font-family: monospace;">var sketchViewModel = new SketchViewModel({<br>
-	&emsp;&emsp;layer: graphicsLayer,<br>
-	&emsp;&emsp;view: view,<br>
-	&emsp;&emsp;pointSymbol: point,<br>
-	&emsp;&emsp;polygonSymbol: extrudedPolygon,<br>
-	&emsp;&emsp;polylineSymbol: route,<br>
-	&emsp;&emsp;snappingOptions: { selfEnabled: true }<br>
-});<br>
+<u>4. Capture Click</u>
+<br>
+Finally, we need to tell our view that when we click on it, we want to create this buffer. 
+To do this, we'll capture the event of the clicking on the view and call a function to generate the buffer.
+<br>
+<p style="padding-left: 5%; font-family: monospace;">view.on("click", function(event) {<br>
+	&emsp;&emsp;bufferPoint(event.mapPoint);<br>
+  });<br>
+  <br>
+  function bufferPoint(point) {<br>
+	&emsp;&emsp;bufferLayer.add(new Graphic({<br>
+	&emsp;&emsp;&emsp;&emsp;geometry: point,<br>
+	&emsp;&emsp;&emsp;&emsp;symbol: pointSymbol<br>
+	&emsp;&emsp;}));<br>
+	<br>
+	&emsp;&emsp;var buffer = geometryEngine.geodesicBuffer(point, 1, "miles");<br>
+	&emsp;&emsp;bufferLayer.add(new Graphic({<br>
+	&emsp;&emsp;&emsp;&emsp;geometry: buffer,<br>
+	&emsp;&emsp;&emsp;&emsp;symbol: bufferSymbol<br>
+	&emsp;&emsp;}));<br>
+  }
 </p>
-And now our sketching should work! Create some buildings of your own on Esri Campus!
-<br><br>
-<button type="button" class="collapsible">Map Solution</button>
-    <div class="content"><img src="./images/e10_one.png"></div>
+Now click around a bunch! You'll likely notice a slight delay, and that's because your computer is doing a bunch of fancy calculations to make this buffer on the fly!
+<br><br><button type="button" class="collapsible">Map Solution</button>
+    <div class="content"><img src="./images/e13_one.jpg"></div>
 <br><br><button type="button" class="collapsible">Code Solution</button>
-    <div class="content"><img src="./images/e10_code_1.jpg"><img src="./images/e10_code_2.jpg"><img src="./images/e10_code_3.jpg"><img src="./images/e10_code_4.jpg"></div>
+    <div class="content"><img src="./images/e13_code_1.jpg"><img src="./images/e13_code_2.jpg"></div>
 <br><br><br><b><u>Challenges:</u></b><br><br>
-There was a lot of code in this one. Can you read through the functions and SketchViewModel events and understand what is happening? Comprehension of code is important in learning JavaScript!
-<br><br>
+Can you make the buffer large enough to encapsulate all of DC?
 </div>
 </div>
 <!-- <div id="dialog" title="Welcome to the ArcGIS API for JavaScript">

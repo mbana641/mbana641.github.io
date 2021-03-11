@@ -1,6 +1,6 @@
 <!doctype html>
 
-<title>Exercise 18 3D</title>
+<title>Exercise 13</title>
 <meta charset="utf-8"/>
 <link rel="icon" type="image/png" href="./brackets.png"/>
 <link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.51.0/codemirror.css>
@@ -164,13 +164,13 @@
 
 
 <textarea id="code" name="code" style="display:none;">
-<!-- Exercise 18 3D, Written in JavaScript 4.18 -->
+<!-- Exercise 13, Written in JavaScript 4.18 -->
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-  <title>Cedar Charts</title>
+  <title>Editor Widget</title>
 
   <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/themes/light/main.css" />
 	<script src="https://js.arcgis.com/4.18/"></script>
@@ -188,14 +188,14 @@
     
     require([
       "esri/Map",
-      "esri/views/SceneView"
-    ], function(Map, SceneView) {
+      "esri/views/MapView"
+    ], function(Map, MapView) {
 
       var map = new Map({
         basemap: "hybrid",
       });
 
-      var view = new SceneView({
+      var view = new MapView({
         container: "viewDiv",
         map: map,
         center: [-74.029, 40.71],
@@ -222,142 +222,64 @@
 <iframe id=preview></iframe>
 </div>
 <div id=instruct style="font-family: Arial, Helvetica, sans-serif;">
-	<span style="display: block; text-align: center;"><b><u>Exercise 18 3D - Adding Cedar Charts</u></b><br><br></span>
+	<span style="display: block; text-align: center;"><b><u>Exercise 13 - Using the Editor Widget</u></b><br><br></span>
 <b><u>Exercise:</u></b><br><br>
-In this lab you will use the Cedar library to create charts that will dynamically update based on the map extents. The charts will depict demographic data that includes Total Population, Density, and Median Age for each US State that lies within the map extents.
+In this lab you will create an app that allows users to add, edit, or delete features. It uses the editor widget, which is new as of version 4.11. The application links to a web map that contains an editable layer from ArcGIS Online.
 <br><br>
-1. Edit the CSS properties for the #viewDiv and add the CSS properties for the charts:
-<p style="padding-left: 5%; font-family: monospace;"><br><br>#viewDiv { height: calc(100% - 300px); width: 100%; }<br>
-#chart1, #chart2 { height: 300px; width: 33%; box-shadow: 0px 0px 0px 1px black inset; float: left; }<br>
-#chart3 { height: 300px; width: 34%; box-shadow: 0px 0px 0px 1px black inset; float: right;}<br>
+1. Add the following css to the style. This code adds a scrollbar to the list of editable attributes if the size exceeds 350px:
+<p style="padding-left: 5%; font-family: monospace;"><br><br>.esri-editor .esri-item-list__scroller {<br>
+&emsp;&emsp;max-height: 350px;<br>
+}<br>
 </p>
 <br>
-2. Next add the JavaScript URLs for the Cedar library. <b><u>Add these below the style tag. You will need to remove the original link to the ArcGIS JavaScript library and place it below the Cedar library scripts</u></b>:
+2. Update the require statement and function definition:
 <br><br>
-<p style="padding-left: 5%; font-family: monospace;">&lt;script src='https://cdnjs.cloudflare.com/ajax/libs/amcharts/3.21.12/amcharts.js'&gt;&lt;/script&gt;<br>
-&lt;script src='https://cdnjs.cloudflare.com/ajax/libs/amcharts/3.21.12/serial.js'&gt;&lt;/script&gt;<br>
-&lt;script src='https://unpkg.com/@esri/cedar@1.0.0-beta.2/dist/umd/cedar.js'&gt;&lt;/script&gt;<br>
-&lt;script src='https://unpkg.com/@esri/cedar@1.0.0-beta.2/dist/umd/themes/amCharts/calcite.js'&gt;&lt;/script&gt;<br>
+<p style="padding-left: 5%; font-family: monospace;">require([<br>
+&emsp;&emsp;"esri/WebMap",<br>
+&emsp;&emsp;"esri/views/MapView",<br>
+&emsp;&emsp;"esri/widgets/Editor"<br>
+], function(WebMap, MapView, Editor) {<br>
 <br></p>
 <br>
-3. Update the require statement and function definition with "esri/layers/FeatureLayer" and "esri/geometry/Extent". Change the basemap to Topo, edit the map location, and add a feature layer. This layer depicts the US states and includes multiple demographic attributes.
+3. Change the map to a WebMap and edit the view.
 <br><br><p style="padding-left: 5%; font-family: monospace;">
-var map = new Map({<br>
-&emsp;&emsp;basemap: "topo",<br>
-})<br><br>
-var extent = new Extent ({<br>
-&emsp;&emsp;xmin: -83.7,<br>
-&emsp;&emsp;ymin: 36.4,<br>
-&emsp;&emsp;xmax: -75.7,<br>
-&emsp;&emsp;ymax: 39.6<br>
+var webmap = new WebMap({<br>
+&emsp;&emsp;portalItem: {<br>
+&emsp;&emsp;&emsp;&emsp;id: "325015b250b04602be82499a8ac62a59"<br>
+&emsp;&emsp;}<br>
+});<br>
+var view = new MapView({<br>
+&emsp;&emsp;container: "viewDiv",<br>
+&emsp;&emsp;map: webmap<br>
 });<br><br>
-var view = new SceneView({<br>
-	&emsp;&emsp;container: "viewDiv",<br>
-	&emsp;&emsp;map: map,<br>
-	&emsp;&emsp;extent: extent<br>
-  });<br><br>
-  var featureLayer = new FeatureLayer("https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_States_Generalized/FeatureServer/0",<br>
-  &emsp;&emsp;{ outFields: ["*"],<br>
-  &emsp;&emsp;&emsp;&emsp;renderer: {<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;type: "simple",<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;symbol: {<br>
-        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;type: "simple-fill",<br>
-        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color: [0, 0, 0, 0.1],<br>
-        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outline: {<br>
-			&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;  width: 0.5,<br>
-			&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;  color: "white"<br>
-			&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br>
-			&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}  <br>
-			&emsp;&emsp;&emsp;&emsp;}<br>
-			&emsp;&emsp; }<br>
-);<br><br>
-view.map.add(featureLayer);<br><br>
 </p><br>
-4. Whenever a user moves around the map we need to update the charts by passing them the visible features. This is accomplished by watching the view. After the update completes, a response will be returned which can be used to iterate through each visible graphic. From each graphic the feature attributes are pushed into an array. Once the array has been populated by all the visible features it is passed to a function called loadCharts, which it does once for each chart.
+4. When the view is ready, disable popups, create the editor widget, and add it to the top right corner.
 <br><br><p style="padding-left: 5%; font-family: monospace;">
-view.whenLayerView(featureLayer).then(function(layerView) {<br>
-&emsp;&emsp;layerView.watch("updating", function(value) {<br>
-&emsp;&emsp;&emsp;&emsp;if (!value) {<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;layerView<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;.queryFeatures({<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;geometry: view.extent,<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;returnGeometry: true<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;})<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;.then(function(results) {<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;var features = [];<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;graphics = results.features;<br><br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;graphics.forEach(function(result, index) {<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;var attributes = result.attributes;<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;var name = attributes.NAME;<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;features.push({<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;attributes: {<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;STATE_ABBR: attributes.STATE_ABBR,<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;POPULATION: attributes.POPULATION,<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;POP_SQMI: attributes.POP_SQMI,<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;MED_AGE: attributes.MED_AGE<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;});<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;});<br><br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;loadCharts(features, "chart1", "POPULATION", "Population")<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;loadCharts(features, "chart2", "POP_SQMI", "Density (Square Mile)")<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;loadCharts(features, "chart3", "MED_AGE", "Median Age")<br><br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;})<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;.catch(function(error) {<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;console.error("query failed: ", error);<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;});<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br>
-&emsp;&emsp;&emsp;&emsp;});<br>
-&emsp;&emsp;});<br><br></p><br>
-5. The next step is to create loadCharts. This function generates a bar chart with the cedar library based on the variables that get passed.<br><br>
-<p style="padding-left: 5%; font-family: monospace;">
-function loadCharts(features, chartName, chartField, chartLabel){<br>
-&emsp;&emsp;features.sort(function(a, b) {<br>
-&emsp;&emsp;&emsp;&emsp;return b.attributes.POPULATION -a.attributes.POPULATION;<br>
+view.when(function() {<br>
+&emsp;&emsp;view.popup.autoOpenEnabled = false;<br>
+&emsp;&emsp;var editor = new Editor({<br>
+&emsp;&emsp;&emsp;&emsp;view: view<br>
 &emsp;&emsp;});<br>
-&emsp;&emsp;var definition = {<br>
-&emsp;&emsp;&emsp;&emsp;type: "bar",<br>
-&emsp;&emsp;&emsp;&emsp;datasets: [<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;{<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;data: {<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;features: features<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br>
-&emsp;&emsp;&emsp;&emsp;],<br>
-&emsp;&emsp;&emsp;&emsp;series: [<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;{<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;category: {<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;field: "STATE_ABBR",<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;label: "US State"<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;},<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;value: {<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;field: chartField,<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;label: chartLabel<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br>
-&emsp;&emsp;&emsp;&emsp;]<br>
-&emsp;&emsp;};<br><br>
-		  
-&emsp;&emsp;var cedarChart = new cedar.Chart(chartName, definition);<br>
-&emsp;&emsp;cedarChart.show();<br>
-}<br><br>
+&emsp;&emsp;view.ui.add(editor, "top-right");<br>
+});<br><br></p><br>
+5. Finally, add the editor to the html.<br><br>
+<p style="padding-left: 5%; font-family: monospace;">
+	&lt;div id="editorDiv"&gt;&lt;/div&gt;
 </p>
-<br>6. The final step is to add the charts to the html below the viewDiv.
-<br><br><p style="padding-left: 5%; font-family: monospace;">
-&lt;div id="chart1"&gt;&lt;/div&gt;<br>
-&lt;div id="chart2"&gt;&lt;/div&gt;<br>
-&lt;div id="chart3"&gt;&lt;/div&gt;<br><br>
-</p><br><br>
+<br><br>
+Your app should display a map of tourist locations in DC. You should be able to add, edit, and delete features.
+<br><br>
 If you're stuck, ensure that your code looks like the solution in the picture below:<br><br>
 <button type="button" class="collapsible">Map Solution</button>
-    <div class="content"><img src="./images/e183d_map.JPG"></div><br>
+    <div class="content"><img src="./images/e16_map.JPG"></div><br>
 <button type="button" class="collapsible">Code Solution</button>
-    <div class="content"><img src="./images/e183d_one.JPG"><img src="./images/e183d_two.JPG"><img src="./images/e183d_three.JPG"><img src="./images/e183d_four.JPG"></div>
+    <div class="content"><img src="./images/e16_one.JPG"></div>
 <br><br>
 </div>
 </div>
 <!-- <div id="dialog" title="Welcome to the ArcGIS API for JavaScript">
   <p>Please use this Code Playground to begin learning about the ArcGIS API for JavaScript. To get started, click on the Directions button. As you edit code on the left side of the screen, press the Refresh button to see the updates on the Map.</p>
-</div> -->
+<br><br></div> -->
     <script>
       var delay;
       // Initialize CodeMirror editor with a nice html5 canvas demo.
@@ -395,7 +317,7 @@ If you're stuck, ensure that your code looks like the solution in the picture be
 		var link = document.createElement('a');
 		mimeType = 'text/html' || 'text/plain';
 
-		link.setAttribute('download', 'exercise18-3D.html');
+		link.setAttribute('download', 'exercise16.html');
 		link.setAttribute('href', 'data:' + 'text/html' + ';charset=utf-8,' + encodeURIComponent(elHtml));
 		link.click(); 
 	  }

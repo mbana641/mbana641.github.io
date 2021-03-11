@@ -164,7 +164,7 @@
 
 
 <textarea id="code" name="code" style="display:none;">
-<!-- Exercise 11 3D , Written in JavaScript 4.18 -->
+<!-- Exercise 11 3D, Written in JavaScript 4.18 -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -187,18 +187,19 @@
   <script>
     require([
       "esri/views/SceneView",
-      "esri/WebScene"
-    ], function(SceneView, WebScene) {
+      "esri/Map"
+    ], function(SceneView, Map) {
 
-      var scene = new WebScene({
-        portalItem: { // autocasts as new PortalItem()
-          id: "d68cddec5f3d4091b3290813e4790da3"
-        }
+      var scene = new Map({
+        basemap: "hybrid",
+		ground: "world-elevation"
       });
 
       var view = new SceneView({
         map: scene,
-        container: "viewDiv"
+        container: "viewDiv",
+		center: [7.59564, 46.06595],
+  	  	zoom: 12
       });
 
     });
@@ -221,81 +222,146 @@
 <iframe id=preview></iframe>
 </div>
 <div id=instruct style="font-family: Arial, Helvetica, sans-serif;">
-<span style="display: block; text-align: center;"><b><u>Exercise 11 3D - Search with Widgets in 3D</u></b><br><br></span>
+<span style="display: block; text-align: center;"><b><u>Exercise 11 3D - Calling a Geoprocessing Service</u></b><br><br></span>
 <b><u>Instructions:</u></b><br><br>
-In this lab you will add a search widget and search against a feature layer. The widget performs context-sensitve search as you type and then it will zoom to and highlight the feature selected. You can also format the data in the popup that appears.
+As cool as JavaScript is, it certainly has limits. There are lots of complex tasks that we may need that are likely already in a geoprocessing tool. 
+So let's use the JS API to call a geoprocessing service and offload all that crazy work to a server!
 <br><br>
-It will search against the neighborhood polygon layer but you can point to any hosted feature layer you want.
-<br><br>
-You'll also notice that we're using a WebScene via portal item ID. This makes our lives easier, if any layers have been configured to search against the webscene they will automatically show up in the search widget we create!
+In this lab, we'll calculate a complex viewshed by reaching out to that geoprocessing service.
 <br><br>
 <b><u>Exercise:</u></b><br><br>
-<u>1. Update Require Statement</u>
+<u>1. Update Require</u>
 <br>
-In our "require" block, we need to tell Dojo to include the widget for "Search" and then tell dojo we're ready to load it in. Make sure to include the "Search" in our function scope!
+Update your require statement <b>and</b> function definition to include the following:
 <br>
 <p style="padding-left: 5%; font-family: monospace;">require([<br>
-    &emsp;&emsp;"esri/WebScene",<br>
-	&emsp;&emsp;"esri/views/SceneView",<br>
-	&emsp;&emsp;/*** ADD THESE ***/<br>
-	&emsp;&emsp;"esri/widgets/Search"<br>
-    ], function(WebScene, SceneView, Search) {
+    &emsp;&emsp;"esri/views/SceneView",<br>
+	&emsp;&emsp;"esri/Map",<br>
+    &emsp;&emsp;"esri/layers/GraphicsLayer",<br>
+    &emsp;&emsp;"esri/Graphic",<br>
+    &emsp;&emsp;"esri/geometry/Point",<br>
+    &emsp;&emsp;"esri/tasks/Geoprocessor",<br>
+    &emsp;&emsp;"esri/tasks/support/LinearUnit",<br>
+    &emsp;&emsp;"esri/tasks/support/FeatureSet",<br>
+  ], function(SceneView, Map, GraphicsLayer, Graphic, Point, Geoprocessor, LinearUnit, FeatureSet) { 
 </p>
 <br>
-<u>2. Create Search Widget</u>
+<u>2. Add Graphics Layer</u>
 <br>
-Now we're going to put in some code to create the widget and then add it to the "top-right" of our scene UI.
+We will create a graphic point on the location that we click on, so let's add a graphics layer to the map.
 <br>
-<p style="padding-left: 5%; font-family: monospace;">. . .<br>
+<p style="padding-left: 5%; font-family: monospace;">var graphicsLayer = new GraphicsLayer();<br>
 	<br>
-    &emsp;&emsp;var view = new SceneView({<br>
-		&emsp;&emsp;&emsp;&emsp;map: scene<br>
-		&emsp;&emsp;&emsp;&emsp;container: "viewDiv",<br>
-	&emsp;&emsp;});<br>
-	<br>
-	/*** ADD THESE ***/
-<br>
-	//Create search widget<br>
-	&emsp;&emsp;var searchWidget = new Search({<br>
-		&emsp;&emsp;&emsp;&emsp;view: view<br>
-	&emsp;&emsp;});
-	<br>
-	//Add widget to the UI<br>
-	&emsp;&emsp;view.ui.add(searchWidget, "top-right");
+	scene.add(graphicsLayer);
 </p>
-Our search widget is created and added to the scene! Check it out! Now if you refresh your scene, it should look something like this:
-<br><br>
-<button type="button" class="collapsible">Part 2 Solution</button>
-    <div class="content"><img src="./images/e11_3D_one.png"></div>
-<br><br>
-<u>3. Try on your own!</u>
-<br><br>
-This time, we're going to add a basemap gallery widget to toggle between different AGOL basemaps.
 <br>
-But no copy-pasting this time <sup><sup>sorry</sup></sup>. Use the API Reference to figure out what "require" and "function" definition you need as well as how to initialize and add the widget to the UI.
+<u>3. Symbols</u>
 <br>
-<a target="_blank" href="https://developers.arcgis.com/javascript/latest/api-reference/esri-widgets-BasemapGallery.html">BasemapGallery Help</a>
-<br><br>
-After adding that widget, your scene should look like this, with both a functioning search widget and basemap gallery:<br><br>
-<button type="button" class="collapsible">Part 3 Solution</button>
-    <div class="content"><img src="./images/e11_3D_two.png"></div>
+This is probably feeling pretty similar to the last exercise at this point!
+<br>
+These symbols are going to be used for the initial click point, but also the returned polygon fill.
+<br>
+<p style="padding-left: 5%; font-family: monospace;">var markerSymbol = {<br>
+	&emsp;&emsp;type: "simple-marker", // autocasts as new SimpleMarkerSymbol()<br>
+	&emsp;&emsp;color: [255, 0, 0],<br>
+	&emsp;&emsp;outline: { // autocasts as new SimpleLineSymbol()<br>
+		&emsp;&emsp;&emsp;&emsp;color: [255, 255, 255],<br>
+		&emsp;&emsp;&emsp;&emsp;width: 2<br>
+		&emsp;&emsp;}<br>
+  };<br>
+  <br>
+  var fillSymbol = {<br>
+	&emsp;&emsp;type: "simple-fill", // autocasts as new SimpleFillSymbol()<br>
+	&emsp;&emsp;color: [0, 255, 0, 0.75],<br>
+	&emsp;&emsp;outline: { // autocasts as new SimpleLineSymbol()<br>
+		&emsp;&emsp;&emsp;&emsp;color: [255, 255, 255],<br>
+		&emsp;&emsp;&emsp;&emsp;width: 1<br>
+		&emsp;&emsp;}<br>
+  };
+</p>
+<br>
+<u>4. Define Geoprocessor</u>
+<br>
+Now we can define the geoprocessor and set the url and out spatial reference.
+And then listen for the view on click trigger to call the function in the next step.
+<br>
+<p style="padding-left: 5%; font-family: monospace;">var gp = new    Geoprocessor("https://sampleserver6.arcgisonline.com/arcgis/rest/services/Elevation/ESRI_Elevation_World/GPServer/Viewshed");<br>
+	&emsp;&emsp;gp.outSpatialReference = { // autocasts as new SpatialReference()<br>
+		&emsp;&emsp;&emsp;&emsp;wkid: 102100<br>
+		&emsp;&emsp;};<br>
+		<br>
+	view.on("click", computeViewshed);
+</p>
+<br>
+<u>5. Computation</u>
+<br>
+This function allows us to computer everything that the geoprocessing tool needs.
+We get the click point's lat/long, create graphics, set up parameters, and then pass all of this to the geoprocessing tool to execute.
+<br>
+<p style="padding-left: 5%; font-family: monospace;">function computeViewshed(event) {<br>
+	&emsp;&emsp;graphicsLayer.removeAll();<br>
+	<br>
+	&emsp;&emsp;var point = new Point({<br>
+		&emsp;&emsp;&emsp;&emsp;longitude: event.mapPoint.longitude,<br>
+		&emsp;&emsp;&emsp;&emsp;latitude: event.mapPoint.latitude<br>
+		&emsp;&emsp;});<br>
+	<br>
+	&emsp;&emsp;var inputGraphic = new Graphic({<br>
+		&emsp;&emsp;&emsp;&emsp;geometry: point,<br>
+		&emsp;&emsp;&emsp;&emsp;symbol: markerSymbol<br>
+		&emsp;&emsp;});<br>
+	<br>
+	&emsp;&emsp;graphicsLayer.add(inputGraphic);<br>
+	<br>
+	&emsp;&emsp;var inputGraphicContainer = [];<br>
+	&emsp;&emsp;inputGraphicContainer.push(inputGraphic);<br>
+	&emsp;&emsp;var featureSet = new FeatureSet();<br>
+	&emsp;&emsp;featureSet.features = inputGraphicContainer;<br>
+	<br>
+	&emsp;&emsp;var vsDistance = new LinearUnit();<br>
+	&emsp;&emsp;vsDistance.distance = 5;<br>
+	&emsp;&emsp;vsDistance.units = "miles";<br>
+	<br>
+	&emsp;&emsp;var params = {<br>
+		&emsp;&emsp;&emsp;&emsp;"Input_Observation_Point": featureSet,<br>
+		&emsp;&emsp;&emsp;&emsp;"Viewshed_Distance": vsDistance<br>
+		&emsp;&emsp;};<br>
+	<br>
+	&emsp;&emsp;gp.execute(params).then(drawResultData);<br>
+  }
 
-<br><br><br><b><u>Challenges:</u></b><br><br>
-Having the Basemap Gallery open all the time takes up a lot of space, and isn't very user friendly. There is an <a target="_blank" href="https://developers.arcgis.com/javascript/latest/api-reference/esri-widgets-Expand.html">Expand Widget</a> that acts like a clickable button for opening a widget.
-<br>
-Try putting the Basemap Gallery into the expand widget, and you'll notice that this is way easier on the eyes! Also don't forget to remove your previous "view.ui.add".
-<p style="padding-left: 5%; font-family: monospace;">var basemapExpand = new Expand ({<br>
-	&emsp;&emsp;content: //VARIABLE FOR YOUR BASEMAP GALLERY HERE,<br>
-	&emsp;&emsp;view: view<br>
-});<br>
-<br>
-view.ui.add(basemapExpand, "top-right");
 </p>
-Now it should look like this while collapsed:<br><br>
-<button type="button" class="collapsible">Challenge Solution</button>
-    <div class="content"><img src="./images/e11_3D_three.png"></div>
+<br>
+<u>5. Handle Results</u>
+<br>
+Finally, we need to actually do something with the data the GP Tool sends back to us.
+We get the results and need to define their symbol and then add them to the map. And lastly, we obviously don't want them out the map, so we'll zoom to their extent.
+<br>
+<p style="padding-left: 5%; font-family: monospace;">function drawResultData(result) {<br>
+	&emsp;&emsp;var resultFeatures = result.results[0].value.features;<br>
+	<br>
+	&emsp;&emsp;// Assign each resulting graphic a symbol<br>
+	&emsp;&emsp;var viewshedGraphics = resultFeatures.map(function(feature) {<br>
+		&emsp;&emsp;&emsp;&emsp;feature.symbol = fillSymbol;<br>
+		&emsp;&emsp;&emsp;&emsp;return feature;<br>
+		&emsp;&emsp;});<br>
+	<br>
+	&emsp;&emsp;// Add the resulting graphics to the graphics layer<br>
+	&emsp;&emsp;graphicsLayer.addMany(viewshedGraphics);<br>
+	<br>
+	&emsp;&emsp;view.goTo({<br>
+		&emsp;&emsp;&emsp;&emsp;target: viewshedGraphics<br>
+		&emsp;&emsp;});<br>
+  }
+</p>
+Now go ahead and click on the map! Give it a few seconds and it'll create a viewshed for you!
+<br><br><button type="button" class="collapsible">Map Solution</button>
+    <div class="content"><img src="./images/e14_one.jpg"></div>
 <br><br><button type="button" class="collapsible">Code Solution</button>
-    <div class="content"><img src="./images/e11_3D_code_1.jpg"><img src="./images/e11_3D_code_2.jpg"></div>
+    <div class="content"><img src="./images/e14_3D_code_1.jpg"><img src="./images/e14_3D_code_2.jpg"><img src="./images/e14_3D_code_3.jpg"></div>
+<br><br><br><b><u>Challenges:</u></b><br><br>
+Really zoom into the point that you clicked to start your viewshed. In 3D, you should be able to really understand why it calculated the way it did!<br>
+Can you think of any other geoprocessing tools that you could use in a JS API?
 </div>
 </div>
 <!-- <div id="dialog" title="Welcome to the ArcGIS API for JavaScript">

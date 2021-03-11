@@ -1,6 +1,6 @@
 <!doctype html>
 
-<title>Exercise 12</title>
+<title>Exercise 8 3D</title>
 <meta charset="utf-8"/>
 <link rel="icon" type="image/png" href="./brackets.png"/>
 <link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.51.0/codemirror.css>
@@ -164,13 +164,13 @@
 
 
 <textarea id="code" name="code" style="display:none;">
-<!-- Exercise 12, Written in JavaScript 4.18 -->
+<!-- Exercise 8 3D , Written in JavaScript 4.18 -->
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-  <title>Exercise 12</title>
+  <title>Exercise 8 3D</title>
 
   <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/css/main.css">
   <script src="https://js.arcgis.com/4.18/"></script>
@@ -186,16 +186,18 @@
 
   <script>
     require([
-      "esri/views/MapView",
-      "esri/Map"
-    ], function(MapView, Map) {
+      "esri/views/SceneView",
+      "esri/WebScene"
+    ], function(SceneView, WebScene) {
 
-      var map = new Map({
-        basemap: "dark-gray-vector"
+      var scene = new WebScene({
+        portalItem: { // autocasts as new PortalItem()
+          id: "d68cddec5f3d4091b3290813e4790da3"
+        }
       });
 
-      var view = new MapView({
-        map: map,
+      var view = new SceneView({
+        map: scene,
         container: "viewDiv"
       });
 
@@ -219,173 +221,81 @@
 <iframe id=preview></iframe>
 </div>
 <div id=instruct style="font-family: Arial, Helvetica, sans-serif;">
-<span style="display: block; text-align: center;"><b><u>Exercise 12 - Search with Widgets</u></b><br><br></span>
+<span style="display: block; text-align: center;"><b><u>Exercise 8 3D - Search with Widgets in 3D</u></b><br><br></span>
 <b><u>Instructions:</u></b><br><br>
-In this lab you will use a QueryTask to query data from a feature layer.
-A query task allows you to make a SQL or spatial query to retrieve subsets of records from a layer or service
+In this lab you will add a search widget and search against a feature layer. The widget performs context-sensitve search as you type and then it will zoom to and highlight the feature selected. You can also format the data in the popup that appears.
 <br><br>
-With Query tasks, you are responsible for adding the resulting features to the map as graphics.
-You are also responsible for adding a symbol and defining the popup template used for the data.
+It will search against the neighborhood polygon layer but you can point to any hosted feature layer you want.
 <br><br>
-Let's look at some Washington D.C. Metro Station data and use this query to select and symbolize the different lines!
+You'll also notice that we're using a WebScene via portal item ID. This makes our lives easier, if any layers have been configured to search against the webscene they will automatically show up in the search widget we create!
 <br><br>
 <b><u>Exercise:</u></b><br><br>
-<u>1. Create HTML Select Box</u>
+<u>1. Update Require Statement</u>
 <br>
-First thing we need is a "select" element in our HTML with different options for each metro line.
-<br>
-The text that we put in here will eventually be passed back into the query, since the user has to select the line they want to view.
-<br>
-<p style="padding-left: 5%; font-family: monospace;">
-	&emsp;&emsp;&lt;div id="viewDiv"&gt;&lt;/div&gt;<br>
-	&emsp;&emsp;&lt;!-- ADD --&gt;<br>
-	&emsp;&emsp;&lt;select id="queryDiv"&gt;<br>
-	&emsp;&emsp;&emsp;&emsp;&lt;option selected&gt;blue&lt;/option&gt;<br>
-	&emsp;&emsp;&emsp;&emsp;&lt;option&gt;orange&lt;/option&gt;<br>
-	&emsp;&emsp;&emsp;&emsp;&lt;option&gt;red&lt;/option&gt;<br>
-	&emsp;&emsp;&emsp;&emsp;&lt;option&gt;silver&lt;/option&gt;<br>
-	&emsp;&emsp;&emsp;&emsp;&lt;option&gt;yellow&lt;/option&gt;<br>
-	&emsp;&emsp;&lt;/select&gt;
-</p>
-<br>
-<u>2. Update Require</u>
-<br>
-Update your require statement <b>and</b> function definition to include the following:
+In our "require" block, we need to tell Dojo to include the widget for "Search" and then tell dojo we're ready to load it in. Make sure to include the "Search" in our function scope!
 <br>
 <p style="padding-left: 5%; font-family: monospace;">require([<br>
-	&emsp;&emsp;"esri/views/MapView",<br>
-	&emsp;&emsp;"esri/Map",<br>
-	&emsp;&emsp;/*** ADD ***/<br>
-	&emsp;&emsp;"esri/layers/FeatureLayer",<br>
-	&emsp;&emsp;"esri/tasks/QueryTask",<br>
-	&emsp;&emsp;"esri/tasks/support/Query",<br>
-	&emsp;&emsp;"esri/symbols/SimpleMarkerSymbol"<br>
-], function(MapView, Map, FeatureLayer, QueryTask, Query, SimpleMarkerSymbol) {
+    &emsp;&emsp;"esri/WebScene",<br>
+	&emsp;&emsp;"esri/views/SceneView",<br>
+	&emsp;&emsp;/*** ADD THESE ***/<br>
+	&emsp;&emsp;"esri/widgets/Search"<br>
+    ], function(WebScene, SceneView, Search) {
 </p>
 <br>
-<u>3. Add Query</u>
+<u>2. Create Search Widget</u>
 <br>
-Now we're going to create a QueryTask and Query to select features from the metro stops feature layer.
-We're also going to simply return two fields from the layer, since that's all we need.
+Now we're going to put in some code to create the widget and then add it to the "top-right" of our scene UI.
 <br>
-<p style="padding-left: 5%; font-family: monospace;">var view = new MapView({<br>
-	&emsp;&emsp;container: "viewDiv",<br>
-	&emsp;&emsp;map: map,<br>
-	&emsp;&emsp;center: [-77.029, 38.89],<br>
-	&emsp;&emsp;zoom: 10<br>
-	});<br>
+<p style="padding-left: 5%; font-family: monospace;">. . .<br>
 	<br>
-	//Create query task to reference the PDX_Rail_Stops_Styled feature layer <br>
-	var queryTask = new QueryTask({<br>
-	&emsp;&emsp;url: "https://services.arcgis.com/hRUr1F8lE8Jq2uJo/arcgis/rest/services/Metro_Stations_Regional/FeatureServer/0"<br>
-	});<br>
-	<br>
-	//Only return two fields<br>
-	var query = new Query({<br>
-	&emsp;&emsp;returnGeometry: true,<br>
-	&emsp;&emsp;outFields: ["NAME", "LINE"],<br>
-	&emsp;&emsp;where: ""<br>
-    });<br>
-</p>
-<br>
-<u>4. Lots o' Functions</u>
-<br>
-Next, we're defining a bunch of functions that are going to execute the query task, get the features, 
-and then add them to the default graphics layer of the view.
-<br>
-<p style="padding-left: 5%; font-family: monospace;">//Perform query when page loads<br>
-	getFeatures("blue");<br>
-	<br>
-	//Get features with query where clause<br>
-	function getFeatures(theColor) {<br>
-	&emsp;&emsp;query.where = "LINE LIKE '%" + theColor + "%'";<br>
-	&emsp;&emsp;queryTask.execute(query).then(function(results) {<br>
-	&emsp;&emsp;&emsp;&emsp;addFeatures(results.features);<br>
-	&emsp;&emsp;})<br>
-	.catch(promiseRejected);<br>
-	}<br>
-	<br>
-	//Add features as graphics<br>
-	function addFeatures(features) {<br>
-	&emsp;&emsp;var color,<br>
-	&emsp;&emsp;&emsp;&emsp;symbol;<br>
-	&emsp;&emsp;//Color<br>
-	&emsp;&emsp;switch (document.getElementById("queryDiv").value) {<br>
-	&emsp;&emsp;&emsp;&emsp;case "blue":<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color = [0, 0, 255]<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;break;<br>
-	&emsp;&emsp;&emsp;&emsp;case "red":<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color = [255, 0, 0]<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;break;<br>
-	&emsp;&emsp;&emsp;&emsp;case "green":<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color = [0, 255, 0]<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;break;<br>
-	&emsp;&emsp;&emsp;&emsp;case "orange":<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color = [255,165, 0]<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;break;	<br>
-	&emsp;&emsp;&emsp;&emsp;case "yellow":<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color = [255, 255, 0]<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;break;<br>
-	&emsp;&emsp;&emsp;&emsp;case "silver":<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color = [190, 190, 190]<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;break;<br>
-	&emsp;&emsp;}<br>
-	&emsp;&emsp;symbol = new SimpleMarkerSymbol({<br>
-	&emsp;&emsp;&emsp;&emsp;color: color,<br>
-	&emsp;&emsp;&emsp;&emsp;size: 8,<br>
-	&emsp;&emsp;&emsp;&emsp;outline: {<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color: [ 255, 255, 255 ],<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;width: 1<br>
-	&emsp;&emsp;&emsp;&emsp;}<br>
+    &emsp;&emsp;var view = new SceneView({<br>
+		&emsp;&emsp;&emsp;&emsp;map: scene<br>
+		&emsp;&emsp;&emsp;&emsp;container: "viewDiv",<br>
 	&emsp;&emsp;});<br>
-	&emsp;&emsp;//Set symbol and popup template<br>
-	&emsp;&emsp;for (var i=0; i < features.length; i++) {<br>
-	&emsp;&emsp;&emsp;&emsp;var feature = features[i];<br>
-	&emsp;&emsp;&emsp;&emsp;feature.symbol = symbol;<br>
-	&emsp;&emsp;&emsp;&emsp;feature.popupTemplate = {<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;title: "{NAME}",<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;content: "This is a metro stop for the {LINE} line(s)."<br>
-	&emsp;&emsp;&emsp;&emsp;}<br>
-	&emsp;&emsp;&emsp;&emsp;view.graphics.add(feature);<br>
-	&emsp;&emsp;}<br>
-	&emsp;&emsp;//Add graphics<br>
-	&emsp;&emsp;view.graphics.removeAll();<br>
-	&emsp;&emsp;view.graphics.addMany(features);<br>
-	&emsp;&emsp;view.goTo(features);<br>
-	&emsp;&emsp;view.popup.visible = false;<br>
-	}
-</p>
-<br>
-<u>4. Add Handlers</u>
-<br>
-Final step I promise! We just have to add some handlers to select the HTML slement so we can change the SQL string for the query.
-Also, just an error handler in case the service isn't working!
-<br>
-<p style="padding-left: 5%; font-family: monospace;">//Add select element to UI<br>
-	view.when(function() {<br>
-		&emsp;&emsp;view.ui.add(document.getElementById("queryDiv"), "top-right");<br>
-		&emsp;&emsp;document.getElementById("queryDiv").addEventListener("change", doQuery);<br>
-	});<br>
 	<br>
-    //Get the color from the drop down<br>
-	function doQuery(e) {<br>
-		&emsp;&emsp;var theColor = e.target.value;<br>
-		&emsp;&emsp;getFeatures(theColor);<br>
-	};<br>
+	/*** ADD THESE ***/
+<br>
+	//Create search widget<br>
+	&emsp;&emsp;var searchWidget = new Search({<br>
+		&emsp;&emsp;&emsp;&emsp;view: view<br>
+	&emsp;&emsp;});
 	<br>
-	//Add the promise rejected function<br>
-	function promiseRejected(){<br>
-		&emsp;&emsp;console.write("Error with query");<br>
-	}<br>
+	//Add widget to the UI<br>
+	&emsp;&emsp;view.ui.add(searchWidget, "top-right");
 </p>
-And now, after all of this, your application should look like this:<br><br>
-<button type="button" class="collapsible">Map Solution</button>
-    <div class="content"><img src="./images/e12_one.png"></div>
-<br><br><button type="button" class="collapsible">Code Solution</button>
-	<div class="content"><img src="./images/e12_code_1.jpg"><img src="./images/e12_code_2.jpg"><img src="./images/e12_code_3.jpg"></div>
+Our search widget is created and added to the scene! Check it out! Now if you refresh your scene, it should look something like this:
+<br><br>
+<button type="button" class="collapsible">Part 2 Solution</button>
+    <div class="content"><img src="./images/e11_3D_one.png"></div>
+<br><br>
+<u>3. Try on your own!</u>
+<br><br>
+This time, we're going to add a basemap gallery widget to toggle between different AGOL basemaps.
+<br>
+But no copy-pasting this time <sup><sup>sorry</sup></sup>. Use the API Reference to figure out what "require" and "function" definition you need as well as how to initialize and add the widget to the UI.
+<br>
+<a target="_blank" href="https://developers.arcgis.com/javascript/latest/api-reference/esri-widgets-BasemapGallery.html">BasemapGallery Help</a>
+<br><br>
+After adding that widget, your scene should look like this, with both a functioning search widget and basemap gallery:<br><br>
+<button type="button" class="collapsible">Part 3 Solution</button>
+    <div class="content"><img src="./images/e11_3D_two.png"></div>
 
 <br><br><br><b><u>Challenges:</u></b><br><br>
-Oops! I left out the green line! Can you modify the HTML to include the green line and ensure that it still works with our query task?
+Having the Basemap Gallery open all the time takes up a lot of space, and isn't very user friendly. There is an <a target="_blank" href="https://developers.arcgis.com/javascript/latest/api-reference/esri-widgets-Expand.html">Expand Widget</a> that acts like a clickable button for opening a widget.
+<br>
+Try putting the Basemap Gallery into the expand widget, and you'll notice that this is way easier on the eyes! Also don't forget to remove your previous "view.ui.add".
+<p style="padding-left: 5%; font-family: monospace;">var basemapExpand = new Expand ({<br>
+	&emsp;&emsp;content: //VARIABLE FOR YOUR BASEMAP GALLERY HERE,<br>
+	&emsp;&emsp;view: view<br>
+});<br>
+<br>
+view.ui.add(basemapExpand, "top-right");
+</p>
+Now it should look like this while collapsed:<br><br>
+<button type="button" class="collapsible">Challenge Solution</button>
+    <div class="content"><img src="./images/e11_3D_three.png"></div>
+<br><br><button type="button" class="collapsible">Code Solution</button>
+    <div class="content"><img src="./images/e11_3D_code_1.jpg"><img src="./images/e11_3D_code_2.jpg"></div>
 </div>
 </div>
 <!-- <div id="dialog" title="Welcome to the ArcGIS API for JavaScript">
@@ -428,7 +338,7 @@ Oops! I left out the green line! Can you modify the HTML to include the green li
 		var link = document.createElement('a');
 		mimeType = 'text/html' || 'text/plain';
 
-		link.setAttribute('download', 'exercise12.html');
+		link.setAttribute('download', 'exercise8-3D.html');
 		link.setAttribute('href', 'data:' + 'text/html' + ';charset=utf-8,' + encodeURIComponent(elHtml));
 		link.click(); 
 	  }

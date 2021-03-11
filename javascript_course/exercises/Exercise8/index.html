@@ -186,20 +186,19 @@
 
   <script>
     require([
-        "esri/Map",
-        "esri/views/SceneView",
-    ], function(Map, SceneView) {
+      "esri/views/MapView",
+      "esri/WebMap"
+    ], function(MapView, WebMap) {
 
-      var map = new Map({
-        basemap: "dark-gray-vector",
-        ground: "world-elevation"
+      var map = new WebMap({
+        portalItem: { // autocasts as new PortalItem()
+          id: "7d281311aef74b5fa2c39f0ebc01b5dd"
+        }
       });
-        
-	  var view = new SceneView({
-        container: "viewDiv",
+
+      var view = new MapView({
         map: map,
-        center: [-77.029, 38.89],
-        scale: 500000
+        container: "viewDiv"
       });
 
     });
@@ -222,58 +221,81 @@
 <iframe id=preview></iframe>
 </div>
 <div id=instruct style="font-family: Arial, Helvetica, sans-serif;">
-<span style="display: block; text-align: center;"><b><u>Exercise 8 - Add a Scene Layer</u></b><br><br></span>
+<span style="display: block; text-align: center;"><b><u>Exercise 8 - Search with Widgets</u></b><br><br></span>
 <b><u>Instructions:</u></b><br><br>
-Just displaying a plain scene is fine, but we need to be able to add our own layers to our scene.
+In this lab you will add a search widget and search against a feature layer. The widget performs context-sensitve search as you type and then it will zoom to and highlight the feature selected. You can also format the data in the popup that appears.
 <br><br>
-In this exercise we will cover the basics of adding a scene layer to any 3D application. To learn more about the options in SceneLayers check out the <a target="_blank" href="https://developers.arcgis.com/javascript/latest/api-reference/esri-layers-SceneLayer.html">API Reference</a>.
+It will search against the neighborhood polygon layer but you can point to any hosted feature layer you want.
+<br><br>
+You'll also notice that we're using a WebMap via portal item ID. This makes our lives easier, if any layers have been configured to search against the webmap they will automatically show up in the search widget we create!
 <br><br>
 <b><u>Exercise:</u></b><br><br>
 <u>1. Update Require Statement</u>
 <br>
-First step is to update the require statement and the function definition.
+In our "require" block, we need to tell Dojo to include the widget for "Search" and then tell dojo we're ready to load it in. Make sure to include the "Search" in our function scope!
+<br>
 <p style="padding-left: 5%; font-family: monospace;">require([<br>
-    &emsp;&emsp;"esri/Map",<br>
-	&emsp;&emsp;"esri/views/SceneView",<br>
-	&emsp;&emsp;"esri/layers/SceneLayer"<br>
-], function(Map, SceneView, SceneLayer) {
+    &emsp;&emsp;"esri/WebMap",<br>
+	&emsp;&emsp;"esri/views/MapView",<br>
+	&emsp;&emsp;/*** ADD THESE ***/<br>
+	&emsp;&emsp;"esri/widgets/Search"<br>
+    ], function(WebMap, MapView, Search) {
 </p>
-This should be pretty familiar at this point. Now we have the components for our Scene Layer.
-<br><br>
-<u>2. Add Scene Layer</u>
 <br>
-Now let's add the a scene layer to our map, buildings always look nice in 3D!
+<u>2. Create Search Widget</u>
 <br>
-<p style="padding-left: 5%; font-family: monospace;">var buildingsSL = new SceneLayer({<br>
-	&emsp;&emsp;url: "https://tiles.arcgis.com/tiles/hRUr1F8lE8Jq2uJo/arcgis/rest/services/BuildingsDC/SceneServer/layers/0"<br>
-});<br>
-map.add(buildingsSL);
+Now we're going to put in some code to create the widget and then add it to the "top-right" of our map UI.
+<br>
+<p style="padding-left: 5%; font-family: monospace;">. . .<br>
+	<br>
+    &emsp;&emsp;var view = new MapView({<br>
+		&emsp;&emsp;&emsp;&emsp;map: map<br>
+		&emsp;&emsp;&emsp;&emsp;container: "viewDiv",<br>
+	&emsp;&emsp;});<br>
+	<br>
+	/*** ADD THESE ***/
+<br>
+	//Create search widget<br>
+	&emsp;&emsp;var searchWidget = new Search({<br>
+		&emsp;&emsp;&emsp;&emsp;view: view<br>
+	&emsp;&emsp;});
+	<br>
+	//Add widget to the UI<br>
+	&emsp;&emsp;view.ui.add(searchWidget, "top-right");
 </p>
-Nice! You should be able to zoom in and check out the buildings now. Should look like this:
+Our search widget is created and added to the map! Check it out! Now if you refresh your map, it should look something like this:
 <br><br>
-<button type="button" class="collapsible">Map Solution</button>
-    <div class="content"><img src="./images/e8_one.png"></div>
+<button type="button" class="collapsible">Part 2 Solution</button>
+    <div class="content"><img src="./images/e11_one.png"></div>
 <br><br>
-<u>3. Adjust Camera</u>
+<u>3. Try on your own!</u>
+<br><br>
+This time, we're going to add a basemap gallery widget to toggle between different AGOL basemaps.
 <br>
-In these scenes, it might be beneficial to adjust your camera in the code to have a better starting point. Let's adjust the camera settings in our SceneView.
-<p style="padding-left: 5%; font-family: monospace;">var view = new SceneView({<br>
-	&emsp;&emsp;container: "viewDiv",<br>
-	&emsp;&emsp;map: map,<br>
-	&emsp;&emsp;camera:{<br>
-		&emsp;&emsp;&emsp;&emsp;position: [-77.029, 38.89, 300],<br>
-		&emsp;&emsp;&emsp;&emsp;tilt: 40,<br>
-		&emsp;&emsp;&emsp;&emsp;heading: 60<br>
-	&emsp;&emsp;}<br>
-});
-</p>
-Now your camera should be perfectly positioned over the Smithsonian Museum of Natural History!
+But no copy-pasting this time <sup><sup>sorry</sup></sup>. Use the API Reference to figure out what "require" and "function" definition you need as well as how to initialize and add the widget to the UI.
+<br>
+<a target="_blank" href="https://developers.arcgis.com/javascript/latest/api-reference/esri-widgets-BasemapGallery.html">BasemapGallery Help</a>
 <br><br>
-<button type="button" class="collapsible">Code Solution</button>
-    <div class="content"><img src="./images/e8_code.jpg"></div>
+After adding that widget, your map should look like this, with both a functioning search widget and basemap gallery:<br><br>
+<button type="button" class="collapsible">Part 3 Solution</button>
+    <div class="content"><img src="./images/e11_two.png"></div>
+
 <br><br><br><b><u>Challenges:</u></b><br><br>
-Add your own SceneLayer! Use whatever portal you are comfortable with, and find a scene layer published up on there. Keep in mind it must be shared publically, otherwise it'll ask you to log into the portal.
-<br><br>
+Having the Basemap Gallery open all the time takes up a lot of space, and isn't very user friendly. There is an <a target="_blank" href="https://developers.arcgis.com/javascript/latest/api-reference/esri-widgets-Expand.html">Expand Widget</a> that acts like a clickable button for opening a widget.
+<br>
+Try putting the Basemap Gallery into the expand widget, and you'll notice that this is way easier on the eyes! Also don't forget to remove your previous "view.ui.add".
+<p style="padding-left: 5%; font-family: monospace;">var basemapExpand = new Expand ({<br>
+	&emsp;&emsp;content: //VARIABLE FOR YOUR BASEMAP GALLERY HERE,<br>
+	&emsp;&emsp;view: view<br>
+});<br>
+<br>
+view.ui.add(basemapExpand, "top-right");
+</p>
+Now it should look like this while collapsed:<br><br>
+<button type="button" class="collapsible">Challenge Solution</button>
+    <div class="content"><img src="./images/e11_three.png"></div>
+<br><br><button type="button" class="collapsible">Code Solution</button>
+    <div class="content"><img src="./images/e11_code_1.jpg"><img src="./images/e11_code_2.jpg"></div>
 </div>
 </div>
 <!-- <div id="dialog" title="Welcome to the ArcGIS API for JavaScript">

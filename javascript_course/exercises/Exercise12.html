@@ -1,6 +1,6 @@
 <!doctype html>
 
-<title>Exercise 13</title>
+<title>Exercise 12</title>
 <meta charset="utf-8"/>
 <link rel="icon" type="image/png" href="./brackets.png"/>
 <link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.51.0/codemirror.css>
@@ -123,7 +123,7 @@
 			font-size:14px;
 		}
 
-        .collapsible {
+		.collapsible {
             background-color: #777;
             color: white;
             cursor: pointer;
@@ -147,7 +147,7 @@
         }
 
 		img {
-			width:100%;
+			width: 100%;
 		}
 
 </style>
@@ -164,16 +164,16 @@
 
 
 <textarea id="code" name="code" style="display:none;">
-<!-- Exercise 13, Written in JavaScript 4.18 -->
+<!-- Exercise 12, Written in JavaScript 4.18 -->
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-  <title>Exercise 13</title>
+  <title>Query and Calculate Statistics</title>
 
-  <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/css/main.css">
-  <script src="https://js.arcgis.com/4.18/"></script>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/themes/light/main.css" />
+	<script src="https://js.arcgis.com/4.18/"></script>
   
   <style>
     html, body, #viewDiv {
@@ -181,31 +181,30 @@
       margin: 0;
       height: 100%;
     }
-  
   </style>
 
   <script>
-    require([
-      "esri/views/MapView",
-      "esri/Map"
-    ], function(MapView, Map) {
+  	require([
+      "esri/Map",
+      "esri/views/MapView"
+    ], function(Map, MapView) {
 
       var map = new Map({
-        basemap: "dark-gray-vector"
+        basemap: "hybrid",
       });
 
       var view = new MapView({
-        map: map,
         container: "viewDiv",
-		center: [-77.029, 38.89],
-		zoom: 10
+        map: map,
+        center: [-74.029, 40.71],
+        zoom: 10
       });
-
+	        
     });
   </script>
 </head>
 <body>
-    <div id="viewDiv"></div>
+  <div id="viewDiv"></div>
 </body>
 </html>
 </textarea>
@@ -221,98 +220,254 @@
 <iframe id=preview></iframe>
 </div>
 <div id=instruct style="font-family: Arial, Helvetica, sans-serif;">
-<span style="display: block; text-align: center;"><b><u>Exercise 13 - Client-side Buffering</u></b><br><br></span>
-<b><u>Instructions:</u></b><br><br>
-You may have heard the term "client-side" before, but what does that actually mean?
-<br><br>
-The "client" in this case is your web browser! So instead of going back to our feature service, or any servers,
- we are going to generate a buffer locally on your computer using your web browser.
-<br><br>
-To do this, we're going to use the GeometryEngine class and buffer by a predefined amount.
-<br><br>
+	<span style="display: block; text-align: center;"><b><u>Exercise 12 - Query and Calculate Statistics</u></b><br><br></span>
 <b><u>Exercise:</u></b><br><br>
-<u>1. Update Require</u>
+In this lab you will use a query with distance and then clone that query to do stats on the features selected.<br><br>
+1. First we'll add some css for how we want our statistics values to be display with color and font size and weight:
+<p style="padding-left: 5%; font-family: monospace;"><br><br>
+#tot-crimes {<br>
+&emsp;&emsp;color: #ed5050;<br>
+&emsp;&emsp;font-size: 36pt;<br>
+&emsp;&emsp;font-weight: bolder;<br>
+&emsp;&emsp;line-height: 0.8;<br>
+}<br><br>
+#tot-Homicides,#tot-theft,#tot-Arson,<br>
+#tot-theftAuto,#tot-MVT,#tot-Robbery,<br>
+#tot-AssaultwWeapon,#tot-Burglary,#tot-SexAbuse{<br>
+&emsp;&emsp;color: #149dcf;<br>
+&emsp;&emsp;font-size: 20pt;<br>
+&emsp;&emsp;font-weight: bolder;<br>
+&emsp;&emsp;line-height: 0.8;<br>
+}<br><br>
+</p>
 <br>
-Update your require statement <b>and</b> function definition to include the following:
-<br>
+2. Update the require statement and function definition:
+<br><br>
 <p style="padding-left: 5%; font-family: monospace;">require([<br>
-	&emsp;&emsp;"esri/views/MapView",<br>
-	&emsp;&emsp;"esri/Map",<br>
-	&emsp;&emsp;/*** ADD ***/<br>
-	&emsp;&emsp;"esri/layers/GraphicsLayer",<br>
-	&emsp;&emsp;"esri/Graphic",<br>
-	&emsp;&emsp;"esri/geometry/geometryEngine"<br>
-], function(MapView, Map, GraphicsLayer, Graphic, geometryEngine) {
+&emsp;&emsp;"esri/WebMap",<br>
+&emsp;&emsp;"esri/views/MapView",<br>
+&emsp;&emsp;"esri/widgets/Legend",<br>
+&emsp;&emsp;"esri/widgets/Expand",<br>
+&emsp;&emsp;"esri/core/lang",<br>
+&emsp;&emsp;"esri/core/promiseUtils",<br>
+&emsp;&emsp;"esri/core/watchUtils"<br>
+], function(WebMap, MapView, Legend, Expand, lang, promiseUtils, watchUtils) {<br>
+<br></p>
+<br>
+3. Let's use the portal id for a new web map that contains crime data and use this webmap in the view. Notice that we are setting some addtional properties on the view like the <a target="_blank" href="https://developers.arcgis.com/javascript/latest/api-reference/esri-views-MapView.html#constraints">constraints</a> of minScale and <a target="_blank" href="https://developers.arcgis.com/javascript/latest/api-reference/esri-views-MapView.html#highlightOptions">highlightOptions</a>. Look at the links to get more info and play around with some different properties as you build out this lab.
+<br><br><p style="padding-left: 5%; font-family: monospace;">
+var webmap = new WebMap({<br>
+&emsp;&emsp;portalItem: {<br>
+&emsp;&emsp;&emsp;&emsp;id: "ac967bafb27d4ded896975e18e928fca"<br>
+&emsp;&emsp;}<br>
+});<br><br>
+var view = new MapView({<br>
+&emsp;&emsp;map: webmap,<br>
+&emsp;&emsp;container: "viewDiv",<br>
+&emsp;&emsp;constraints: {<br>
+&emsp;&emsp;&emsp;&emsp;minScale: 300000<br>
+&emsp;&emsp;},<br>
+&emsp;&emsp;highlightOptions: {<br>
+&emsp;&emsp;&emsp;&emsp;color: "yellow",<br>
+&emsp;&emsp;&emsp;&emsp;haloOpacity: 0.65,<br>
+&emsp;&emsp;&emsp;&emsp;fillOpacity: 0.45<br>
+&emsp;&emsp;}<br>
+});<br><br>
+</p><br>
+4. Next, we are going to add a UI element to show the results of our query. Notice that the values in the span id='', the id's are the same as you defined in your css above.
+<br><br><p style="padding-left: 5%; font-family: monospace;">
+var titleContent = document.createElement("div");<br>
+titleContent.style.padding = "15px";<br>
+titleContent.style.backgroundColor = "white";<br>
+titleContent.style.width = "500px";<br>
+titleContent.innerHTML = [<br>
+&emsp;&emsp;"&lt;div id='title' class='esri-widget'&gt;",<br>
+&emsp;&emsp;"&lt;span id='tot-crimes'&gt;0&lt;/span&gt; crimes occurred within half mile of the pointer location in 2018.&lt;br&gt;",<br>
+&emsp;&emsp;&emsp;&emsp;"Total number of Theft are &lt;span id='tot-theft'&gt;0&lt;/span&gt;.&lt;br&gt;",<br>
+&emsp;&emsp;&emsp;&emsp;"Total number of Theft from Auto are &lt;span id='tot-theftAuto'&gt;0&lt;/span&gt;.&lt;br&gt;",<br>
+&emsp;&emsp;&emsp;&emsp;"Total number of Motor Vehicle Theft are &lt;span id='tot-MVT'&gt;0&lt;/span&gt;.&lt;br&gt;",<br>
+&emsp;&emsp;&emsp;&emsp;"Total number of Robberies are &lt;span id='tot-Robbery'&gt;0&lt;/span&gt;.&lt;br&gt;",<br>
+&emsp;&emsp;&emsp;&emsp;"Total number of Assault with a Dangerous Weapon are &lt;span id='tot-AssaultwWeapon'&gt;0&lt;/span&gt;.&lt;br&gt;",<br>
+&emsp;&emsp;&emsp;&emsp;"Total number of Burglaries &lt;span id='tot-Burglary'&gt;0&lt;/span&gt;.&lt;br&gt;",<br>
+&emsp;&emsp;&emsp;&emsp;"Total number of Sex Abuse are &lt;span id='tot-SexAbuse'&gt;0&lt;/span&gt;.&lt;br&gt;",<br>
+&emsp;&emsp;&emsp;&emsp;"Total number of Homicides are &lt;span id='tot-Homicides'&gt;0&lt;/span&gt;.&lt;br&gt;",<br>
+&emsp;&emsp;&emsp;&emsp;"Total number of Arson are &lt;span id='tot-Arson'&gt;0&lt;/span&gt;.&lt;br&gt;",<br>
+&emsp;&emsp;"&lt;/div&gt;"<br>
+].join(" ");<br><br>
+var titleExpand = new Expand({<br>
+&emsp;&emsp;expandIconClass: "esri-icon-dashboard",<br>
+&emsp;&emsp;expandTooltip: "Summary stats",<br>
+&emsp;&emsp;view: view,<br>
+&emsp;&emsp;content: titleContent,<br>
+&emsp;&emsp;expanded: view.widthBreakpoint !== "xsmall"<br>
+});<br>
+view.ui.add(titleExpand, "top-right");<br><br></p><br>
+5. Next let's add a legend which should be easy for you to do. Here we will add it into a Expand widget as well like we did above. Notice that both the above and legend are using the <a target="_blank" href="https://developers.arcgis.com/javascript/latest/api-reference/esri-views-MapView.html#widthBreakpoint">widthBreakpoint</a> property to dynamically control the expansion of the widget. You can see this by making the browser window smaller.<br><br>
+<p style="padding-left: 5%; font-family: monospace;">
+var legendExpand = new Expand({<br>
+&emsp;&emsp;view: view,<br>
+&emsp;&emsp;content: new Legend({<br>
+&emsp;&emsp;&emsp;&emsp;view: view<br>
+&emsp;&emsp;}),<br>
+&emsp;&emsp;expanded: view.widthBreakpoint !== "xsmall"<br>
+});<br>
+view.ui.add(legendExpand, "bottom-left");<br><br>
+view.watch("widthBreakpoint", function(newValue) {<br>
+&emsp;&emsp;titleExpand.expanded = newValue !== "xsmall";<br>
+&emsp;&emsp;legendExpand.expanded = newValue !== "xsmall";<br>
+});<br>
 </p>
-<br>
-<u>2. Add Graphics Layer</u>
-<br>
-Before we can work with the graphics layer, we need to add it to our map!
-<br>
-<p style="padding-left: 5%; font-family: monospace;">var bufferLayer = new GraphicsLayer();<br>
-	<br>
-	map.add(bufferLayer);
+<br><br>
+6. You need to declare a variable so that we can control what is highlighted as the selection is changed. This will be used later.<br><br>
+<p style="padding-left: 5%; font-family: monospace;">
+	var highlightHandle = null;
 </p>
-<br>
-<u>3. Symbols</u>
-<br>
-We need a symbol for the buffer we're going to create since these a client-side graphics. 
-So this will create both a "fill" for the buffer and a point symbol as well.
-<br>
-<p style="padding-left: 5%; font-family: monospace;">var bufferSymbol = {<br>
-	&emsp;&emsp;type: "simple-fill", // autocasts as new SimpleFillSymbol()<br>
-	&emsp;&emsp;color: [140, 140, 222, 0.5],<br>
-	&emsp;&emsp;outline: {<br>
-	&emsp;&emsp;&emsp;&emsp;color: [0, 0, 0, 0.5],<br>
-	&emsp;&emsp;&emsp;&emsp;width: 2<br>
-	&emsp;&emsp;}<br>
-  };<br>
-  <br>
-  var pointSymbol = {<br>
-	&emsp;&emsp;type: "simple-marker", // autocasts as new SimpleMarkerSymbol()<br>
-	&emsp;&emsp;color: [255, 0, 0],<br>
-	&emsp;&emsp;outline: {<br>
-	&emsp;&emsp;&emsp;&emsp;color: [255, 255, 255],<br>
-	&emsp;&emsp;&emsp;&emsp;width: 1<br>
-	&emsp;&emsp;},<br>
-	&emsp;&emsp;size: 7<br>
-  };
+<br><br>
+7. Now we need to right the code when to start doing the query. What this is saying is that when the view is ready, then we get the first layer in the map which is our crime points. So when the view is not updating once <a target="_blank" href="https://developers.arcgis.com/javascript/latest/api-reference/esri-core-watchUtils.html#whenFalseOnce">watchUtils.whenFalseOnce</a> when there is a click or drag on the view, we capture the location and stop navigations using event.stopPropagation() so as we drag it doesn't pan the map. But instead we call the function to queryStatsOnDrag and pass the layerView and the event(the location clicked).<br><br>
+<p style="padding-left: 5%; font-family: monospace;">
+view.when()<br>
+.then(function() {<br>
+&emsp;&emsp;var layer = webmap.layers.getItemAt(0);<br>
+&emsp;&emsp;view.whenLayerView(layer).then(function(layerView) {<br>
+&emsp;&emsp;&emsp;&emsp;watchUtils.whenFalseOnce(layerView, "updating", function(<br>
+&emsp;&emsp;&emsp;&emsp;val) {<br>
+&emsp;&emsp;&emsp;&emsp;view.on(["click", "drag"], function(event) {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;event.stopPropagation();<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;queryStatsOnDrag(layerView, event)<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;.then(updateStats);<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;});<br>
+&emsp;&emsp;&emsp;&emsp;});<br>
+&emsp;&emsp;});<br>
+});<br>
 </p>
-<br>
-<u>4. Capture Click</u>
-<br>
-Finally, we need to tell our view that when we click on it, we want to create this buffer. 
-To do this, we'll capture the event of the clicking on the view and call a function to generate the buffer.
-<br>
-<p style="padding-left: 5%; font-family: monospace;">view.on("click", function(event) {<br>
-	&emsp;&emsp;bufferPoint(event.mapPoint);<br>
-  });<br>
-  <br>
-  function bufferPoint(point) {<br>
-	&emsp;&emsp;bufferLayer.add(new Graphic({<br>
-	&emsp;&emsp;&emsp;&emsp;geometry: point,<br>
-	&emsp;&emsp;&emsp;&emsp;symbol: pointSymbol<br>
-	&emsp;&emsp;}));<br>
-	<br>
-	&emsp;&emsp;var buffer = geometryEngine.geodesicBuffer(point, 1, "miles");<br>
-	&emsp;&emsp;bufferLayer.add(new Graphic({<br>
-	&emsp;&emsp;&emsp;&emsp;geometry: buffer,<br>
-	&emsp;&emsp;&emsp;&emsp;symbol: bufferSymbol<br>
-	&emsp;&emsp;}));<br>
-  }
+<br><br>
+8. What does the queryStatsOnDrag function look like. It looks complicated but it really isn't. First we create a query on the layerView that is passed in. Then we use the event as the geometry and set the distance for the query. Then we clone the query so we can use it also for the stats query. Next we define the array of statDefinitions to count up how many crimes and of what type are found within the query. Then we do the query against the layerView to get the stats. Next we use the query with the distance set to highlight the features that are selected. Here is where we use the highlightHandle from above that we set to null earlier. We need this because if we don't remove the previous highlighted features they will just accumulate as you drag around the view.<br><br>
+<p style="padding-left: 5%; font-family: monospace;">
+function queryStatsOnDrag(layerView, event) {<br><br>
+&emsp;&emsp;// create a query object for the highlight and the statistics query<br><br>
+&emsp;&emsp;var query = layerView.layer.createQuery();<br>
+&emsp;&emsp;query.geometry = view.toMap(event); // converts the screen point to a map point<br>
+&emsp;&emsp;query.distance = .5; // queries all features within 1 mile of the point<br>
+&emsp;&emsp;query.units = "miles";<br><br>
+&emsp;&emsp;var statsQuery = query.clone();<br><br>
+&emsp;&emsp;// Create the statistic definitions for querying stats from the layer view<br>
+&emsp;&emsp;// the `onStatisticField` property can reference a field name or a SQL expression<br>
+&emsp;&emsp;// `outStatisticFieldName` is the name of the statistic you will reference in the result<br>
+&emsp;&emsp;// `statisticType` can be sum, avg, min, max, count, stddev<br>
+&emsp;&emsp;var statDefinitions = [<br><br>
+&emsp;&emsp;&emsp;&emsp;// total OFFENSES<br><br>
+&emsp;&emsp;&emsp;&emsp;{<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;onStatisticField: "1",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outStatisticFieldName: "total",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;statisticType: "count"<br>
+&emsp;&emsp;&emsp;&emsp;},<br><br>
+&emsp;&emsp;&emsp;&emsp;// total types of crime <br>
+&emsp;&emsp;&emsp;&emsp;// Since separate fields don't exist for each crime type, we can use<br>
+&emsp;&emsp;&emsp;&emsp;// an expression to return a 1 or a 0 for each crime type and sum up the<br>
+&emsp;&emsp;&emsp;&emsp;// results to get the total.<br><br>
+&emsp;&emsp;&emsp;&emsp;{<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;onStatisticField: "CASE WHEN OFFENSE = 'THEFT/OTHER' THEN 1 ELSE 0 END",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outStatisticFieldName: "total_Theft",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;statisticType: "sum"<br>
+&emsp;&emsp;&emsp;&emsp;}, {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;onStatisticField: "CASE WHEN OFFENSE = 'THEFT F/AUTO' THEN 1 ELSE 0 END",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outStatisticFieldName: "total_TheftAuto",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;statisticType: "sum"<br>
+&emsp;&emsp;&emsp;&emsp;}, {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;onStatisticField: "CASE WHEN OFFENSE = 'MOTOR VEHICLE THEFT' THEN 1 ELSE 0 END",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outStatisticFieldName: "total_MVT",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;statisticType: "sum"<br>
+&emsp;&emsp;&emsp;&emsp;}, {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;onStatisticField: "CASE WHEN OFFENSE = 'ROBBERY' THEN 1 ELSE 0 END",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outStatisticFieldName: "total_Robbery",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;statisticType: "sum"<br>
+&emsp;&emsp;&emsp;&emsp;}, {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;onStatisticField: "CASE WHEN OFFENSE = 'ASSAULT W/DANGEROUS WEAPON' THEN 1 ELSE 0 END",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outStatisticFieldName: "total_AssaultWeapon",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;statisticType: "sum"<br>
+&emsp;&emsp;&emsp;&emsp;}, {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;onStatisticField: "CASE WHEN OFFENSE = 'BURGLARY' THEN 1 ELSE 0 END",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outStatisticFieldName: "total_Bulglary",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;statisticType: "sum"<br>
+&emsp;&emsp;&emsp;&emsp;}, {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;onStatisticField: "CASE WHEN OFFENSE = 'SEX ABUSE' THEN 1 ELSE 0 END",<br>
+&emsp;&emsp;&emsp;&emsp;outStatisticFieldName: "total_SexAbuse",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;statisticType: "sum"<br>
+&emsp;&emsp;&emsp;&emsp;}, {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;onStatisticField: "CASE WHEN OFFENSE = 'HOMICIDE' THEN 1 ELSE 0 END",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outStatisticFieldName: "total_Homicide",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;statisticType: "sum"<br>
+&emsp;&emsp;&emsp;&emsp;}, {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;onStatisticField: "CASE WHEN OFFENSE = 'ARSON' THEN 1 ELSE 0 END",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outStatisticFieldName: "total_Arson",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;statisticType: "sum"<br>
+&emsp;&emsp;&emsp;&emsp;}<br><br>
+&emsp;&emsp;];<br><br>
+&emsp;&emsp;// add the stat definitions to the the statistics query object cloned earlier<br>
+&emsp;&emsp;statsQuery.outStatistics = statDefinitions;<br><br>
+&emsp;&emsp;// execute the query for all features in the layer view<br>
+&emsp;&emsp;var allStatsResponse = layerView.queryFeatures(statsQuery)<br>
+&emsp;&emsp;&emsp;&emsp;.then(function(response) {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;var stats = response.features[0].attributes;<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;return stats;<br>
+&emsp;&emsp;&emsp;&emsp;}, function(e) {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;console.error(e);<br>
+&emsp;&emsp;&emsp;&emsp;});<br><br>
+&emsp;&emsp;// highlight all features within the query distance<br>
+&emsp;&emsp;layerView.queryObjectIds(query)<br>
+&emsp;&emsp;&emsp;&emsp;.then(function(ids) {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;if (highlightHandle) {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;highlightHandle.remove();<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;highlightHandle = null;<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;highlightHandle = layerView.highlight(ids);<br>
+&emsp;&emsp;&emsp;&emsp;});<br><br>
+&emsp;&emsp;// Return the promises that will resolve to each set of statistics<br>
+&emsp;&emsp;return promiseUtils.eachAlways([allStatsResponse]);<br>
+}<br>
 </p>
-Now click around a bunch! You'll likely notice a slight delay, and that's because your computer is doing a bunch of fancy calculations to make this buffer on the fly!
-<br><br><button type="button" class="collapsible">Map Solution</button>
-    <div class="content"><img src="./images/e13_one.jpg"></div>
-<br><br><button type="button" class="collapsible">Code Solution</button>
-    <div class="content"><img src="./images/e13_code_1.jpg"><img src="./images/e13_code_2.jpg"></div>
-<br><br><br><b><u>Challenges:</u></b><br><br>
-Can you make the buffer large enough to encapsulate all of DC?
+<br><br>
+9. The last bit is to write the function to update the numbers with the data returned from the statistic queries.<br><br>
+<p style="padding-left: 5%; font-family: monospace;">
+function updateStats(responses) {<br>
+&emsp;&emsp;var allStats = responses[0].value;<br>
+&emsp;&emsp;var totalNumber = document.getElementById("tot-crimes");<br>
+&emsp;&emsp;var totTheft = document.getElementById("tot-theft");<br>
+&emsp;&emsp;var totTheftAuto = document.getElementById("tot-theftAuto");<br>
+&emsp;&emsp;var totMVT = document.getElementById("tot-MVT");<br>
+&emsp;&emsp;var totRobbery = document.getElementById("tot-Robbery");<br>
+&emsp;&emsp;var totAssault = document.getElementById("tot-AssaultwWeapon");<br>
+&emsp;&emsp;var totBurglary = document.getElementById("tot-Burglary");<br>
+&emsp;&emsp;var totSexAbuse = document.getElementById("tot-SexAbuse");<br>
+&emsp;&emsp;var totHomicide = document.getElementById("tot-Homicides");<br>
+&emsp;&emsp;var totArson = document.getElementById("tot-Arson");<br><br>
+&emsp;&emsp;// Update the total numbers in the title UI element<br>
+&emsp;&emsp;totalNumber.innerHTML = allStats.total;<br>
+&emsp;&emsp;totTheft.innerHTML = allStats.total_Theft;<br>
+&emsp;&emsp;totTheftAuto.innerHTML = allStats.total_TheftAuto;<br>
+&emsp;&emsp;totMVT.innerHTML = allStats.total_MVT;<br>
+&emsp;&emsp;totRobbery.innerHTML = allStats.total_Robbery;<br>
+&emsp;&emsp;totAssault.innerHTML = allStats.total_AssaultWeapon;<br>
+&emsp;&emsp;totBurglary.innerHTML = allStats.total_Bulglary;<br>
+&emsp;&emsp;totSexAbuse.innerHTML = allStats.total_SexAbuse;<br>
+&emsp;&emsp;totHomicide.innerHTML = allStats.total_Homicide;<br>
+&emsp;&emsp;totArson.innerHTML = allStats.total_Arson;<br>
+}<br>
+</p>
+<br><br>
+Select a category to query the feature layer. Click on any point to display the attribute data in a popup.
+<br><br>
+If you're stuck, ensure that your code looks like the solution in the picture below:<br><br>
+<button type="button" class="collapsible">Map Solution</button>
+    <div class="content"><img src="./images/e15_map.JPG"></div><br>
+<button type="button" class="collapsible">Code Solution</button>
+    <div class="content"><img src="./images/e15_one.JPG"><img src="./images/e15_two.JPG"><img src="./images/e15_three.JPG"><img src="./images/e15_four.JPG"><img src="./images/e15_five.JPG"></div>
+<br><br>
 </div>
 </div>
 <!-- <div id="dialog" title="Welcome to the ArcGIS API for JavaScript">
-  <p>Please use this Code Playground to begin learning about the ArcGIS API for JavaScript. To get started, please read through and follow the directions on the right hand side of your screen.</p>
-</div> -->
+  <p>Please use this Code Playground to begin learning about the ArcGIS API for JavaScript. To get started, click on the Directions button. As you edit code on the left side of the screen, press the Refresh button to see the updates on the Map.</p>
+<br><br></div> -->
     <script>
       var delay;
       // Initialize CodeMirror editor with a nice html5 canvas demo.
@@ -329,9 +484,9 @@ Can you make the buffer large enough to encapsulate all of DC?
       });
 	  document.getElementById('instruct').style.display = "none";
 	  
-	  /* $( function() {
-		$( "#dialog" ).dialog({width: "500px", modal: true});
-	  } ); */
+	//   $( function() {
+	// 	$( "#dialog" ).dialog({width: "500px"});
+	//   } );
       
       function updatePreview() {
 	    var wrapper = document.getElementById('wrapper');
@@ -350,12 +505,12 @@ Can you make the buffer large enough to encapsulate all of DC?
 		var link = document.createElement('a');
 		mimeType = 'text/html' || 'text/plain';
 
-		link.setAttribute('download', 'exercise13.html');
+		link.setAttribute('download', 'exercise15.html');
 		link.setAttribute('href', 'data:' + 'text/html' + ';charset=utf-8,' + encodeURIComponent(elHtml));
 		link.click(); 
 	  }
 
-	  /* function loadLab(evt, a){
+	  function loadLab(evt, a){
 		var i, tabcontent, tablinks;
 		 tabcontent = document.getElementsByClassName("tabcontent");
 		 for (i = 0; i < tabcontent.length; i++) {
@@ -380,8 +535,9 @@ Can you make the buffer large enough to encapsulate all of DC?
 			editor.getDoc().setValue(document.getElementById('lab2').value)
 			document.getElementById('instruct').innerHTML = "<br>###Build a starter map<br><br>This lab covers the basics for creating a basic starter mapping application. The starter map simply loads a default base map, and centers and zooms it in in a <a target='_blank' href='https://developers.arcgis.com/javascript/latest/api-reference/esri-views-MapView.html'>MapView</a>. If you are new to ArcGIS and need a full set of instructions on building a basic mapping application visit the <a target='_blank' href='https://developers.arcgis.com/javascript/latest/sample-code/get-started-mapview/index.html'>Getting Started with MapView</a> tutorial.<br><br>###Bonus<ul><li>Experiment with different basemaps such as topo-vector or gray-vector. Here is a <a target='_blank' href='https://developers.arcgis.com/javascript/latest/api-reference/esri-Map.html#basemap'>list</a> of options.</li><li>Change the center and zoom level.</li></ul>"
 		}
-	  } */
-	    var coll = document.getElementsByClassName("collapsible");
+	  }
+
+	  var coll = document.getElementsByClassName("collapsible");
         var i;
 
         for (i = 0; i < coll.length; i++) {
@@ -395,7 +551,7 @@ Can you make the buffer large enough to encapsulate all of DC?
             }
         });
         }
-
+	  
 	  function openCity(evt, cityName) {
 		  var i, tabcontent, tablinks;
 		  tabcontent = document.getElementsByClassName("tabcontent");

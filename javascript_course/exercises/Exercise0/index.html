@@ -53,18 +53,6 @@
 		background-color: white;
 		display: block
 	  }
-
-	  #toc{
-		position: absolute;
-		overflow: auto;
-		top:0;
-		left:0;
-		padding: 10px;
-		width: calc(100% - 22px);
-		height: calc(100% - 22px);
-		background-color: white;
-		display: none;
-	  }
 	  
 		.tab {
 		  overflow: hidden;
@@ -230,7 +218,6 @@
   <button id="MapCanvas" class="tablinks" onclick="openCity(event, 'MapCanvas'); updatePreview();">Map</button>
   <button id="Refresh" class="tablinks" onclick="updatePreview()">Refresh</button>
   <button id="Download" class="tablinks" onclick="download()">Download</button>
-  <button id="TOC" class="tablinks" onclick="openCity(event, 'TOC')">Table of Contents</button>
 </div>
 <div id=container>
 <div id=wrapper>
@@ -268,7 +255,7 @@ For us, we just need two lines of code, go ahead and copy these two lines into t
 <br>
 <p style="padding-left: 5%; font-family: monospace;">&lt;link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/themes/light/main.css"&gt;<br>
 &lt;script src="https://js.arcgis.com/4.18/"&gt;&lt;/script&gt;</p>
-The "link" is our css for our JS API library, and the "script" is our actual API being loaded it!
+The "link" is our css for our JS API library, and the "script" is our actual API being loaded in!
 <br><br>
 <u>2. Add some JavaScript!</u>
 <br>
@@ -299,21 +286,13 @@ A few lines here, we'll explain them later:
     &emsp;&emsp;container: "viewDiv" // Div element<br>
   });</p>
 With this we have done everything needed to load in a map! Click on the map tab and you'll see your map!<br><br>
-If it doesn't load, ensure that your code looks like the solution in the picture below:<br><br>
+If it doesn't load, try hitting the refresh button to ensure that your code is actually in there, and then make sure your code looks like the solution in the picture below:<br><br>
 <button type="button" class="collapsible">Solution</button>
     <div class="content"><img src="./images/e0_one.png"></div>
 
 <br><br><br><b><u>Challenges:</u></b><br><br>
 Can you make your indentation easier to read? Copy and pasting code always messes up indentation... Try to make sure all nested elements are correctly positioned, in the HTML and JavaScript!
 
-</div>
-<div id=toc style="font-family: Arial, Arial, Helvetica, sans-serif;">
-	<span style="display: block; text-align: center;"><b><u>Table of Contents:</u></b><br><br></span>
-	<ol>
-		<li><a target="_blank" href="https://mozenberger.github.io/JSAPIWorkshop/Exercise0/">Introduction (Pre-work)</a></li>
-		<li><a target="_blank" href="https://mbana641.github.io/javascript_course/Exercise1">HTML, CSS, and JavaScript</a></li>
-		<ul><li>3D class goes here</li></ul>
-	</ol>
 </div>
 </div>
 <div id="dialog" title="Welcome to the ArcGIS API for JavaScript">

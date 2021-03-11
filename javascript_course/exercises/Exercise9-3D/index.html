@@ -1,6 +1,6 @@
 <!doctype html>
 
-<title>Exercise 17 3D</title>
+<title>Exercise 9 3D</title>
 <meta charset="utf-8"/>
 <link rel="icon" type="image/png" href="./brackets.png"/>
 <link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.51.0/codemirror.css>
@@ -123,7 +123,7 @@
 			font-size:14px;
 		}
 
-		.collapsible {
+        .collapsible {
             background-color: #777;
             color: white;
             cursor: pointer;
@@ -147,7 +147,7 @@
         }
 
 		img {
-			width: 100%;
+			width:100%;
 		}
 
 </style>
@@ -164,16 +164,16 @@
 
 
 <textarea id="code" name="code" style="display:none;">
-<!-- Exercise 17 3D, Written in JavaScript 4.18 -->
+<!-- Exercise 9 3D, Written in JavaScript 4.18 -->
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-  <title>Arcade</title>
+  <title>Exercise 9 3D</title>
 
-  <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/themes/light/main.css" />
-	<script src="https://js.arcgis.com/4.18/"></script>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.18/"></script>
   
   <style>
     html, body, #viewDiv {
@@ -181,32 +181,29 @@
       margin: 0;
       height: 100%;
     }
+  
   </style>
 
   <script>
-    //var view; // declaring view as a global variable 
-    
     require([
-      "esri/Map",
-      "esri/views/SceneView"
-    ], function(Map, SceneView) {
+      "esri/views/SceneView",
+      "esri/Map"
+    ], function(SceneView, Map) {
 
-      var map = new Map({
-        basemap: "hybrid",
-      });
+      var scene = new Map({
+		  basemap: "dark-gray-vector"
+	  });
 
       var view = new SceneView({
-        container: "viewDiv",
-        map: map,
-        center: [-74.029, 40.71],
-        zoom: 10
+        map: scene,
+        container: "viewDiv"
       });
-	        
+
     });
   </script>
 </head>
 <body>
-  <div id="viewDiv"></div>
+    <div id="viewDiv"></div>
 </body>
 </html>
 </textarea>
@@ -222,133 +219,178 @@
 <iframe id=preview></iframe>
 </div>
 <div id=instruct style="font-family: Arial, Helvetica, sans-serif;">
-	<span style="display: block; text-align: center;"><b><u>Exercise 17 3D - Working with Arcade</u></b><br><br></span>
+<span style="display: block; text-align: center;"><b><u>Exercise 9 3D - Search with Widgets</u></b><br><br></span>
+<b><u>Instructions:</u></b><br><br>
+In this lab you will use a QueryTask to query data from a feature layer.
+A query task allows you to make a SQL or spatial query to retrieve subsets of records from a layer or service
+<br><br>
+With Query tasks, you are responsible for adding the resulting features to the map as graphics.
+You are also responsible for adding a symbol and defining the popup template used for the data.
+<br><br>
+Let's look at some Washington D.C. Metro Station data and use this query to select and symbolize the different lines!
+<br><br>
 <b><u>Exercise:</u></b><br><br>
-In this lab you will use Arcade to create custom labels based on each feature’s attributes. Through arcade you can access individual features by using $feature, and use it to edit lables or rendering. Arcade scripts can be used across the Esri platform to include ArcGIS Pro, the JavaScript API, and mobile applications.
-<br><br>
-1. Add the following code directly below &lt;/style&gt;. This is the Arcade expression that will be used to produce the label.
-<p style="padding-left: 5%; font-family: monospace;"><br><br>&lt;script type="text/plain" id="amenities"&gt;<br>
-&emsp;&emsp;var i = 0;<br>
-&emsp;&emsp;var features = [];<br><br>
-&emsp;&emsp;if ($feature.TastingRoo != " ") {<br>
-&emsp;&emsp;&emsp;&emsp;features[i++] = "-Tasting Room Onsite";<br>
-&emsp;&emsp;}<br>
-&emsp;&emsp;if ($feature.GroupTour != " ") {<br>
-&emsp;&emsp;&emsp;&emsp;features[i++] = "-Tours Available";<br>
-&emsp;&emsp;}<br>
-&emsp;&emsp;if ($feature.PicnicArea != " ") {<br>
-&emsp;&emsp;&emsp;&emsp;features[i++] = "-Picnic Area Onsite";<br>
-&emsp;&emsp;}<br>
-&emsp;&emsp;if ($feature.FoodAvaila != " ") {<br>
-&emsp;&emsp;&emsp;&emsp;features[i++] = "-Food Available Onsite";<br>
-&emsp;&emsp;}<br><br>
-&emsp;&emsp;return Concatenate(features, TextFormatting.NewLine)<br>
-&lt;/script&gt;<br>
-</p>
+<u>1. Create HTML Select Box</u>
 <br>
-2. Update the require statement and function definition:
-<br><br>
-<p style="padding-left: 5%; font-family: monospace;">require([<br>
-&emsp;&emsp;"esri/Map",<br>
-&emsp;&emsp;"esri/views/SceneView",<br>
-&emsp;&emsp;"esri/layers/FeatureLayer",<br>
-&emsp;&emsp;"esri/geometry/Extent"<br>
-], function(Map, SceneView, FeatureLayer, Extent) {<br>
-<br></p>
+First thing we need is a "select" element in our HTML with different options for each metro line.
 <br>
-3. Change your map and view. Add a variable that will be used to determine at what scale labels should draw.
-<br><br><p style="padding-left: 5%; font-family: monospace;">
-	var minScale = 100000;<br>
-	var map = new Map({<br>
-		&emsp;&emsp;basemap: "gray-vector"<br>
-	})<br><br>
-	 
-	var extent = new Extent ({<br>
-		&emsp;&emsp;xmin: -83.7,<br>
-		&emsp;&emsp;ymin: 36.4,<br>
-		&emsp;&emsp;xmax: -75.7,<br>
-		&emsp;&emsp;ymax: 39.6<br>
-	})<br><br>
-	 
-	var view = new SceneView({<br>
-		&emsp;&emsp;container: "viewDiv",<br>
-		&emsp;&emsp;map: map,<br>
-		&emsp;&emsp;extent: extent<br>
-	});<br><br>
-</p><br>
-4. Create two labeling classes. One is for the feature name and will be displayed at the top-right corner. The second, which uses the arcade script, is for the list of amenities and will be displayed to the bottom-right of the feature. Both classes call a function named createTextSymbol which determines how the label is displayed.
-<br><br><p style="padding-left: 5%; font-family: monospace;">
-	var nameClass = {<br>
-		&emsp;&emsp;labelPlacement: "above-right",<br>
-		&emsp;&emsp;labelExpressionInfo: {<br>
-			&emsp;&emsp;&emsp;&emsp;expression: "$feature.NAME"<br>
-			&emsp;&emsp;},<br>
-			&emsp;&emsp;minScale: minScale<br>
-	  };<br>
-	  nameClass.symbol = createTextSymbol("black");<br><br>
-			  
-	  var amenitiesArcade = document.getElementById("amenities").text;<br>
-	  var amenitiesClass = {<br>
-		&emsp;&emsp;labelExpressionInfo: {<br>
-			&emsp;&emsp;&emsp;&emsp;expression: amenitiesArcade<br>
-			&emsp;&emsp;},<br>
-			&emsp;&emsp;labelPlacement: "below-right",<br>
-			&emsp;&emsp;&emsp;&emsp;minScale: minScale<br>
-			&emsp;&emsp;};<br>
-	  amenitiesClass.symbol = createTextSymbol("#3ba53f");<br><br></p><br>
-5. Create the feature layer and add it to the map.<br><br>
+The text that we put in here will eventually be passed back into the query, since the user has to select the line they want to view.
+<br>
 <p style="padding-left: 5%; font-family: monospace;">
-	var serviceUrl = "https://services5.arcgis.com/cMBqYE4wmbXNMvex/ArcGIS/rest/services/Virginia_Wineries/FeatureServer/1";<br>
-	var layer = new FeatureLayer({<br>
-		&emsp;&emsp;url: serviceUrl,<br>
-		&emsp;&emsp;renderer: {<br>
-			&emsp;&emsp;&emsp;&emsp;type: "simple",<br>
-			&emsp;&emsp;&emsp;&emsp;symbol: {<br>
-				&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;type: "simple-marker",<br>
-				&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color: [128, 0, 128, 0.6],<br>
-				&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;size: 10,<br>
-				&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outline: {<br>
-					&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color: [0, 0, 0, 0.4],<br>
-					&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;width: 0.5<br>
-					&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br>
-					&emsp;&emsp;&emsp;&emsp;}<br>
-					&emsp;&emsp;},<br>
-					&emsp;&emsp;labelingInfo: [<br>
-					&emsp;&emsp;&emsp;&emsp;nameClass,<br>
-					&emsp;&emsp;&emsp;&emsp;amenitiesClass<br>
-					&emsp;&emsp;]<br>
-	});<br><br>
-	
-	view.map.add(layer);<br><br>
+	&emsp;&emsp;&lt;div id="viewDiv"&gt;&lt;/div&gt;<br>
+	&emsp;&emsp;&lt;!-- ADD --&gt;<br>
+	&emsp;&emsp;&lt;select id="queryDiv"&gt;<br>
+	&emsp;&emsp;&emsp;&emsp;&lt;option selected&gt;blue&lt;/option&gt;<br>
+	&emsp;&emsp;&emsp;&emsp;&lt;option&gt;orange&lt;/option&gt;<br>
+	&emsp;&emsp;&emsp;&emsp;&lt;option&gt;red&lt;/option&gt;<br>
+	&emsp;&emsp;&emsp;&emsp;&lt;option&gt;silver&lt;/option&gt;<br>
+	&emsp;&emsp;&emsp;&emsp;&lt;option&gt;yellow&lt;/option&gt;<br>
+	&emsp;&emsp;&lt;/select&gt;
 </p>
-<br>6. The last thing we need to do is to add the createTextSymbol function:
-<br><br><p style="padding-left: 5%; font-family: monospace;">
-	function createTextSymbol(color) {<br>
-		&emsp;&emsp;return {<br>
-			&emsp;&emsp;&emsp;&emsp;type: "text",<br>
-			&emsp;&emsp;&emsp;&emsp;font: {<br>
-				&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;size: 12,<br>
-				&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;weight: "bold"<br>
-				&emsp;&emsp;&emsp;&emsp;},<br>
-				&emsp;&emsp;&emsp;&emsp;color: "white",<br>
-				&emsp;&emsp;&emsp;&emsp;haloColor: color,<br>
-				&emsp;&emsp;&emsp;&emsp;haloSize: 1<br>
-				&emsp;&emsp;};<br>
-	  }<br>
-</p><br><br>
-Your app should display a map of all the wineries in Virginia. They should be labeled with the winery name and list the available amenities when zoomed in to a close enough extent.
-<br><br>
-If you're stuck, ensure that your code looks like the solution in the picture below:<br><br>
+<br>
+<u>2. Update Require</u>
+<br>
+Update your require statement <b>and</b> function definition to include the following:
+<br>
+<p style="padding-left: 5%; font-family: monospace;">require([<br>
+	&emsp;&emsp;"esri/views/SceneView",<br>
+	&emsp;&emsp;"esri/Map",<br>
+	&emsp;&emsp;/*** ADD ***/<br>
+	&emsp;&emsp;"esri/layers/FeatureLayer",<br>
+	&emsp;&emsp;"esri/tasks/QueryTask",<br>
+	&emsp;&emsp;"esri/tasks/support/Query",<br>
+	&emsp;&emsp;"esri/symbols/SimpleMarkerSymbol"<br>
+], function(SceneView, Map, FeatureLayer, QueryTask, Query, SimpleMarkerSymbol) {
+</p>
+<br>
+<u>3. Add Query</u>
+<br>
+Now we're going to create a QueryTask and Query to select features from the metro stops feature layer.
+We're also going to simply return two fields from the layer, since that's all we need.
+<br>
+<p style="padding-left: 5%; font-family: monospace;">var view = new SceneView({<br>
+	&emsp;&emsp;container: "viewDiv",<br>
+	&emsp;&emsp;map: scene,<br>
+	&emsp;&emsp;center: [-77.029, 38.89],<br>
+	&emsp;&emsp;zoom: 10<br>
+	});<br>
+	<br>
+	//Create query task to reference the PDX_Rail_Stops_Styled feature layer <br>
+	var queryTask = new QueryTask({<br>
+	&emsp;&emsp;url: "https://services.arcgis.com/hRUr1F8lE8Jq2uJo/arcgis/rest/services/Metro_Stations_Regional/FeatureServer/0"<br>
+	});<br>
+	<br>
+	//Only return two fields<br>
+	var query = new Query({<br>
+	&emsp;&emsp;returnGeometry: true,<br>
+	&emsp;&emsp;outFields: ["NAME", "LINE"],<br>
+	&emsp;&emsp;where: ""<br>
+    });<br>
+</p>
+<br>
+<u>4. Lots o' Functions</u>
+<br>
+Next, we're defining a bunch of functions that are going to execute the query task, get the features, 
+and then add them to the default graphics layer of the view.
+<br>
+<p style="padding-left: 5%; font-family: monospace;">//Perform query when page loads<br>
+	getFeatures("blue");<br>
+	<br>
+	//Get features with query where clause<br>
+	function getFeatures(theColor) {<br>
+	&emsp;&emsp;query.where = "LINE LIKE '%" + theColor + "%'";<br>
+	&emsp;&emsp;queryTask.execute(query).then(function(results) {<br>
+	&emsp;&emsp;&emsp;&emsp;addFeatures(results.features);<br>
+	&emsp;&emsp;})<br>
+	.catch(promiseRejected);<br>
+	}<br>
+	<br>
+	//Add features as graphics<br>
+	function addFeatures(features) {<br>
+	&emsp;&emsp;var color,<br>
+	&emsp;&emsp;&emsp;&emsp;symbol;<br>
+	&emsp;&emsp;//Color<br>
+	&emsp;&emsp;switch (document.getElementById("queryDiv").value) {<br>
+	&emsp;&emsp;&emsp;&emsp;case "blue":<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color = [0, 0, 255]<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;break;<br>
+	&emsp;&emsp;&emsp;&emsp;case "red":<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color = [255, 0, 0]<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;break;<br>
+	&emsp;&emsp;&emsp;&emsp;case "green":<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color = [0, 255, 0]<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;break;<br>
+	&emsp;&emsp;&emsp;&emsp;case "orange":<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color = [255,165, 0]<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;break;	<br>
+	&emsp;&emsp;&emsp;&emsp;case "yellow":<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color = [255, 255, 0]<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;break;<br>
+	&emsp;&emsp;&emsp;&emsp;case "silver":<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color = [190, 190, 190]<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;break;<br>
+	&emsp;&emsp;}<br>
+	&emsp;&emsp;symbol = new SimpleMarkerSymbol({<br>
+	&emsp;&emsp;&emsp;&emsp;color: color,<br>
+	&emsp;&emsp;&emsp;&emsp;size: 8,<br>
+	&emsp;&emsp;&emsp;&emsp;outline: {<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color: [ 255, 255, 255 ],<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;width: 1<br>
+	&emsp;&emsp;&emsp;&emsp;}<br>
+	&emsp;&emsp;});<br>
+	&emsp;&emsp;//Set symbol and popup template<br>
+	&emsp;&emsp;for (var i=0; i < features.length; i++) {<br>
+	&emsp;&emsp;&emsp;&emsp;var feature = features[i];<br>
+	&emsp;&emsp;&emsp;&emsp;feature.symbol = symbol;<br>
+	&emsp;&emsp;&emsp;&emsp;feature.popupTemplate = {<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;title: "{NAME}",<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;content: "This is a metro stop for the {LINE} line(s)."<br>
+	&emsp;&emsp;&emsp;&emsp;}<br>
+	&emsp;&emsp;&emsp;&emsp;view.graphics.add(feature);<br>
+	&emsp;&emsp;}<br>
+	&emsp;&emsp;//Add graphics<br>
+	&emsp;&emsp;view.graphics.removeAll();<br>
+	&emsp;&emsp;view.graphics.addMany(features);<br>
+	&emsp;&emsp;view.goTo(features);<br>
+	&emsp;&emsp;view.popup.visible = false;<br>
+	}
+</p>
+<br>
+<u>4. Add Handlers</u>
+<br>
+Final step I promise! We just have to add some handlers to select the HTML slement so we can change the SQL string for the query.
+Also, just an error handler in case the service isn't working!
+<br>
+<p style="padding-left: 5%; font-family: monospace;">//Add select element to UI<br>
+	view.when(function() {<br>
+		&emsp;&emsp;view.ui.add(document.getElementById("queryDiv"), "top-right");<br>
+		&emsp;&emsp;document.getElementById("queryDiv").addEventListener("change", doQuery);<br>
+	});<br>
+	<br>
+    //Get the color from the drop down<br>
+	function doQuery(e) {<br>
+		&emsp;&emsp;var theColor = e.target.value;<br>
+		&emsp;&emsp;getFeatures(theColor);<br>
+	};<br>
+	<br>
+	//Add the promise rejected function<br>
+	function promiseRejected(){<br>
+		&emsp;&emsp;console.write("Error with query");<br>
+	}<br>
+</p>
+And now, after all of this, your application should look like this:<br><br>
 <button type="button" class="collapsible">Map Solution</button>
-    <div class="content"><img src="./images/e173d_map.JPG"></div><br>
-<button type="button" class="collapsible">Code Solution</button>
-    <div class="content"><img src="./images/e173d_one.JPG"><img src="./images/e173d_two.JPG"><img src="./images/e173d_three.JPG"></div>
-<br><br>
+    <div class="content"><img src="./images/e12_3D_one.png"></div>
+<br><br><button type="button" class="collapsible">Code Solution</button>
+    <div class="content"><img src="./images/e12_3D_code_1.jpg"><img src="./images/e12_3D_code_2.jpg"><img src="./images/e12_3D_code_3.jpg"></div>
+
+<br><br><br><b><u>Challenges:</u></b><br><br>
+Oops! I left out the green line! Can you modify the HTML to include the green line and ensure that it still works with our query task?
 </div>
 </div>
 <!-- <div id="dialog" title="Welcome to the ArcGIS API for JavaScript">
-  <p>Please use this Code Playground to begin learning about the ArcGIS API for JavaScript. To get started, click on the Directions button. As you edit code on the left side of the screen, press the Refresh button to see the updates on the Map.</p>
-<br><br></div> -->
+  <p>Please use this Code Playground to begin learning about the ArcGIS API for JavaScript. To get started, please read through and follow the directions on the right hand side of your screen.</p>
+</div> -->
     <script>
       var delay;
       // Initialize CodeMirror editor with a nice html5 canvas demo.
@@ -365,9 +407,9 @@ If you're stuck, ensure that your code looks like the solution in the picture be
       });
 	  document.getElementById('instruct').style.display = "none";
 	  
-	//   $( function() {
-	// 	$( "#dialog" ).dialog({width: "500px"});
-	//   } );
+	  /* $( function() {
+		$( "#dialog" ).dialog({width: "500px", modal: true});
+	  } ); */
       
       function updatePreview() {
 	    var wrapper = document.getElementById('wrapper');
@@ -386,12 +428,12 @@ If you're stuck, ensure that your code looks like the solution in the picture be
 		var link = document.createElement('a');
 		mimeType = 'text/html' || 'text/plain';
 
-		link.setAttribute('download', 'exercise17-3D.html');
+		link.setAttribute('download', 'exercise9-3D.html');
 		link.setAttribute('href', 'data:' + 'text/html' + ';charset=utf-8,' + encodeURIComponent(elHtml));
 		link.click(); 
 	  }
 
-	  function loadLab(evt, a){
+	  /* function loadLab(evt, a){
 		var i, tabcontent, tablinks;
 		 tabcontent = document.getElementsByClassName("tabcontent");
 		 for (i = 0; i < tabcontent.length; i++) {
@@ -416,9 +458,8 @@ If you're stuck, ensure that your code looks like the solution in the picture be
 			editor.getDoc().setValue(document.getElementById('lab2').value)
 			document.getElementById('instruct').innerHTML = "<br>###Build a starter map<br><br>This lab covers the basics for creating a basic starter mapping application. The starter map simply loads a default base map, and centers and zooms it in in a <a target='_blank' href='https://developers.arcgis.com/javascript/latest/api-reference/esri-views-MapView.html'>MapView</a>. If you are new to ArcGIS and need a full set of instructions on building a basic mapping application visit the <a target='_blank' href='https://developers.arcgis.com/javascript/latest/sample-code/get-started-mapview/index.html'>Getting Started with MapView</a> tutorial.<br><br>###Bonus<ul><li>Experiment with different basemaps such as topo-vector or gray-vector. Here is a <a target='_blank' href='https://developers.arcgis.com/javascript/latest/api-reference/esri-Map.html#basemap'>list</a> of options.</li><li>Change the center and zoom level.</li></ul>"
 		}
-	  }
-
-	  var coll = document.getElementsByClassName("collapsible");
+	  } */
+	    var coll = document.getElementsByClassName("collapsible");
         var i;
 
         for (i = 0; i < coll.length; i++) {
@@ -432,7 +473,7 @@ If you're stuck, ensure that your code looks like the solution in the picture be
             }
         });
         }
-	  
+
 	  function openCity(evt, cityName) {
 		  var i, tabcontent, tablinks;
 		  tabcontent = document.getElementsByClassName("tabcontent");

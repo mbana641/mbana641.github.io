@@ -186,20 +186,17 @@
 
   <script>
     require([
-        "esri/Map",
-        "esri/views/SceneView",
-    ], function(Map, SceneView) {
+      "esri/views/MapView",
+      "esri/Map"
+    ], function(MapView, Map) {
 
       var map = new Map({
-        basemap: "topo-vector",
-        ground: "world-elevation"
+        basemap: "dark-gray-vector"
       });
-        
-      var view = new SceneView({
-        container: "viewDiv",
+
+      var view = new MapView({
         map: map,
-        center: [-117.195658, 34.056677],
-        scale: 5000
+        container: "viewDiv"
       });
 
     });
@@ -222,42 +219,173 @@
 <iframe id=preview></iframe>
 </div>
 <div id=instruct style="font-family: Arial, Helvetica, sans-serif;">
-<span style="display: block; text-align: center;"><b><u>Exercise 9 - Create a 3D Application from a Web Scene</u></b><br><br></span>
+<span style="display: block; text-align: center;"><b><u>Exercise 9 - Search with Widgets</u></b><br><br></span>
 <b><u>Instructions:</u></b><br><br>
-Back in Exercise 6 you loaded a Web Map into your app and were able to quickly load everything in that Web Map. Well, thankfully we can do the same thing in 3D, just a Web Scene instead!
+In this lab you will use a QueryTask to query data from a feature layer.
+A query task allows you to make a SQL or spatial query to retrieve subsets of records from a layer or service
 <br><br>
-Once again, the advantage to using this approach is that the app will inherit all of the pre-defined settings you configured in your portal.
+With Query tasks, you are responsible for adding the resulting features to the map as graphics.
+You are also responsible for adding a symbol and defining the popup template used for the data.
+<br><br>
+Let's look at some Washington D.C. Metro Station data and use this query to select and symbolize the different lines!
 <br><br>
 <b><u>Exercise:</u></b><br><br>
-<u>1. Update Require Statement</u>
+<u>1. Create HTML Select Box</u>
 <br>
-Let's first add a reference for our <a target="_blank" href="https://developers.arcgis.com/javascript/latest/api-reference/esri-WebScene.html">WebScene</a> in our <b>require</b> statement and include it in our <b>function</b> parameters.
-<p style="padding-left: 5%; font-family: monospace;">"esri/WebScene"
+First thing we need is a "select" element in our HTML with different options for each metro line.
+<br>
+The text that we put in here will eventually be passed back into the query, since the user has to select the line they want to view.
+<br>
+<p style="padding-left: 5%; font-family: monospace;">
+	&emsp;&emsp;&lt;div id="viewDiv"&gt;&lt;/div&gt;<br>
+	&emsp;&emsp;&lt;!-- ADD --&gt;<br>
+	&emsp;&emsp;&lt;select id="queryDiv"&gt;<br>
+	&emsp;&emsp;&emsp;&emsp;&lt;option selected&gt;blue&lt;/option&gt;<br>
+	&emsp;&emsp;&emsp;&emsp;&lt;option&gt;orange&lt;/option&gt;<br>
+	&emsp;&emsp;&emsp;&emsp;&lt;option&gt;red&lt;/option&gt;<br>
+	&emsp;&emsp;&emsp;&emsp;&lt;option&gt;silver&lt;/option&gt;<br>
+	&emsp;&emsp;&emsp;&emsp;&lt;option&gt;yellow&lt;/option&gt;<br>
+	&emsp;&emsp;&lt;/select&gt;
 </p>
-<u>2. Add Scene Layer</u>
 <br>
-The scene we are going to loading in is located <a target="_blank" href="https://esrifederal.maps.arcgis.com/home/webscene/viewer.html?webscene=fe1f639285254591b1bb2ad9c63be3af">here!</a> 
-<br><br>
-Note the scene ID at the end of that URL. Take the code block below, paste this <b>above</b> the view variable, and then paste in that same ID into the proper space of the portalItem.
-<p style="padding-left: 5%; font-family: monospace;">var scene = new WebScene({<br>
-	&emsp;&emsp;portalItem: {<br>
-		&emsp;&emsp;&emsp;&emsp;id: ""<br>
+<u>2. Update Require</u>
+<br>
+Update your require statement <b>and</b> function definition to include the following:
+<br>
+<p style="padding-left: 5%; font-family: monospace;">require([<br>
+	&emsp;&emsp;"esri/views/MapView",<br>
+	&emsp;&emsp;"esri/Map",<br>
+	&emsp;&emsp;/*** ADD ***/<br>
+	&emsp;&emsp;"esri/layers/FeatureLayer",<br>
+	&emsp;&emsp;"esri/tasks/QueryTask",<br>
+	&emsp;&emsp;"esri/tasks/support/Query",<br>
+	&emsp;&emsp;"esri/symbols/SimpleMarkerSymbol"<br>
+], function(MapView, Map, FeatureLayer, QueryTask, Query, SimpleMarkerSymbol) {
+</p>
+<br>
+<u>3. Add Query</u>
+<br>
+Now we're going to create a QueryTask and Query to select features from the metro stops feature layer.
+We're also going to simply return two fields from the layer, since that's all we need.
+<br>
+<p style="padding-left: 5%; font-family: monospace;">var view = new MapView({<br>
+	&emsp;&emsp;container: "viewDiv",<br>
+	&emsp;&emsp;map: map,<br>
+	&emsp;&emsp;center: [-77.029, 38.89],<br>
+	&emsp;&emsp;zoom: 10<br>
+	});<br>
+	<br>
+	//Create query task to reference the PDX_Rail_Stops_Styled feature layer <br>
+	var queryTask = new QueryTask({<br>
+	&emsp;&emsp;url: "https://services.arcgis.com/hRUr1F8lE8Jq2uJo/arcgis/rest/services/Metro_Stations_Regional/FeatureServer/0"<br>
+	});<br>
+	<br>
+	//Only return two fields<br>
+	var query = new Query({<br>
+	&emsp;&emsp;returnGeometry: true,<br>
+	&emsp;&emsp;outFields: ["NAME", "LINE"],<br>
+	&emsp;&emsp;where: ""<br>
+    });<br>
+</p>
+<br>
+<u>4. Lots o' Functions</u>
+<br>
+Next, we're defining a bunch of functions that are going to execute the query task, get the features, 
+and then add them to the default graphics layer of the view.
+<br>
+<p style="padding-left: 5%; font-family: monospace;">//Perform query when page loads<br>
+	getFeatures("blue");<br>
+	<br>
+	//Get features with query where clause<br>
+	function getFeatures(theColor) {<br>
+	&emsp;&emsp;query.where = "LINE LIKE '%" + theColor + "%'";<br>
+	&emsp;&emsp;queryTask.execute(query).then(function(results) {<br>
+	&emsp;&emsp;&emsp;&emsp;addFeatures(results.features);<br>
+	&emsp;&emsp;})<br>
+	.catch(promiseRejected);<br>
+	}<br>
+	<br>
+	//Add features as graphics<br>
+	function addFeatures(features) {<br>
+	&emsp;&emsp;var color,<br>
+	&emsp;&emsp;&emsp;&emsp;symbol;<br>
+	&emsp;&emsp;//Color<br>
+	&emsp;&emsp;switch (document.getElementById("queryDiv").value) {<br>
+	&emsp;&emsp;&emsp;&emsp;case "blue":<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color = [0, 0, 255]<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;break;<br>
+	&emsp;&emsp;&emsp;&emsp;case "red":<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color = [255, 0, 0]<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;break;<br>
+	&emsp;&emsp;&emsp;&emsp;case "green":<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color = [0, 255, 0]<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;break;<br>
+	&emsp;&emsp;&emsp;&emsp;case "orange":<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color = [255,165, 0]<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;break;	<br>
+	&emsp;&emsp;&emsp;&emsp;case "yellow":<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color = [255, 255, 0]<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;break;<br>
+	&emsp;&emsp;&emsp;&emsp;case "silver":<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color = [190, 190, 190]<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;break;<br>
 	&emsp;&emsp;}<br>
-});<br>
+	&emsp;&emsp;symbol = new SimpleMarkerSymbol({<br>
+	&emsp;&emsp;&emsp;&emsp;color: color,<br>
+	&emsp;&emsp;&emsp;&emsp;size: 8,<br>
+	&emsp;&emsp;&emsp;&emsp;outline: {<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color: [ 255, 255, 255 ],<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;width: 1<br>
+	&emsp;&emsp;&emsp;&emsp;}<br>
+	&emsp;&emsp;});<br>
+	&emsp;&emsp;//Set symbol and popup template<br>
+	&emsp;&emsp;for (var i=0; i < features.length; i++) {<br>
+	&emsp;&emsp;&emsp;&emsp;var feature = features[i];<br>
+	&emsp;&emsp;&emsp;&emsp;feature.symbol = symbol;<br>
+	&emsp;&emsp;&emsp;&emsp;feature.popupTemplate = {<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;title: "{NAME}",<br>
+	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;content: "This is a metro stop for the {LINE} line(s)."<br>
+	&emsp;&emsp;&emsp;&emsp;}<br>
+	&emsp;&emsp;&emsp;&emsp;view.graphics.add(feature);<br>
+	&emsp;&emsp;}<br>
+	&emsp;&emsp;//Add graphics<br>
+	&emsp;&emsp;view.graphics.removeAll();<br>
+	&emsp;&emsp;view.graphics.addMany(features);<br>
+	&emsp;&emsp;view.goTo(features);<br>
+	&emsp;&emsp;view.popup.visible = false;<br>
+	}
 </p>
-<br><br>
-<u>3. Switch out map for scene</u>
 <br>
-This one is easy. In the previous step we created a variable called "scene". Simply replace the "map" variable in our view with this new scene variable!
-<br><br>
-We can also now delete the "center" and "scale" items in our view as this is defined in our Web Scene.
-<br><br><button type="button" class="collapsible">Map Solution</button>
-    <div class="content"><img src="./images/e9_one.png"></div>
+<u>4. Add Handlers</u>
+<br>
+Final step I promise! We just have to add some handlers to select the HTML slement so we can change the SQL string for the query.
+Also, just an error handler in case the service isn't working!
+<br>
+<p style="padding-left: 5%; font-family: monospace;">//Add select element to UI<br>
+	view.when(function() {<br>
+		&emsp;&emsp;view.ui.add(document.getElementById("queryDiv"), "top-right");<br>
+		&emsp;&emsp;document.getElementById("queryDiv").addEventListener("change", doQuery);<br>
+	});<br>
+	<br>
+    //Get the color from the drop down<br>
+	function doQuery(e) {<br>
+		&emsp;&emsp;var theColor = e.target.value;<br>
+		&emsp;&emsp;getFeatures(theColor);<br>
+	};<br>
+	<br>
+	//Add the promise rejected function<br>
+	function promiseRejected(){<br>
+		&emsp;&emsp;console.write("Error with query");<br>
+	}<br>
+</p>
+And now, after all of this, your application should look like this:<br><br>
+<button type="button" class="collapsible">Map Solution</button>
+    <div class="content"><img src="./images/e12_one.png"></div>
 <br><br><button type="button" class="collapsible">Code Solution</button>
-    <div class="content"><img src="./images/e9_code.jpg"></div>
+	<div class="content"><img src="./images/e12_code_1.jpg"><img src="./images/e12_code_2.jpg"><img src="./images/e12_code_3.jpg"></div>
+
 <br><br><br><b><u>Challenges:</u></b><br><br>
-Find your own Web Scene and load it in! Use that same method to find the ID of your scene.
-<br><br>
+Oops! I left out the green line! Can you modify the HTML to include the green line and ensure that it still works with our query task?
 </div>
 </div>
 <!-- <div id="dialog" title="Welcome to the ArcGIS API for JavaScript">

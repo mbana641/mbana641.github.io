@@ -123,7 +123,7 @@
 			font-size:14px;
 		}
 
-        .collapsible {
+		.collapsible {
             background-color: #777;
             color: white;
             cursor: pointer;
@@ -147,7 +147,7 @@
         }
 
 		img {
-			width:100%;
+			width: 100%;
 		}
 
 </style>
@@ -170,10 +170,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-  <title>Exercise 12 3D</title>
+  <title>Query and Calculate Statistics</title>
 
-  <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/css/main.css">
-  <script src="https://js.arcgis.com/4.18/"></script>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/themes/light/main.css" />
+	<script src="https://js.arcgis.com/4.18/"></script>
   
   <style>
     html, body, #viewDiv {
@@ -181,29 +181,30 @@
       margin: 0;
       height: 100%;
     }
-  
   </style>
 
   <script>
-    require([
-      "esri/views/SceneView",
-      "esri/Map"
-    ], function(SceneView, Map) {
+  	require([
+      "esri/Map",
+      "esri/views/SceneView"
+    ], function(Map, SceneView) {
 
-      var scene = new Map({
-		  basemap: "dark-gray-vector"
-	  });
-
-      var view = new SceneView({
-        map: scene,
-        container: "viewDiv"
+      var map = new Map({
+        basemap: "hybrid",
       });
 
+      var view = new SceneView({
+        container: "viewDiv",
+        map: map,
+        center: [-74.029, 40.71],
+        zoom: 10
+      });
+	        
     });
   </script>
 </head>
 <body>
-    <div id="viewDiv"></div>
+  <div id="viewDiv"></div>
 </body>
 </html>
 </textarea>
@@ -219,178 +220,254 @@
 <iframe id=preview></iframe>
 </div>
 <div id=instruct style="font-family: Arial, Helvetica, sans-serif;">
-<span style="display: block; text-align: center;"><b><u>Exercise 12 3D - Search with Widgets</u></b><br><br></span>
-<b><u>Instructions:</u></b><br><br>
-In this lab you will use a QueryTask to query data from a feature layer.
-A query task allows you to make a SQL or spatial query to retrieve subsets of records from a layer or service
-<br><br>
-With Query tasks, you are responsible for adding the resulting features to the map as graphics.
-You are also responsible for adding a symbol and defining the popup template used for the data.
-<br><br>
-Let's look at some Washington D.C. Metro Station data and use this query to select and symbolize the different lines!
-<br><br>
+<span style="display: block; text-align: center;"><b><u>Exercise 12 3D - Query and Calculate Statistics</u></b><br><br></span>
 <b><u>Exercise:</u></b><br><br>
-<u>1. Create HTML Select Box</u>
-<br>
-First thing we need is a "select" element in our HTML with different options for each metro line.
-<br>
-The text that we put in here will eventually be passed back into the query, since the user has to select the line they want to view.
-<br>
-<p style="padding-left: 5%; font-family: monospace;">
-	&emsp;&emsp;&lt;div id="viewDiv"&gt;&lt;/div&gt;<br>
-	&emsp;&emsp;&lt;!-- ADD --&gt;<br>
-	&emsp;&emsp;&lt;select id="queryDiv"&gt;<br>
-	&emsp;&emsp;&emsp;&emsp;&lt;option selected&gt;blue&lt;/option&gt;<br>
-	&emsp;&emsp;&emsp;&emsp;&lt;option&gt;orange&lt;/option&gt;<br>
-	&emsp;&emsp;&emsp;&emsp;&lt;option&gt;red&lt;/option&gt;<br>
-	&emsp;&emsp;&emsp;&emsp;&lt;option&gt;silver&lt;/option&gt;<br>
-	&emsp;&emsp;&emsp;&emsp;&lt;option&gt;yellow&lt;/option&gt;<br>
-	&emsp;&emsp;&lt;/select&gt;
+In this lab you will use a query with distance and then clone that query to do stats on the features selected.<br><br>
+1. First we'll add some css for how we want our statistics values to be display with color and font size and weight:
+<p style="padding-left: 5%; font-family: monospace;"><br><br>
+#tot-crimes {<br>
+&emsp;&emsp;color: #ed5050;<br>
+&emsp;&emsp;font-size: 36pt;<br>
+&emsp;&emsp;font-weight: bolder;<br>
+&emsp;&emsp;line-height: 0.8;<br>
+}<br><br>
+#tot-Homicides,#tot-theft,#tot-Arson,<br>
+#tot-theftAuto,#tot-MVT,#tot-Robbery,<br>
+#tot-AssaultwWeapon,#tot-Burglary,#tot-SexAbuse{<br>
+&emsp;&emsp;color: #149dcf;<br>
+&emsp;&emsp;font-size: 20pt;<br>
+&emsp;&emsp;font-weight: bolder;<br>
+&emsp;&emsp;line-height: 0.8;<br>
+}<br><br>
 </p>
 <br>
-<u>2. Update Require</u>
-<br>
-Update your require statement <b>and</b> function definition to include the following:
-<br>
+2. Update the require statement and function definition:
+<br><br>
 <p style="padding-left: 5%; font-family: monospace;">require([<br>
-	&emsp;&emsp;"esri/views/SceneView",<br>
-	&emsp;&emsp;"esri/Map",<br>
-	&emsp;&emsp;/*** ADD ***/<br>
-	&emsp;&emsp;"esri/layers/FeatureLayer",<br>
-	&emsp;&emsp;"esri/tasks/QueryTask",<br>
-	&emsp;&emsp;"esri/tasks/support/Query",<br>
-	&emsp;&emsp;"esri/symbols/SimpleMarkerSymbol"<br>
-], function(SceneView, Map, FeatureLayer, QueryTask, Query, SimpleMarkerSymbol) {
+&emsp;&emsp;"esri/WebScene",<br>
+&emsp;&emsp;"esri/views/SceneView",<br>
+&emsp;&emsp;"esri/widgets/Legend",<br>
+&emsp;&emsp;"esri/widgets/Expand",<br>
+&emsp;&emsp;"esri/core/lang",<br>
+&emsp;&emsp;"esri/core/promiseUtils",<br>
+&emsp;&emsp;"esri/core/watchUtils"<br>
+], function(WebScene, SceneView, Legend, Expand, lang, promiseUtils, watchUtils) {<br>
+<br></p>
+<br>
+3. Let's use the portal id for a new web map that contains crime data and use this webscene in the view. Notice that we are setting some addtional properties on the view like the <a href="https://developers.arcgis.com/javascript/latest/api-reference/esri-views-MapView.html#constraints">constraints</a> of minScale and <a href="https://developers.arcgis.com/javascript/latest/api-reference/esri-views-MapView.html#highlightOptions">highlightOptions</a>. Look at the links to get more info and play around with some different properties as you build out this lab.
+<br><br><p style="padding-left: 5%; font-family: monospace;">
+var webscene = new WebScene({<br>
+&emsp;&emsp;portalItem: {<br>
+&emsp;&emsp;&emsp;&emsp;id: "e57df7b2e5e1484a9a6fba59983756c3"<br>
+&emsp;&emsp;}<br>
+});<br><br>
+var view = new SceneView({<br>
+&emsp;&emsp;map: webscene,<br>
+&emsp;&emsp;container: "viewDiv",<br>
+&emsp;&emsp;constraints: {<br>
+&emsp;&emsp;&emsp;&emsp;minScale: 300000<br>
+&emsp;&emsp;},<br>
+&emsp;&emsp;highlightOptions: {<br>
+&emsp;&emsp;&emsp;&emsp;color: "yellow",<br>
+&emsp;&emsp;&emsp;&emsp;haloOpacity: 0.65,<br>
+&emsp;&emsp;&emsp;&emsp;fillOpacity: 0.45<br>
+&emsp;&emsp;}<br>
+});<br><br>
+</p><br>
+4. Next, we are going to add a UI element to show the results of our query. Notice that the values in the span id='', the id's are the same as you defined in your css above.
+<br><br><p style="padding-left: 5%; font-family: monospace;">
+var titleContent = document.createElement("div");<br>
+titleContent.style.padding = "15px";<br>
+titleContent.style.backgroundColor = "white";<br>
+titleContent.style.width = "500px";<br>
+titleContent.innerHTML = [<br>
+&emsp;&emsp;"&lt;div id='title' class='esri-widget'&gt;",<br>
+&emsp;&emsp;"&lt;span id='tot-crimes'&gt;0&lt;/span&gt; crimes occurred within half mile of the pointer location in 2018.&lt;br&gt;",<br>
+&emsp;&emsp;&emsp;&emsp;"Total number of Theft are &lt;span id='tot-theft'&gt;0&lt;/span&gt;.&lt;br&gt;",<br>
+&emsp;&emsp;&emsp;&emsp;"Total number of Theft from Auto are &lt;span id='tot-theftAuto'&gt;0&lt;/span&gt;.&lt;br&gt;",<br>
+&emsp;&emsp;&emsp;&emsp;"Total number of Motor Vehicle Theft are &lt;span id='tot-MVT'&gt;0&lt;/span&gt;.&lt;br&gt;",<br>
+&emsp;&emsp;&emsp;&emsp;"Total number of Robberies are &lt;span id='tot-Robbery'&gt;0&lt;/span&gt;.&lt;br&gt;",<br>
+&emsp;&emsp;&emsp;&emsp;"Total number of Assault with a Dangerous Weapon are &lt;span id='tot-AssaultwWeapon'&gt;0&lt;/span&gt;.&lt;br&gt;",<br>
+&emsp;&emsp;&emsp;&emsp;"Total number of Burglaries &lt;span id='tot-Burglary'&gt;0&lt;/span&gt;.&lt;br&gt;",<br>
+&emsp;&emsp;&emsp;&emsp;"Total number of Sex Abuse are &lt;span id='tot-SexAbuse'&gt;0&lt;/span&gt;.&lt;br&gt;",<br>
+&emsp;&emsp;&emsp;&emsp;"Total number of Homicides are &lt;span id='tot-Homicides'&gt;0&lt;/span&gt;.&lt;br&gt;",<br>
+&emsp;&emsp;&emsp;&emsp;"Total number of Arson are &lt;span id='tot-Arson'&gt;0&lt;/span&gt;.&lt;br&gt;",<br>
+&emsp;&emsp;"&lt;/div&gt;"<br>
+].join(" ");<br><br>
+var titleExpand = new Expand({<br>
+&emsp;&emsp;expandIconClass: "esri-icon-dashboard",<br>
+&emsp;&emsp;expandTooltip: "Summary stats",<br>
+&emsp;&emsp;view: view,<br>
+&emsp;&emsp;content: titleContent,<br>
+&emsp;&emsp;expanded: view.widthBreakpoint !== "xsmall"<br>
+});<br>
+view.ui.add(titleExpand, "top-right");<br><br></p><br>
+5. Next let's add a legend which should be easy for you to do. Here we will add it into a Expand widget as well like we did above. Notice that both the above and legend are using the <a href="https://developers.arcgis.com/javascript/latest/api-reference/esri-views-MapView.html#widthBreakpoint">widthBreakpoint</a> property to dynamically control the expansion of the widget. You can see this by making the browser window smaller.<br><br>
+<p style="padding-left: 5%; font-family: monospace;">
+var legendExpand = new Expand({<br>
+&emsp;&emsp;view: view,<br>
+&emsp;&emsp;content: new Legend({<br>
+&emsp;&emsp;&emsp;&emsp;view: view<br>
+&emsp;&emsp;}),<br>
+&emsp;&emsp;expanded: view.widthBreakpoint !== "xsmall"<br>
+});<br>
+view.ui.add(legendExpand, "bottom-left");<br><br>
+view.watch("widthBreakpoint", function(newValue) {<br>
+&emsp;&emsp;titleExpand.expanded = newValue !== "xsmall";<br>
+&emsp;&emsp;legendExpand.expanded = newValue !== "xsmall";<br>
+});<br>
 </p>
-<br>
-<u>3. Add Query</u>
-<br>
-Now we're going to create a QueryTask and Query to select features from the metro stops feature layer.
-We're also going to simply return two fields from the layer, since that's all we need.
-<br>
-<p style="padding-left: 5%; font-family: monospace;">var view = new SceneView({<br>
-	&emsp;&emsp;container: "viewDiv",<br>
-	&emsp;&emsp;map: scene,<br>
-	&emsp;&emsp;center: [-77.029, 38.89],<br>
-	&emsp;&emsp;zoom: 10<br>
-	});<br>
-	<br>
-	//Create query task to reference the PDX_Rail_Stops_Styled feature layer <br>
-	var queryTask = new QueryTask({<br>
-	&emsp;&emsp;url: "https://services.arcgis.com/hRUr1F8lE8Jq2uJo/arcgis/rest/services/Metro_Stations_Regional/FeatureServer/0"<br>
-	});<br>
-	<br>
-	//Only return two fields<br>
-	var query = new Query({<br>
-	&emsp;&emsp;returnGeometry: true,<br>
-	&emsp;&emsp;outFields: ["NAME", "LINE"],<br>
-	&emsp;&emsp;where: ""<br>
-    });<br>
+<br><br>
+6. You need to declare a variable so that we can control what is highlighted as the selection is changed. This will be used later.<br><br>
+<p style="padding-left: 5%; font-family: monospace;">
+	var highlightHandle = null;
 </p>
-<br>
-<u>4. Lots o' Functions</u>
-<br>
-Next, we're defining a bunch of functions that are going to execute the query task, get the features, 
-and then add them to the default graphics layer of the view.
-<br>
-<p style="padding-left: 5%; font-family: monospace;">//Perform query when page loads<br>
-	getFeatures("blue");<br>
-	<br>
-	//Get features with query where clause<br>
-	function getFeatures(theColor) {<br>
-	&emsp;&emsp;query.where = "LINE LIKE '%" + theColor + "%'";<br>
-	&emsp;&emsp;queryTask.execute(query).then(function(results) {<br>
-	&emsp;&emsp;&emsp;&emsp;addFeatures(results.features);<br>
-	&emsp;&emsp;})<br>
-	.catch(promiseRejected);<br>
-	}<br>
-	<br>
-	//Add features as graphics<br>
-	function addFeatures(features) {<br>
-	&emsp;&emsp;var color,<br>
-	&emsp;&emsp;&emsp;&emsp;symbol;<br>
-	&emsp;&emsp;//Color<br>
-	&emsp;&emsp;switch (document.getElementById("queryDiv").value) {<br>
-	&emsp;&emsp;&emsp;&emsp;case "blue":<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color = [0, 0, 255]<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;break;<br>
-	&emsp;&emsp;&emsp;&emsp;case "red":<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color = [255, 0, 0]<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;break;<br>
-	&emsp;&emsp;&emsp;&emsp;case "green":<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color = [0, 255, 0]<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;break;<br>
-	&emsp;&emsp;&emsp;&emsp;case "orange":<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color = [255,165, 0]<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;break;	<br>
-	&emsp;&emsp;&emsp;&emsp;case "yellow":<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color = [255, 255, 0]<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;break;<br>
-	&emsp;&emsp;&emsp;&emsp;case "silver":<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color = [190, 190, 190]<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;break;<br>
-	&emsp;&emsp;}<br>
-	&emsp;&emsp;symbol = new SimpleMarkerSymbol({<br>
-	&emsp;&emsp;&emsp;&emsp;color: color,<br>
-	&emsp;&emsp;&emsp;&emsp;size: 8,<br>
-	&emsp;&emsp;&emsp;&emsp;outline: {<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color: [ 255, 255, 255 ],<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;width: 1<br>
-	&emsp;&emsp;&emsp;&emsp;}<br>
-	&emsp;&emsp;});<br>
-	&emsp;&emsp;//Set symbol and popup template<br>
-	&emsp;&emsp;for (var i=0; i < features.length; i++) {<br>
-	&emsp;&emsp;&emsp;&emsp;var feature = features[i];<br>
-	&emsp;&emsp;&emsp;&emsp;feature.symbol = symbol;<br>
-	&emsp;&emsp;&emsp;&emsp;feature.popupTemplate = {<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;title: "{NAME}",<br>
-	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;content: "This is a metro stop for the {LINE} line(s)."<br>
-	&emsp;&emsp;&emsp;&emsp;}<br>
-	&emsp;&emsp;&emsp;&emsp;view.graphics.add(feature);<br>
-	&emsp;&emsp;}<br>
-	&emsp;&emsp;//Add graphics<br>
-	&emsp;&emsp;view.graphics.removeAll();<br>
-	&emsp;&emsp;view.graphics.addMany(features);<br>
-	&emsp;&emsp;view.goTo(features);<br>
-	&emsp;&emsp;view.popup.visible = false;<br>
-	}
+<br><br>
+7. Now we need to right the code when to start doing the query. What this is saying is that when the view is ready, then we get the first layer in the map which is our crime points. So when the view is not updating once <a href="https://developers.arcgis.com/javascript/latest/api-reference/esri-core-watchUtils.html#whenFalseOnce">watchUtils.whenFalseOnce</a> when there is a click or drag on the view, we capture the location and stop navigations using event.stopPropagation() so as we drag it doesn't pan the map. But instead we call the function to queryStatsOnDrag and pass the layerView and the event(the location clicked).<br><br>
+<p style="padding-left: 5%; font-family: monospace;">
+view.when()<br>
+.then(function() {<br>
+&emsp;&emsp;var layer = webscene.layers.getItemAt(0);<br>
+&emsp;&emsp;view.whenLayerView(layer).then(function(layerView) {<br>
+&emsp;&emsp;&emsp;&emsp;watchUtils.whenFalseOnce(layerView, "updating", function(<br>
+&emsp;&emsp;&emsp;&emsp;val) {<br>
+&emsp;&emsp;&emsp;&emsp;view.on(["click", "drag"], function(event) {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;event.stopPropagation();<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;queryStatsOnDrag(layerView, event)<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;.then(updateStats);<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;});<br>
+&emsp;&emsp;&emsp;&emsp;});<br>
+&emsp;&emsp;});<br>
+});<br>
 </p>
-<br>
-<u>4. Add Handlers</u>
-<br>
-Final step I promise! We just have to add some handlers to select the HTML slement so we can change the SQL string for the query.
-Also, just an error handler in case the service isn't working!
-<br>
-<p style="padding-left: 5%; font-family: monospace;">//Add select element to UI<br>
-	view.when(function() {<br>
-		&emsp;&emsp;view.ui.add(document.getElementById("queryDiv"), "top-right");<br>
-		&emsp;&emsp;document.getElementById("queryDiv").addEventListener("change", doQuery);<br>
-	});<br>
-	<br>
-    //Get the color from the drop down<br>
-	function doQuery(e) {<br>
-		&emsp;&emsp;var theColor = e.target.value;<br>
-		&emsp;&emsp;getFeatures(theColor);<br>
-	};<br>
-	<br>
-	//Add the promise rejected function<br>
-	function promiseRejected(){<br>
-		&emsp;&emsp;console.write("Error with query");<br>
-	}<br>
+<br><br>
+8. What does the queryStatsOnDrag function look like. It looks complicated but it really isn't. First we create a query on the layerView that is passed in. Then we use the event as the geometry and set the distance for the query. Then we clone the query so we can use it also for the stats query. Next we define the array of statDefinitions to count up how many crimes and of what type are found within the query. Then we do the query against the layerView to get the stats. Next we use the query with the distance set to highlight the features that are selected. Here is where we use the highlightHandle from above that we set to null earlier. We need this because if we don't remove the previous highlighted features they will just accumulate as you drag around the view.<br><br>
+<p style="padding-left: 5%; font-family: monospace;">
+function queryStatsOnDrag(layerView, event) {<br><br>
+&emsp;&emsp;// create a query object for the highlight and the statistics query<br><br>
+&emsp;&emsp;var query = layerView.layer.createQuery();<br>
+&emsp;&emsp;query.geometry = view.toMap(event); // converts the screen point to a map point<br>
+&emsp;&emsp;query.distance = .5; // queries all features within 1 mile of the point<br>
+&emsp;&emsp;query.units = "miles";<br><br>
+&emsp;&emsp;var statsQuery = query.clone();<br><br>
+&emsp;&emsp;// Create the statistic definitions for querying stats from the layer view<br>
+&emsp;&emsp;// the `onStatisticField` property can reference a field name or a SQL expression<br>
+&emsp;&emsp;// `outStatisticFieldName` is the name of the statistic you will reference in the result<br>
+&emsp;&emsp;// `statisticType` can be sum, avg, min, max, count, stddev<br>
+&emsp;&emsp;var statDefinitions = [<br><br>
+&emsp;&emsp;&emsp;&emsp;// total OFFENSES<br><br>
+&emsp;&emsp;&emsp;&emsp;{<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;onStatisticField: "1",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outStatisticFieldName: "total",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;statisticType: "count"<br>
+&emsp;&emsp;&emsp;&emsp;},<br><br>
+&emsp;&emsp;&emsp;&emsp;// total types of crime <br>
+&emsp;&emsp;&emsp;&emsp;// Since separate fields don't exist for each crime type, we can use<br>
+&emsp;&emsp;&emsp;&emsp;// an expression to return a 1 or a 0 for each crime type and sum up the<br>
+&emsp;&emsp;&emsp;&emsp;// results to get the total.<br><br>
+&emsp;&emsp;&emsp;&emsp;{<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;onStatisticField: "CASE WHEN OFFENSE = 'THEFT/OTHER' THEN 1 ELSE 0 END",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outStatisticFieldName: "total_Theft",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;statisticType: "sum"<br>
+&emsp;&emsp;&emsp;&emsp;}, {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;onStatisticField: "CASE WHEN OFFENSE = 'THEFT F/AUTO' THEN 1 ELSE 0 END",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outStatisticFieldName: "total_TheftAuto",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;statisticType: "sum"<br>
+&emsp;&emsp;&emsp;&emsp;}, {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;onStatisticField: "CASE WHEN OFFENSE = 'MOTOR VEHICLE THEFT' THEN 1 ELSE 0 END",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outStatisticFieldName: "total_MVT",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;statisticType: "sum"<br>
+&emsp;&emsp;&emsp;&emsp;}, {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;onStatisticField: "CASE WHEN OFFENSE = 'ROBBERY' THEN 1 ELSE 0 END",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outStatisticFieldName: "total_Robbery",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;statisticType: "sum"<br>
+&emsp;&emsp;&emsp;&emsp;}, {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;onStatisticField: "CASE WHEN OFFENSE = 'ASSAULT W/DANGEROUS WEAPON' THEN 1 ELSE 0 END",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outStatisticFieldName: "total_AssaultWeapon",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;statisticType: "sum"<br>
+&emsp;&emsp;&emsp;&emsp;}, {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;onStatisticField: "CASE WHEN OFFENSE = 'BURGLARY' THEN 1 ELSE 0 END",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outStatisticFieldName: "total_Bulglary",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;statisticType: "sum"<br>
+&emsp;&emsp;&emsp;&emsp;}, {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;onStatisticField: "CASE WHEN OFFENSE = 'SEX ABUSE' THEN 1 ELSE 0 END",<br>
+&emsp;&emsp;&emsp;&emsp;outStatisticFieldName: "total_SexAbuse",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;statisticType: "sum"<br>
+&emsp;&emsp;&emsp;&emsp;}, {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;onStatisticField: "CASE WHEN OFFENSE = 'HOMICIDE' THEN 1 ELSE 0 END",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outStatisticFieldName: "total_Homicide",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;statisticType: "sum"<br>
+&emsp;&emsp;&emsp;&emsp;}, {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;onStatisticField: "CASE WHEN OFFENSE = 'ARSON' THEN 1 ELSE 0 END",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;outStatisticFieldName: "total_Arson",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;statisticType: "sum"<br>
+&emsp;&emsp;&emsp;&emsp;}<br><br>
+&emsp;&emsp;];<br><br>
+&emsp;&emsp;// add the stat definitions to the the statistics query object cloned earlier<br>
+&emsp;&emsp;statsQuery.outStatistics = statDefinitions;<br><br>
+&emsp;&emsp;// execute the query for all features in the layer view<br>
+&emsp;&emsp;var allStatsResponse = layerView.queryFeatures(statsQuery)<br>
+&emsp;&emsp;&emsp;&emsp;.then(function(response) {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;var stats = response.features[0].attributes;<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;return stats;<br>
+&emsp;&emsp;&emsp;&emsp;}, function(e) {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;console.error(e);<br>
+&emsp;&emsp;&emsp;&emsp;});<br><br>
+&emsp;&emsp;// highlight all features within the query distance<br>
+&emsp;&emsp;layerView.queryObjectIds(query)<br>
+&emsp;&emsp;&emsp;&emsp;.then(function(ids) {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;if (highlightHandle) {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;highlightHandle.remove();<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;highlightHandle = null;<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;highlightHandle = layerView.highlight(ids);<br>
+&emsp;&emsp;&emsp;&emsp;});<br><br>
+&emsp;&emsp;// Return the promises that will resolve to each set of statistics<br>
+&emsp;&emsp;return promiseUtils.eachAlways([allStatsResponse]);<br>
+}<br>
 </p>
-And now, after all of this, your application should look like this:<br><br>
+<br><br>
+9. The last bit is to write the function to update the numbers with the data returned from the statistic queries.<br><br>
+<p style="padding-left: 5%; font-family: monospace;">
+function updateStats(responses) {<br>
+&emsp;&emsp;var allStats = responses[0].value;<br>
+&emsp;&emsp;var totalNumber = document.getElementById("tot-crimes");<br>
+&emsp;&emsp;var totTheft = document.getElementById("tot-theft");<br>
+&emsp;&emsp;var totTheftAuto = document.getElementById("tot-theftAuto");<br>
+&emsp;&emsp;var totMVT = document.getElementById("tot-MVT");<br>
+&emsp;&emsp;var totRobbery = document.getElementById("tot-Robbery");<br>
+&emsp;&emsp;var totAssault = document.getElementById("tot-AssaultwWeapon");<br>
+&emsp;&emsp;var totBurglary = document.getElementById("tot-Burglary");<br>
+&emsp;&emsp;var totSexAbuse = document.getElementById("tot-SexAbuse");<br>
+&emsp;&emsp;var totHomicide = document.getElementById("tot-Homicides");<br>
+&emsp;&emsp;var totArson = document.getElementById("tot-Arson");<br><br>
+&emsp;&emsp;// Update the total numbers in the title UI element<br>
+&emsp;&emsp;totalNumber.innerHTML = allStats.total;<br>
+&emsp;&emsp;totTheft.innerHTML = allStats.total_Theft;<br>
+&emsp;&emsp;totTheftAuto.innerHTML = allStats.total_TheftAuto;<br>
+&emsp;&emsp;totMVT.innerHTML = allStats.total_MVT;<br>
+&emsp;&emsp;totRobbery.innerHTML = allStats.total_Robbery;<br>
+&emsp;&emsp;totAssault.innerHTML = allStats.total_AssaultWeapon;<br>
+&emsp;&emsp;totBurglary.innerHTML = allStats.total_Bulglary;<br>
+&emsp;&emsp;totSexAbuse.innerHTML = allStats.total_SexAbuse;<br>
+&emsp;&emsp;totHomicide.innerHTML = allStats.total_Homicide;<br>
+&emsp;&emsp;totArson.innerHTML = allStats.total_Arson;<br>
+}<br>
+</p>
+<br><br>
+Select a category to query the feature layer. Click on any point to display the attribute data in a popup.
+<br><br>
+If you're stuck, ensure that your code looks like the solution in the picture below:<br><br>
 <button type="button" class="collapsible">Map Solution</button>
-    <div class="content"><img src="./images/e12_3D_one.png"></div>
+    <div class="content"><img src="./images/e15_3D_one.jpg"></div>
 <br><br><button type="button" class="collapsible">Code Solution</button>
-    <div class="content"><img src="./images/e12_3D_code_1.jpg"><img src="./images/e12_3D_code_2.jpg"><img src="./images/e12_3D_code_3.jpg"></div>
-
-<br><br><br><b><u>Challenges:</u></b><br><br>
-Oops! I left out the green line! Can you modify the HTML to include the green line and ensure that it still works with our query task?
+    <div class="content"><img src="./images/e15_3D_code_1.jpg"><img src="./images/e15_3D_code_2.jpg"><img src="./images/e15_3D_code_3.jpg"><img src="./images/e15_3D_code_4.jpg"><img src="./images/e15_3D_code_5.jpg"></div>
+<br><br>
 </div>
 </div>
 <!-- <div id="dialog" title="Welcome to the ArcGIS API for JavaScript">
-  <p>Please use this Code Playground to begin learning about the ArcGIS API for JavaScript. To get started, please read through and follow the directions on the right hand side of your screen.</p>
-</div> -->
+  <p>Please use this Code Playground to begin learning about the ArcGIS API for JavaScript. To get started, click on the Directions button. As you edit code on the left side of the screen, press the Refresh button to see the updates on the Map.</p>
+<br><br></div> -->
     <script>
       var delay;
       // Initialize CodeMirror editor with a nice html5 canvas demo.
@@ -408,7 +485,7 @@ Oops! I left out the green line! Can you modify the HTML to include the green li
 	  document.getElementById('instruct').style.display = "none";
 	  
 	  /* $( function() {
-		$( "#dialog" ).dialog({width: "500px", modal: true});
+		$( "#dialog" ).dialog({width: "500px"});
 	  } ); */
       
       function updatePreview() {
@@ -433,7 +510,7 @@ Oops! I left out the green line! Can you modify the HTML to include the green li
 		link.click(); 
 	  }
 
-	  /* function loadLab(evt, a){
+	  function loadLab(evt, a){
 		var i, tabcontent, tablinks;
 		 tabcontent = document.getElementsByClassName("tabcontent");
 		 for (i = 0; i < tabcontent.length; i++) {
@@ -458,8 +535,9 @@ Oops! I left out the green line! Can you modify the HTML to include the green li
 			editor.getDoc().setValue(document.getElementById('lab2').value)
 			document.getElementById('instruct').innerHTML = "<br>###Build a starter map<br><br>This lab covers the basics for creating a basic starter mapping application. The starter map simply loads a default base map, and centers and zooms it in in a <a target='_blank' href='https://developers.arcgis.com/javascript/latest/api-reference/esri-views-MapView.html'>MapView</a>. If you are new to ArcGIS and need a full set of instructions on building a basic mapping application visit the <a target='_blank' href='https://developers.arcgis.com/javascript/latest/sample-code/get-started-mapview/index.html'>Getting Started with MapView</a> tutorial.<br><br>###Bonus<ul><li>Experiment with different basemaps such as topo-vector or gray-vector. Here is a <a target='_blank' href='https://developers.arcgis.com/javascript/latest/api-reference/esri-Map.html#basemap'>list</a> of options.</li><li>Change the center and zoom level.</li></ul>"
 		}
-	  } */
-	    var coll = document.getElementsByClassName("collapsible");
+	  }
+
+	  var coll = document.getElementsByClassName("collapsible");
         var i;
 
         for (i = 0; i < coll.length; i++) {
@@ -473,7 +551,7 @@ Oops! I left out the green line! Can you modify the HTML to include the green li
             }
         });
         }
-
+	  
 	  function openCity(evt, cityName) {
 		  var i, tabcontent, tablinks;
 		  tabcontent = document.getElementsByClassName("tabcontent");

@@ -1,6 +1,6 @@
 <!doctype html>
 
-<title>Exercise 16</title>
+<title>Exercise 13 3D</title>
 <meta charset="utf-8"/>
 <link rel="icon" type="image/png" href="./brackets.png"/>
 <link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.51.0/codemirror.css>
@@ -164,7 +164,7 @@
 
 
 <textarea id="code" name="code" style="display:none;">
-<!-- Exercise 16, Written in JavaScript 4.18 -->
+<!-- Exercise 13 3D, Written in JavaScript 4.18 -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -222,7 +222,7 @@
 <iframe id=preview></iframe>
 </div>
 <div id=instruct style="font-family: Arial, Helvetica, sans-serif;">
-	<span style="display: block; text-align: center;"><b><u>Exercise 16 - Using the Editor Widget</u></b><br><br></span>
+	<span style="display: block; text-align: center;"><b><u>Exercise 13 3D - Using the Editor Widget</u></b><br><br></span>
 <b><u>Exercise:</u></b><br><br>
 In this lab you will create an app that allows users to add, edit, or delete features. It uses the editor widget, which is new as of version 4.11. The application links to a web map that contains an editable layer from ArcGIS Online.
 <br><br>
@@ -235,45 +235,64 @@ In this lab you will create an app that allows users to add, edit, or delete fea
 2. Update the require statement and function definition:
 <br><br>
 <p style="padding-left: 5%; font-family: monospace;">require([<br>
-&emsp;&emsp;"esri/WebMap",<br>
-&emsp;&emsp;"esri/views/MapView",<br>
+&emsp;&emsp;"esri/WebScene",<br>
+&emsp;&emsp;"esri/views/SceneView",<br>
 &emsp;&emsp;"esri/widgets/Editor"<br>
-], function(WebMap, MapView, Editor) {<br>
+], function(WebScene, SceneView, Editor) {<br>
 <br></p>
 <br>
-3. Change the map to a WebMap and edit the view.
+3. Change the map to a WebScene and edit the view.
 <br><br><p style="padding-left: 5%; font-family: monospace;">
-var webmap = new WebMap({<br>
+var webscene = new WebScene({<br>
 &emsp;&emsp;portalItem: {<br>
-&emsp;&emsp;&emsp;&emsp;id: "325015b250b04602be82499a8ac62a59"<br>
+&emsp;&emsp;&emsp;&emsp;id: "206a6a13162c4d9a95ea6a87abad2437"<br>
 &emsp;&emsp;}<br>
 });<br>
-var view = new MapView({<br>
+var view = new SceneView({<br>
 &emsp;&emsp;container: "viewDiv",<br>
-&emsp;&emsp;map: webmap<br>
+&emsp;&emsp;map: webscene<br>
 });<br><br>
 </p><br>
-4. When the view is ready, disable popups, create the editor widget, and add it to the top right corner.
+4. For the editing tool to identify the size and the rotation, you need to set them as visual variables in the renderer:<br><br>
+<br><br><p style="padding-left: 5%; font-family: monospace;">
+var renderer = {<br>
+&emsp;&emsp;type: "unique-value",<br>
+&emsp;&emsp;visualVariables: [<br>
+&emsp;&emsp;&emsp;&emsp; {<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;type: "size",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;field: "SIZE",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;axis: "height",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;valueUnit: "meters"<br>
+&emsp;&emsp;&emsp;&emsp;},<br>
+&emsp;&emsp;&emsp;&emsp;{<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;type: "rotation",<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;field: "ROTATION"<br>
+&emsp;&emsp;&emsp;&emsp;}<br>
+&emsp;&emsp;],<br>
+};<br>
+<br><br></p>
+5. When the view is ready, disable popups, create the editor widget, and add it to the top right corner.
 <br><br><p style="padding-left: 5%; font-family: monospace;">
 view.when(function() {<br>
 &emsp;&emsp;view.popup.autoOpenEnabled = false;<br>
 &emsp;&emsp;var editor = new Editor({<br>
-&emsp;&emsp;&emsp;&emsp;view: view<br>
+&emsp;&emsp;&emsp;&emsp;view: view,<br>
+&emsp;&emsp;&emsp;&emsp;renderer: renderer
 &emsp;&emsp;});<br>
 &emsp;&emsp;view.ui.add(editor, "top-right");<br>
 });<br><br></p><br>
-5. Finally, add the editor to the html.<br><br>
+6. Finally, add the editor to the html.<br><br>
 <p style="padding-left: 5%; font-family: monospace;">
 	&lt;div id="editorDiv"&gt;&lt;/div&gt;
 </p>
 <br><br>
-Your app should display a map of tourist locations in DC. You should be able to add, edit, and delete features.
+Your app should display a map of features in a scene near the water. You should be able to add, edit, and delete features. Feel free to play around with adding features, changing the sizes and locations, etc.
 <br><br>
 If you're stuck, ensure that your code looks like the solution in the picture below:<br><br>
 <button type="button" class="collapsible">Map Solution</button>
-    <div class="content"><img src="./images/e16_map.JPG"></div><br>
+    <div class="content"><img src="./images/e163d_map.JPG"></div><br>
 <button type="button" class="collapsible">Code Solution</button>
-    <div class="content"><img src="./images/e16_one.JPG"></div>
+    <div class="content"><img src="./images/e163d_one.JPG"><img src="./images/e163d_two.JPG"></div>
 <br><br>
 </div>
 </div>
@@ -317,7 +336,7 @@ If you're stuck, ensure that your code looks like the solution in the picture be
 		var link = document.createElement('a');
 		mimeType = 'text/html' || 'text/plain';
 
-		link.setAttribute('download', 'exercise16.html');
+		link.setAttribute('download', 'exercise16-3D.html');
 		link.setAttribute('href', 'data:' + 'text/html' + ';charset=utf-8,' + encodeURIComponent(elHtml));
 		link.click(); 
 	  }
