@@ -339,8 +339,7 @@
   </script>
 </head>
 <body>
-    <div id="viewDiv"></div>
-    <div id="sketchPanel" class="esri-widget">
+    <div id="viewDiv"><div id="sketchPanel" class="esri-widget">
       <div id="startbuttons">
         <button id="point" data-type="point" class="esri-button starttool">Draw a point of interest</button>
         <button id="line" data-type="polyline" class="esri-button starttool">Draw a route</button>
@@ -351,14 +350,8 @@
         <button id="done" class="esri-button">Done</button>
       </div>
     </div>
-    <div id="snapping" class="esri-widget">
-      <input type="checkbox" id="snappingcheckbox" checked />
-      <label id="snappinghint"
-        >snapping (use
-        <div id="snappingctrlkey">CTRL-key</div>
-        to toggle)</label
-      >
     </div>
+    
 </body>
 </html>
 </textarea>
@@ -376,7 +369,7 @@
 <div id=instruct style="font-family: Arial, Helvetica, sans-serif;">
 <span style="display: block; text-align: center;"><b><u>Exercise 7 - Sketching in 3D</u></b><br><br></span>
 <b><u>Instructions:</u></b><br><br>
-Loading in layers and Web Scenes are all great, but what if we want to make our own 3D points/lines/polygons?
+First off, don't worry if your map doesn't load or looks funky at first, it might, but we're missing peices for the code already over there and JavaScript doesn't usually like that. In this exercise we're going to make our own 3D points/lines/polygons!
 <br><br>
 Good news is that this is very doable in JavaScript! Instead of a feature layer, we are going to be manipulating a graphics layer to let us draw on the fly.
 <br><br>
