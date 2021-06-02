@@ -38,9 +38,9 @@ var svg = d3.select("body").append("svg")
     .attr("height", height);
 
 var force = d3.layout.force()
-    .gravity(.2)
-    .distance(100)
-    .charge(-200)
+    .gravity(.3)
+    .distance(50)
+    .charge(-100)
     .size([width, height]);
 
 var color = d3.scale.category10();
