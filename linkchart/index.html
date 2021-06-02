@@ -45,7 +45,7 @@ var force = d3.layout.force()
 
 var color = d3.scale.category10();
 
-d3.json("./travelers.json", function(json) {
+d3.json("./fire_reports.json", function(json) {
   force
       .nodes(json.nodes)
       .links(json.links)
