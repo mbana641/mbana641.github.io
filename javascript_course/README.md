@@ -18,7 +18,7 @@ The labs start from ground-zero and work through the accessing different aspects
 
 Let's get started!
 
-### Version 4.21
+### Version 4.24 (mostly)
 
 * Lab 1:  [Review HTML, CSS, and JavaScript](https://mbana641.github.io/javascript_course/exercises/Exercise1)
 * Lab 2:  [Build a Starter 2D Map](https://mbana641.github.io/javascript_course/exercises/Exercise2) or [Build a Starter 3D Map](https://mbana641.github.io/javascript_course/exercises/Exercise2-3D)
