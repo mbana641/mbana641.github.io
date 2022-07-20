@@ -1,4 +1,4 @@
-<!-- Exercise 9 3D, Written in JavaScript 4.18 -->
+<!-- Exercise 9 3D, Written in JavaScript 4.24 -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -6,8 +6,8 @@
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
   <title>Exercise 9 3D</title>
 
-  <link rel="stylesheet" href="https://js.arcgis.com/4.21/esri/css/main.css">
-  <script src="https://js.arcgis.com/4.21/"></script>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.24/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.24/"></script>
   
   <style>
     html, body, #viewDiv {
@@ -24,10 +24,9 @@
       "esri/Map",
       /*** ADD ***/
       "esri/layers/FeatureLayer",
-      "esri/tasks/QueryTask",
-      "esri/tasks/support/Query",
+      "esri/rest/support/Query",
       "esri/symbols/SimpleMarkerSymbol"
-    ], function(SceneView, Map, FeatureLayer, QueryTask, Query, SimpleMarkerSymbol) {
+    ], function(SceneView, Map, FeatureLayer, Query, SimpleMarkerSymbol) {
 
       var scene = new Map({
 		  basemap: "dark-gray-vector"
@@ -41,16 +40,16 @@
       });
 
       //Create query task to reference the PDX_Rail_Stops_Styled feature layer
-      var queryTask = new QueryTask({
+      var metroLines = new FeatureLayer({
         url: "https://services.arcgis.com/hRUr1F8lE8Jq2uJo/arcgis/rest/services/Metro_Stations_Regional/FeatureServer/0"
       });
 
-      //Only return two fields
-      var query = new Query({
-        returnGeometry: true,
-        outFields: ["NAME", "LINE"],
-        where: ""
-      });
+      //Attach query to feature layer
+      let query = metroLines.createQuery();
+      //These are the attributes we need
+      query.outFields = ["NAME", "LINE"];
+      //And we also need the geometry
+      query.returnGeometry = true;
       
       //Perform query when page loads
       getFeatures("blue");
@@ -58,7 +57,7 @@
       //Get features with query where clause
       function getFeatures(theColor) {
         query.where = "LINE LIKE '%" + theColor + "%'";
-        queryTask.execute(query).then(function(results) {
+        metroLines.queryFeatures(query).then(function(results) {
           addFeatures(results.features);
         })
       .catch(promiseRejected);
@@ -66,8 +65,7 @@
 
       //Add features as graphics
       function addFeatures(features) {
-        var color,
-          symbol;
+        var color;
         //Color
         switch (document.getElementById("queryDiv").value) {
           case "blue":
@@ -89,7 +87,7 @@
             color = [190, 190, 190]
             break;
         }
-        symbol = new SimpleMarkerSymbol({
+        var symbol = new SimpleMarkerSymbol({
           color: color,
           size: 8,
           outline: {
@@ -128,7 +126,7 @@
 
       //Add the promise rejected function
       function promiseRejected(){
-        console.write("Error with query");
+        console.log("Error with query");
       }
       
     });

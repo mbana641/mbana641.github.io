@@ -164,7 +164,7 @@
 
 
 <textarea id="code" name="code" style="display:none;">
-<!-- Exercise 9 3D, Written in JavaScript 4.18 -->
+<!-- Exercise 9 3D, Written in JavaScript 4.24 -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -172,8 +172,8 @@
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
   <title>Exercise 9 3D</title>
 
-  <link rel="stylesheet" href="https://js.arcgis.com/4.21/esri/css/main.css">
-  <script src="https://js.arcgis.com/4.21/"></script>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.24/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.24/"></script>
   
   <style>
     html, body, #viewDiv {
@@ -257,10 +257,9 @@ Update your require statement <b>and</b> function definition to include the foll
 	&emsp;&emsp;"esri/Map",<br>
 	&emsp;&emsp;/*** ADD ***/<br>
 	&emsp;&emsp;"esri/layers/FeatureLayer",<br>
-	&emsp;&emsp;"esri/tasks/QueryTask",<br>
-	&emsp;&emsp;"esri/tasks/support/Query",<br>
+	&emsp;&emsp;"esri/rest/support/Query",<br>
 	&emsp;&emsp;"esri/symbols/SimpleMarkerSymbol"<br>
-], function(SceneView, Map, FeatureLayer, QueryTask, Query, SimpleMarkerSymbol) {
+], function(SceneView, Map, FeatureLayer, Query, SimpleMarkerSymbol) {
 </p>
 <br>
 <u>3. Add Query</u>
@@ -275,17 +274,17 @@ We're also going to simply return two fields from the layer, since that's all we
 	&emsp;&emsp;zoom: 10<br>
 	});<br>
 	<br>
-	//Create query task to reference the PDX_Rail_Stops_Styled feature layer <br>
-	var queryTask = new QueryTask({<br>
+	//Add layer to query on <br>
+	var metroLines = new FeatureLayer({<br>
 	&emsp;&emsp;url: "https://services.arcgis.com/hRUr1F8lE8Jq2uJo/arcgis/rest/services/Metro_Stations_Regional/FeatureServer/0"<br>
 	});<br>
 	<br>
-	//Only return two fields<br>
-	var query = new Query({<br>
-	&emsp;&emsp;returnGeometry: true,<br>
-	&emsp;&emsp;outFields: ["NAME", "LINE"],<br>
-	&emsp;&emsp;where: ""<br>
-    });<br>
+	//Attach query to feature layer<br>
+	var query = metroLines.createQuery();<br>
+	//These are the attributes we need<br>
+	query.outFields = ["NAME", "LINE"];<br>
+	//And we also need the geometry<br>
+    query.returnGeometry = true;<br>
 </p>
 <br>
 <u>4. Lots o' Functions</u>
@@ -299,7 +298,7 @@ and then add them to the default graphics layer of the view.
 	//Get features with query where clause<br>
 	function getFeatures(theColor) {<br>
 	&emsp;&emsp;query.where = "LINE LIKE '%" + theColor + "%'";<br>
-	&emsp;&emsp;queryTask.execute(query).then(function(results) {<br>
+	&emsp;&emsp;metroLines.queryFeatures(query).then(function(results) {<br>
 	&emsp;&emsp;&emsp;&emsp;addFeatures(results.features);<br>
 	&emsp;&emsp;})<br>
 	.catch(promiseRejected);<br>
@@ -307,8 +306,7 @@ and then add them to the default graphics layer of the view.
 	<br>
 	//Add features as graphics<br>
 	function addFeatures(features) {<br>
-	&emsp;&emsp;var color,<br>
-	&emsp;&emsp;&emsp;&emsp;symbol;<br>
+	&emsp;&emsp;var color;<br>
 	&emsp;&emsp;//Color<br>
 	&emsp;&emsp;switch (document.getElementById("queryDiv").value) {<br>
 	&emsp;&emsp;&emsp;&emsp;case "blue":<br>
@@ -330,7 +328,7 @@ and then add them to the default graphics layer of the view.
 	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;color = [190, 190, 190]<br>
 	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;break;<br>
 	&emsp;&emsp;}<br>
-	&emsp;&emsp;symbol = new SimpleMarkerSymbol({<br>
+	&emsp;&emsp;var symbol = new SimpleMarkerSymbol({<br>
 	&emsp;&emsp;&emsp;&emsp;color: color,<br>
 	&emsp;&emsp;&emsp;&emsp;size: 8,<br>
 	&emsp;&emsp;&emsp;&emsp;outline: {<br>
@@ -375,7 +373,7 @@ Also, just an error handler in case the service isn't working!
 	<br>
 	//Add the promise rejected function<br>
 	function promiseRejected(){<br>
-		&emsp;&emsp;console.write("Error with query");<br>
+		&emsp;&emsp;console.log("Error with query");<br>
 	}<br>
 </p>
 And now, after all of this, your application should look like this:<br><br>
