@@ -221,10 +221,10 @@
 <div id=instruct style="font-family: Arial, Helvetica, sans-serif;">
 <span style="display: block; text-align: center;"><b><u>Exercise 9 - Search with Widgets</u></b><br><br></span>
 <b><u>Instructions:</u></b><br><br>
-In this lab you will use a QueryTask to query data from a feature layer.
-A query task allows you to make a SQL or spatial query to retrieve subsets of records from a layer or service
+In this lab you will use a Query to get specific data from a feature layer.
+A query allows you to make a SQL or spatial query to reache out to that REST endpoint for the feature layer and get that data.
 <br><br>
-With Query tasks, you are responsible for adding the resulting features to the map as graphics.
+With Querys, you are responsible for adding the resulting features to the map as graphics.
 You are also responsible for adding a symbol and defining the popup template used for the data.
 <br><br>
 Let's look at some Washington D.C. Metro Station data and use this query to select and symbolize the different lines!
@@ -264,7 +264,8 @@ Update your require statement <b>and</b> function definition to include the foll
 <br>
 <u>3. Add Query</u>
 <br>
-Now we're going to create a QueryTask and Query to select features from the metro stops feature layer.
+Now we're going to create a Query and attach it to the feature layer to select features from the metro stops.<br>
+Note that we never add this feature layer to the map. We don't need to since we're just using it to return graphics.<br>
 We're also going to simply return two fields from the layer, since that's all we need.
 <br>
 <p style="padding-left: 5%; font-family: monospace;">var view = new MapView({<br>
@@ -289,8 +290,9 @@ We're also going to simply return two fields from the layer, since that's all we
 <br>
 <u>4. Lots o' Functions</u>
 <br>
-Next, we're defining a bunch of functions that are going to execute the query task, get the features, 
-and then add them to the default graphics layer of the view.
+Next, we're defining a bunch of functions that are going to execute the query, get the features, 
+and then add them to the default graphics layer of the view.<br>
+Notice also that we perform the "getFeatures" function with blue so that the map always starts with something there.
 <br>
 <p style="padding-left: 5%; font-family: monospace;">//Perform query when page loads<br>
 	getFeatures("blue");<br>
@@ -380,7 +382,7 @@ And now, after all of this, your application should look like this:<br><br>
 <button type="button" class="collapsible">Map Solution</button>
     <div class="content"><img src="./images/e12_one.png"></div>
 <br><br><button type="button" class="collapsible">Code Solution</button>
-	<div class="content"><img src="./images/e12_code_1.jpg"><img src="./images/e12_code_2.jpg"><img src="./images/e12_code_3.jpg"></div>
+	<div class="content"><img src="./images/e12_code.png"></div>
 
 <br><br><br><b><u>Challenges:</u></b><br><br>
 Oops! I left out the green line! Can you modify the HTML to include the green line and ensure that it still works with our query task?
