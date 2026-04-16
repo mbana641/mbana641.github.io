@@ -1,0 +1,6 @@
+name	type	reltype	endname	endtype
+Megan	Person	WorksFor	Esri	Company
+Emma	Person	Knows	Megan	Person
+Roberto	Person	WorksFor	Esri	Company
+Emma	Person	WorksFor	Esri	Company
+Roberto	Person	Knows	Megan	Person
